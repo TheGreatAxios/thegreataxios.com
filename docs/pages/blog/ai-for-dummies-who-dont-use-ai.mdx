@@ -1,0 +1,233 @@
+---
+layout: minimal
+authors:
+    - "thegreataxios"
+date: 2024-11-04
+title: "AI for Dummies (who don't use AI)"
+preview: "Three practical AI use cases for developers who don't use AI-first workflows: generating CURL requests via terminal AI, implementing obscure native APIs, and creating inline documentation for smart contracts."
+---
+
+# AI for Dummies (who don't use AI)
+
+**TL;DR**
+AI tools can enhance developer productivity without requiring full adoption of AI-first development workflows. This guide explores three practical use cases for engineers who don't rely heavily on AI coding assistants: generating CURL requests via terminal AI, using AI for obscure native language API implementation, and creating inline documentation for smart contracts. These targeted applications demonstrate how selective AI integration can streamline tedious tasks while maintaining traditional development approaches.
+
+> **Update**
+> This was originally written on Nov 4, 2024. AI has accelerated since then -- it's currently July 12, 2025 -- and while AI is far more capable of many things including full blown software development, campaign creation, research, and more; the following use-cases presented here are still fully valid and used often by me.
+
+Over the last few years I've spent less time coding and more time learning, building documentation, and supporting developers. While I still write software at least two-three times per week and actively juggle a few different software development related projects; I have not really taken advantage of the **AI Boom** at least compared to many of the developers I support and especially from what I've seen at hackathons.
+
+For the engineerings out looking for some unique places to slot AI into your workflow instead of using it for **everything,** I have some that have been interesting for me to explore.
+
+Below are the **Top 3 Uses Cases** I've found for AI as someone who does NOT use Cursor, v0, and other AI tools on a daily basis.
+
+### **Top 3 Use Cases**
+
+#### 1. Creating CURL Requests
+
+Creating CURL requests is something that I’m sufficient at. I can rip out a quick GET or POST request to a test endpoint. I’ve been using [Warp](https://www.warp.dev/) Terminal — like many other devs — for a number of months now. To be honest, I was originally pretty skeptical when they rolled out the “Ask” Feature late this summer. _What did I learn?_ You can ask Warp to create a CURL request with some of the more complicated information pre-generated for you.
+
+Working in the blockchain space, I often want to check “something” on-chain. Example, double check that my wallet has enough gas tokens.
+
+Here is an example conversation I had with my terminal asking it to help me check what the balance of the address was.
+
+TLDR; Using AI to help generate requests can quickly help gather and check on information.
+
+![](https://cdn-images-1.medium.com/max/1600/1*9u1rwC7qsNFC9pnRndhXxA.png)
+
+Make requests to Warp AI to quickly check for me.
+
+#### 2. Code Generation for Obscure Native Language APIs
+
+I recently started building the v2 of a distribution platform for [Eidolon](https://eidolon.gg/). The Eidolon Console allows users to purchase software development kits (SDKs) — primarily in Unity. The platform is built using the Remix framework which is a Node.js full-stack framework that allows development with React on the frontend and mix-n-match hosting options on the server.
+
+I’ve found developing with it is quite enjoyable as you can encapsulate logic on the server directly into the route which makes smaller applications far more maintainable.
+
+Regardless, I fall into what I think is the majority of developers in that I don’t know the majority of the core Node APIs by heart and I definitely need to search quite a bit to figure out which one to use.
+
+In this case, I was able to use AI to help me understand how to design a file download from an action route in Remix and return the proper information to the client.
+
+```ts
+// Other Imports  
+import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";  
+import { Readable } from "node:stream";  
+  
+...  
+  
+export const loader: LoaderFunction = async ({ request }) => {  
+  
+  ...  
+  
+  try {  
+      const response = await s3Client.send(getObjectCommand);  
+      const bodyStream = response.Body as Readable;  
+    
+      // Convert Readable (Node.js stream) to a web ReadableStream  
+      const webStream = new ReadableStream({  
+        start(controller) {  
+          bodyStream.on("data", (chunk) => controller.enqueue(chunk));  
+          bodyStream.on("end", () => controller.close());  
+          bodyStream.on("error", (err) => controller.error(err));  
+        },  
+      });  
+    
+      return new Response(webStream, {  
+        headers: {  
+          "Content-Type": response.ContentType || "application/octet-stream",  
+          "Content-Disposition": `attachment; filename="${fileName}"`,  
+        },  
+      });  
+    } catch (error) {  
+      throw new Response("Error fetching file", { status: 500 });  
+    }  
+}  
+  
+...  
+// Loader + Remix Function Body Below
+```
+
+Additionally, when originally setting navigation to this download route; I was running into issues with no actual download occurring and having to chain together redirects to make a smooth experience. I again prompted AI to determine a better way to download without routing to the new page and staying and it provided this code snippet which resolved the issue.
+
+TLDR; I used AI to help me understand lower level APIs for things that I don’t remember off the top of my head (e.g the window open) and for native API usage which to be candid I never knew to begin with!
+
+```js
+onClick={(e) => {  
+  e.preventDefault();  
+  window.open(  
+  `/api/download?license=${license.id}`,  
+  "_blank"  
+  );  
+}}
+```
+
+#### 3. Creating Inline Documentation
+
+The last one is something that I’ve had other developers chat with me about, but interestingly enough I found it fantastic for smart contracts. While I don’t believe everything needs to be commented fully it is nice to know that libraries can be nicely commented for future developers to build on top of. For example, here is one of the smart contracts I wrote for games to quickly scaffold out on chain Leaderboards. While there may be a bit more than is necessary it was nice to save myself 10–15 minutes of writing comments by using AI.
+
+TLDR; AI is pretty solid at writing clean documentation.
+
+```solidity
+// SPDX-License-Identifier: MIT  
+pragma solidity >=0.8.0 <0.9.0;  
+  
+import "../authority/Authority.sol";  
+  
+/// @title Leaderboard  
+/// @author Your Name  
+/// @notice A contract to manage a leaderboard of scores associated with Ethereum addresses  
+/// @dev This contract inherits from the Authority contract and uses role-based access control  
+contract Leaderboard is Authority {  
+    /// @dev Struct representing a user entry in the leaderboard  
+    struct User {  
+        address user; // The user's Ethereum address  
+        uint64 highScore; // The user's high score  
+        uint64 timestamp; // The timestamp when the score was submitted  
+        uint32 index; // The index of the user in the sorted leaderboard  
+    }  
+  
+    uint32 resetIndex; // Variable used for incremental reset  
+    User[] public leaderboard; // The leaderboard array of User structs  
+    uint32 public maxLength; // The maximum length of the leaderboard  
+    bool public paused; // Flag indicating whether score submission is paused  
+  
+    event IncrementalReset(uint32 indexed amount); // Event emitted when an incremental reset is performed  
+    event Reset(); // Event emitted when the leaderboard is completely reset  
+    event SubmitScore(address indexed user, uint64 indexed highScore); // Event emitted when a score is submitted but not added to the leaderboard  
+    event SubmitScoreAndAdd(address indexed user, uint64 indexed highScore); // Event emitted when a score is submitted and added to the leaderboard  
+  
+    /// @notice Constructor to initialize the contract  
+    /// @param _maxLength The maximum length of the leaderboard  
+    constructor(uint32 _maxLength) {  
+        maxLength = _maxLength;  
+        paused = false;  
+    }  
+  
+    /// @notice Submit a new high score for a user  
+    /// @param user The Ethereum address of the user  
+    /// @param highScore The new high score to be submitted  
+    /// @dev Only callable by the SERVER_ROLE  
+    function submitScore(address user, uint64 highScore) public virtual onlyRole(SERVER_ROLE) {  
+        if (paused) revert("Submitted Scores is Paused");  
+        if (length() >= maxLength && highScore <= leaderboard[length() - 1].highScore) {  
+            emit SubmitScore(user, highScore);  
+            return;  
+        }  
+        _addToLeaderboard(user, highScore, length() >= maxLength ? length() - 1 : length());  
+        _sort(leaderboard, 0, int32(length()));  
+    }  
+  
+    /// @notice Get the current length of the leaderboard  
+    /// @return The length of the leaderboard  
+    function length() public view returns (uint32) {  
+        return uint32(leaderboard.length);  
+    }  
+  
+    /// @dev Internal function to add a new user to the leaderboard  
+    /// @param user The Ethereum address of the user  
+    /// @param highScore The new high score to be added  
+    /// @param index The index at which the new user should be inserted  
+    function _addToLeaderboard(address user, uint64 highScore, uint32 index) internal virtual {  
+        leaderboard.push(User(user, highScore, uint64(block.timestamp), index));  
+        emit SubmitScoreAndAdd(user, highScore);  
+    }  
+  
+    /// @notice Reset the entire leaderboard  
+    /// @dev Only callable by the MANAGER_ROLE  
+    /// @dev Will revert if the leaderboard length is greater than 25,000  
+    function reset() external onlyRole(MANAGER_ROLE) {  
+        if (length() < 25_000) {  
+            delete leaderboard;  
+            emit Reset();  
+        }  
+        revert("Reset must be done in increments");  
+    }  
+  
+    /// @notice Perform an incremental reset of the leaderboard  
+    /// @dev Only callable by the MANAGER_ROLE  
+    /// @dev Removes up to 1,500 entries from the leaderboard  
+    function incrementalReset() public virtual onlyRole(MANAGER_ROLE) {  
+        if (!paused) paused = true;  
+        uint32 removalAmount = length() > 1500 ? 1500 : length();  
+        for (uint32 i = 0; i < removalAmount; i++) {  
+            leaderboard.pop();  
+        }  
+        emit IncrementalReset(removalAmount);  
+    }  
+  
+    /// @dev Internal function to sort the leaderboard array using the quicksort algorithm  
+    /// @param arr The leaderboard array to be sorted  
+    /// @param left The left index of the subarray to be sorted  
+    /// @param right The right index of the subarray to be sorted  
+    function _sort(User[] memory arr, int256 left, int256 right) internal virtual {  
+        int256 i = left;  
+        int256 j = right;  
+        if (i == j) return;  
+  
+        uint256 pivot = arr[uint256(left + (right - left) / 2)].index;  
+        while (i <= j) {  
+            while (arr[uint256(i)].index > pivot) i++;  
+            while (pivot > arr[uint256(j)].index) j--;  
+            if (i <= j) {  
+                (arr[uint256(i)].index, arr[uint256(i)].index) = (arr[uint256(i)].index, arr[uint256(i)].index);  
+                i++;  
+                j--;  
+            }  
+        }  
+  
+        if (left < j)  
+            _sort(arr, left, j);  
+        if (i < right)  
+            _sort(arr, i, right);  
+    }  
+}
+```
+
+Interesting in using the Sediment contracts? Checkout the docs at [https://docs.dirtroad.dev/sediment](https://docs.dirtroad.dev/sediment).
+
+### **Final Thoughts**
+
+Using AI to code is still something I’m learning to do. However, in the meantime these are three things that make a lot of sense for software engineers to start tinkering with AI to boost their problem solving capabilities or handle tedious tasks (like documentation!).
+
+### Need Support?
+
+Whether you need an engineer, a consultant, an advisor, or a teacher; head over to [https://dirtroad.dev](https://dirtroad.dev/) and let me know how I can help you.

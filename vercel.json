@@ -1,0 +1,234 @@
+{
+  "redirects": [
+    {
+      "source": "/AI+for+Dummies+(who+don't+use+AI)",
+      "destination": "/blog/ai-for-dummies-who-dont-use-ai",
+      "permanent": true
+    },
+    {
+      "source": "/AI%20for%20Dummies%20(who%20don't%20use%20AI)",
+      "destination": "/blog/ai-for-dummies-who-dont-use-ai",
+      "permanent": true
+    },
+    {
+      "source": "/blog/AI+for+Dummies+(who+don't+use+AI)",
+      "destination": "/blog/ai-for-dummies-who-dont-use-ai",
+      "permanent": true
+    },
+    {
+      "source": "/blog/AI%20for%20Dummies%20(who%20don't%20use%20AI)",
+      "destination": "/blog/ai-for-dummies-who-dont-use-ai",
+      "permanent": true
+    },
+    {
+      "source": "/Authoritative+Actions",
+      "destination": "/blog/authoritative-actions",
+      "permanent": true
+    },
+    {
+      "source": "/Authoritative%20Actions",
+      "destination": "/blog/authoritative-actions",
+      "permanent": true
+    },
+    {
+      "source": "/blog/Authoritative+Actions",
+      "destination": "/blog/authoritative-actions",
+      "permanent": true
+    },
+    {
+      "source": "/blog/Authoritative%20Actions",
+      "destination": "/blog/authoritative-actions",
+      "permanent": true
+    },
+    {
+      "source": "/Building+the+Rails+for+an+AI-Powered+World",
+      "destination": "/blog/building-the-rails-for-an-ai-powered-world",
+      "permanent": true
+    },
+    {
+      "source": "/Building%20the%20Rails%20for%20an%20AI-Powered%20World",
+      "destination": "/blog/building-the-rails-for-an-ai-powered-world",
+      "permanent": true
+    },
+    {
+      "source": "/blog/Building+the+Rails+for+an+AI-Powered+World",
+      "destination": "/blog/building-the-rails-for-an-ai-powered-world",
+      "permanent": true
+    },
+    {
+      "source": "/blog/Building%20the%20Rails%20for%20an%20AI-Powered%20World",
+      "destination": "/blog/building-the-rails-for-an-ai-powered-world",
+      "permanent": true
+    },
+    {
+      "source": "/Enhancing+Unity+Game+Development",
+      "destination": "/blog/enhancing-unity-game-development",
+      "permanent": true
+    },
+    {
+      "source": "/Enhancing%20Unity%20Game%20Development",
+      "destination": "/blog/enhancing-unity-game-development",
+      "permanent": true
+    },
+    {
+      "source": "/blog/Enhancing+Unity+Game+Development",
+      "destination": "/blog/enhancing-unity-game-development",
+      "permanent": true
+    },
+    {
+      "source": "/blog/Enhancing%20Unity%20Game%20Development",
+      "destination": "/blog/enhancing-unity-game-development",
+      "permanent": true
+    },
+    {
+      "source": "/Proof-of-Encryption+in+the+Cloud",
+      "destination": "/blog/proof-of-encryption-in-the-cloud",
+      "permanent": true
+    },
+    {
+      "source": "/Proof-of-Encryption%20in%20the%20Cloud",
+      "destination": "/blog/proof-of-encryption-in-the-cloud",
+      "permanent": true
+    },
+    {
+      "source": "/blog/Proof-of-Encryption+in+the+Cloud",
+      "destination": "/blog/proof-of-encryption-in-the-cloud",
+      "permanent": true
+    },
+    {
+      "source": "/blog/Proof-of-Encryption%20in%20the%20Cloud",
+      "destination": "/blog/proof-of-encryption-in-the-cloud",
+      "permanent": true
+    },
+    {
+      "source": "/Scaling+Authority+on+the+EVM",
+      "destination": "/blog/scaling-authority-on-the-evm",
+      "permanent": true
+    },
+    {
+      "source": "/Scaling%20Authority%20on%20the%20EVM",
+      "destination": "/blog/scaling-authority-on-the-evm",
+      "permanent": true
+    },
+    {
+      "source": "/blog/Scaling+Authority+on+the+EVM",
+      "destination": "/blog/scaling-authority-on-the-evm",
+      "permanent": true
+    },
+    {
+      "source": "/blog/Scaling%20Authority%20on%20the%20EVM",
+      "destination": "/blog/scaling-authority-on-the-evm",
+      "permanent": true
+    },
+    {
+      "source": "/SKALE+Governance+Update+-+July+7,+2025",
+      "destination": "/blog/skale-governance-update-july-7-2025",
+      "permanent": true
+    },
+    {
+      "source": "/SKALE%20Governance%20Update%20-%20July%207%2C%202025",
+      "destination": "/blog/skale-governance-update-july-7-2025",
+      "permanent": true
+    },
+    {
+      "source": "/blog/SKALE+Governance+Update+-+July+7,+2025",
+      "destination": "/blog/skale-governance-update-july-7-2025",
+      "permanent": true
+    },
+    {
+      "source": "/blog/SKALE%20Governance%20Update%20-%20July%207%2C%202025",
+      "destination": "/blog/skale-governance-update-july-7-2025",
+      "permanent": true
+    },
+    {
+      "source": "/Supercharge+your+Game",
+      "destination": "/blog/supercharge-your-game",
+      "permanent": true
+    },
+    {
+      "source": "/Supercharge%20your%20Game",
+      "destination": "/blog/supercharge-your-game",
+      "permanent": true
+    },
+    {
+      "source": "/blog/Supercharge+your+Game",
+      "destination": "/blog/supercharge-your-game",
+      "permanent": true
+    },
+    {
+      "source": "/blog/Supercharge%20your%20Game",
+      "destination": "/blog/supercharge-your-game",
+      "permanent": true
+    },
+    {
+      "source": "/The+Power+of+Random",
+      "destination": "/blog/the-power-of-random",
+      "permanent": true
+    },
+    {
+      "source": "/The%20Power%20of%20Random",
+      "destination": "/blog/the-power-of-random",
+      "permanent": true
+    },
+    {
+      "source": "/blog/The+Power+of+Random",
+      "destination": "/blog/the-power-of-random",
+      "permanent": true
+    },
+    {
+      "source": "/blog/The%20Power%20of%20Random",
+      "destination": "/blog/the-power-of-random",
+      "permanent": true
+    },
+    {
+      "source": "/The+Rise+of+the+Machine+Economy",
+      "destination": "/blog/the-rise-of-the-machine-economy",
+      "permanent": true
+    },
+    {
+      "source": "/The%20Rise%20of%20the%20Machine%20Economy",
+      "destination": "/blog/the-rise-of-the-machine-economy",
+      "permanent": true
+    },
+    {
+      "source": "/blog/The+Rise+of+the+Machine+Economy",
+      "destination": "/blog/the-rise-of-the-machine-economy",
+      "permanent": true
+    },
+    {
+      "source": "/blog/The%20Rise%20of%20the%20Machine%20Economy",
+      "destination": "/blog/the-rise-of-the-machine-economy",
+      "permanent": true
+    },
+    {
+      "source": "/x402+via+EIP-3009+Forwarding",
+      "destination": "/blog/x402-via-eip3009-forwarding",
+      "permanent": true
+    },
+    {
+      "source": "/x402%20via%20EIP-3009%20Forwarding",
+      "destination": "/blog/x402-via-eip3009-forwarding",
+      "permanent": true
+    },
+    {
+      "source": "/blog/x402+via+EIP-3009+Forwarding",
+      "destination": "/blog/x402-via-eip3009-forwarding",
+      "permanent": true
+    },
+    {
+      "source": "/blog/x402%20via%20EIP-3009%20Forwarding",
+      "destination": "/blog/x402-via-eip3009-forwarding",
+      "permanent": true
+    },
+    {
+      "source": "/TheGreatAxios+Website",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/TheGreatAxios%20Website",
+      "destination": "/",
+      "permanent": true
+    }
+  ]
+}

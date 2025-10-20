@@ -1,16 +1,254 @@
 ---
 layout: minimal
 authors:
-    - "[thegreataxios](https://x.com/thegreataxios)"
+    - "thegreataxios"
 date: 2025-10-05
+title: "x402 via EIP-3009 Forwarding"
+preview: "x402 brings internet-native payments to any blockchain via ERC-3009 forwarding, enabling USDC payments across SKALE's zero-gas, infinite block space network with instant finality and no facilitator changes required."
 ---
 
 # x402 via EIP-3009 Forwarding
 
-::authors
+**TL;DR**
+x402 is an open protocol for internet native payments created at Coinbase. Coinbase has been deeply aligned with Circle, and chose to build x402 process around the the use of ERC-3009 native USDC.
 
-TL;DR
-sadfasdfasd
-fasdf
-asdf
-asfdasf
+With an increasing number of blockchains being created, many of which are utilizing bridged assets instead of official deployments from stablecoin issuers, this article explores ERC-3009, forwarding payments with ERC-3009 Forwarder, implementing with minimal facilitator changes, and more.
+
+While enables x402 on any blockchain, a major unlock of this initiative was to bring x402 to SKALE, the only network of infinite block space with zero gas fees and instant finality.
+
+## Technology Overview
+
+The following section provides an introduction to x402, blockchains, SKALE Network, stablecoins and tokenization, ERC-3009, and the ERC-3009 Forwarder. If you are already familiar with these topics and want to skip to the implementation, click [here](#implementation).
+
+### x402
+
+[x402](https://x402.org) by Coinbase is an open protocol for internet native payments. This allows for access to be given to resources in a new manner; without the need for traditional login/registration, OAuth, or complex registration. It also bakes monetization directly into the flow for resource access.
+
+Specifically, x402 is blockchain agnostic and runs at the speed of blockchain. The faster the blockchain, the faster your payment. While designed for digital dollars, the standard is technically agnostic to allow for any token to be used as payment.
+
+Additionally, it was built with a number of key use cases in mind such as agentic payments to allow for real time API access to resources, micro transactions for access and creation of content, and more broadly a native integration into any web based service allowing for monetization to occur without a middleman.
+
+### SKALE
+
+[SKALE](https://skale.space) is a network of blockchains capable of bringing an infinite amount of block space to the world in the form of SKALE Chains. SKALE Chains are EVM compatible blockchains that are run by the pool of SKALE validator nodes. With a unique economic model that allows communities, developers, businesses, enterprises, and governments to purchase their own blockchains for  a flat fee, the underlying SKALE Chain can be configured and utilized in whatever way they see fit, including zero gas fee transactions.
+
+With the instant finality, large block size, and zero gas fee nature of a SKALE Chain; it's an ideal fit to bring zero cost operations to x402 for every token; a far greater opportunity for developers and stablecoin issuers compared to using subsidized USDC on certain chains.
+
+### Stablecoins
+If you are unfamiliar with stablecoins, they are a cryptocurrency designed to remain at a stable value in relation to some other asset. The largest stablecoins today are Tether USD (USDT) and Circle USD (USDC) which are tokens issued by their respective companies intended to stay pegged at the value of $1 USD per token.
+
+The usage of stablecoins within x402 makes a lot of sense for many of the core use cases called out such as for cloud compute and storage providers. Stablecoins with zero gas fees is an even stronger pull to providers who don't have to weigh the cost of gas into their services.
+
+### ERC-3009 & Forwarding Contract
+
+ERC-3009 allows the transfer of fungible assets through signed authorization. Through the use of meta-transactions, signatures are used to approve the movement of assets. This brings with it many unique benefits which are explored in the official [EIP-3009](https://eips.ethereum.org/EIPS/eip-3009).
+
+The unique part about 3009, is that it's actually implemented within a few stablecoins, such as USDC and EURC by Circle, but very few others. While this limits blockchains and tokens without ERC-3009 native tokens, it does not stop us from moving forward.
+
+While there are a number of ways to implement the meta-transactions, for to start I chose to go with a **Forwarding** contract for ERC-3009 since that is what the majority of facilitators are currently offering. My belief is that when a technology is new we can always explore more complex and fine-tuned designs, however, the easier it is to integrate into existing tooling the faster we can bring the usage over to SKALE and everyone can benefit from the zero gas fees.
+
+
+> The current forwarding contract is not audited. This contract is offered without any guarantees or warranties under the MIT License. See the full license [here](https://github.com/TheGreatAxios/eip3009-wrapper/blob/main/LICENSE).
+
+
+## Implementation
+
+The following section explores all the code written and steps taken to achieve a working implementation.
+
+### Forwarding Payments with ERC-3009
+
+The entire setup of facilitators currently relies on ERC-3009 compatible tokens, i.e USDC.
+Therefore, to ensure that we could utilize as much of the existing facilitator as possible we needed to implement a `Forwarding` contract. While slightly more inefficient, the gas costs are irrelevant on a chain like SKALE and the extra approval is a price worth paying to achieve my goal (I can iron it out later).
+
+I created the [EIP-3009 Forwarder](https://github.com/TheGreatAxios/eip3009-forwarder) which uses the core structure of the core proposal, but through a forwarding contract. *The difference?* The sender who is signing the authorization must first approve the token being spent via authorization.
+
+As mentioned above, I think this is an acceptable tradeoff. This specific forwarding contract is designed to support a single token only. This was again done to mimic the setup and flows of a traditional facilitator.
+
+### x402 Example Scripts
+
+Once the forwarding contract was built with a small test suite, it made sense to ensure this worked directly. I then setup a `Bun` mono-repo [here](https://github.com/TheGreatAxios/x402-examples) which has a config folder and an ethers-v6 example.
+
+Make note of the first key step within the script below, which is the approval checks and approve as needed functionality.
+
+```typescript
+// ===================
+// STEP A: User approves ERC-20 (with smart allowance check)
+// ===================
+console.log("Step A: Checking and setting allowance");
+
+const approveAmount = ethers.parseUnits("1", token.decimals); // 1 token
+const currentAllowance = await erc20Contract.allowance(userAddress, FORWARDER_ADDRESS);
+const minimumRequired = (approveAmount * 20n) / 100n; // 20% of approve amount
+
+console.log(`Current allowance: ${ethers.formatUnits(currentAllowance, token.decimals)}`);
+console.log(`Minimum required (20%): ${ethers.formatUnits(minimumRequired, token.decimals)}`);
+
+if (currentAllowance < minimumRequired) {
+	console.log("Insufficient allowance, approving...");
+	const approveTx = await erc20Contract.approve(FORWARDER_ADDRESS, approveAmount);
+	await approveTx.wait();
+	console.log(`✓ Approved! Tx: ${approveTx.hash}`);
+} else {
+	console.log("✓ Sufficient allowance exists, skipping approval");
+}
+```
+
+This code ensures some amount is approved to the forwarder in advance which can then be used for micro-transactions.
+
+> I think in these cases it's an acceptable flow for agents as they can do a single approval for small batches i.e $10 of $0.01 gets you 1000 transactions.
+
+You can deploy the forwarding contract and play with these scripts directly. The example script working to execute a USDC (without ERC-3009) payment on SKALE Europa Testnet can be seen here:
+
+```shell
+Step A: Checking and setting allowance
+Current allowance: 999999999999.78
+Minimum required (20%): 0.2
+✓ Sufficient allowance exists, skipping approval
+User balance: 49.78 USDC
+
+Step B: User signs authorization for 0.01 token transfer
+Nonce: 0x94c1a3e2f911070928b2d1cee1c31736decabe7ac044b020f4b808806b58eb8b
+Valid from: 2025-10-04T05:34:14.000Z
+Valid until: 2025-10-04T06:34:14.000Z
+Nonce already used: false
+Domain separator: 0x056b9108f4b1e6aca877b44e3afa782d7a46328ecb25ee6d4eb037c02cfeaaa0
+Domain: {
+  name: "USDC Forwarder",
+  version: "1",
+  chainId: 1444673419,
+  verifyingContract: "0x7779B0d1766e6305E5f8081E3C0CDF58FcA24330",
+}
+Authorization value: {
+  from: "0xdEAC50014a531969d76D9236d209912F4B1AacDB",
+  to: "0xD1A64e20e93E088979631061CACa74E08B3c0f55",
+  value: "0.01 (10000)",
+  validAfter: 1759556054,
+  validBefore: 1759559654,
+  nonce: "0x94c1a3e2f911070928b2d1cee1c31736decabe7ac044b020f4b808806b58eb8b",
+}
+✓ User signed authorization: 0xa8e092aea8b4b0001d...
+Signature components: v=28, r=0xa8e092aea8b4b0001dd9e1f72c718855e0ff0b91668dd9d92ba3df474b051370, s=0x3f1380d002c243e432f2292aaed3bac5cb64b1f4a494e128d6e3fa33e722cfa7
+
+Step C: Relayer executes the transfer (pays gas)
+Final allowance check: 999999999999.78
+✓ Transfer executed! Tx: 0x6e0da427fa6976cbc3100f155c77113fc2508249fcb042763baeb3af264370da
+✓ Gas paid by relayer: 92297 units
+✓ 0.01 tokens transferred from 0xdEAC50014a531969d76D9236d209912F4B1AacDB to 0xD1A64e20e93E088979631061CACa74E08B3c0f55
+
+🎉 Gasless transfer complete!
+- User paid 0 gas for the transfer
+- Relayer paid the gas fees
+- Transfer executed via signed authorization
+```
+
+### Minimal Facilitator Modifications
+
+The facilitator is an optional service within the x402 flow that simplifies the process of verifying and settling payments. While optional, it can help accelerate the adoption and addition of x402 into applications that don't have the experience or the resources to build the necessary functionality.
+
+The two key functions that a facilitator offers are:
+
+1. Verification of payment payloads submitted by clients (buyers).
+2. Settling of payments on the blockchain on behalf of the servers
+
+This enables any web server to utilize the blockchain to handle payments and settlement without the need of direct connection to the blockchain within their existing servers.
+
+The majority of facilitators (and x402 payments) have been focused on Base so far. While Coinbase/Base may be subsidizing all gas fees for USDC transactions making x402 cheap, there are no guarantees that lasts forever OR benefits toward non-USDC stablecoins and tokens.
+
+With the core protocol being built around the usage of USDC to start, the facilitators are utilizing an Ethereum Improvement Proposal (EIP) labeled EIP-3009 which allows transfer with authorization; further extending EIP-712 signatures and meta-transactions directly within the token contract.
+
+However, as not all blockchains are able to attain a native deployment by Circle and with many existing stablecoins like USDT not being natively EIP-3009 compatible, I set out to ensure that that facilitators could work with any token with minimal modifications.
+
+The proposed changes include using an [`EIP-3009 Forwarder`](https://github.com/thegreataxios/eip3009-forwarder) smart contract in Solidity which wallets can approve to spend tokens on their behalf. With such a design, it allows any token on any blockchain to be utilized with almost no changes to an EVM facilitator as the current flows remain almost identical.
+
+To prove this, I made a [pull request](https://github.com/faremeter/faremeter/pull/58) to Faremeter by [Corbits](https://corbits.dev) to add support to their facilitator. The majority of changes come from additional configuration as you can see in the following:
+
+```typescript
+type NetworkInfo = {
+	address: Address;
+	contractName: string;
+	/* Added Below */
+	forwarder?: Address;
+	forwarderName?: string;
+	forwarderVersion?: string;
+};
+```
+
+The most complicated changes were needed within the actual EVM facilitator code, of which the original changes were actually pretty light. They simply had to allow the facilitator to defer to a forwarder when present else fallback to the actual ERC-20 with ERC-3009 support.
+
+I wound up refactoring the whole file to better re-use code, but an example here:
+
+```typescript
+async function createContractConfig(
+  useForwarder: boolean,
+  chainId: number,
+  forwarderVersion: string | undefined,
+  forwarderName: string | undefined,
+  forwarderAddress: `0x${string}` | undefined,
+  publicClient: PublicClient,
+  asset: `0x${string}`,
+  contractName: string,
+): Promise<ContractConfig> {
+  const address = getContractAddress(useForwarder, forwarderAddress, asset);
+
+  const domain = useForwarder
+    ? generateForwarderDomain(chainId, {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        version: forwarderVersion!,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        name: forwarderName!,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        verifyingContract: forwarderAddress!,
+      })
+    : await generateDomain(publicClient, chainId, asset);
+
+  // Validate contract name for non-forwarder cases
+  if (!useForwarder && domain.name !== contractName) {
+    throw new Error(
+      `On chain contract name (${domain.name}) doesn't match configured asset name (${contractName})`,
+    );
+  }
+
+  return { address, domain };
+}
+```
+from [here](https://github.com/faremeter/faremeter/blob/76f2e79ee2906ae4e60330186c350bfd31e520a1/packages/payment-evm/src/exact/facilitator.ts#L81) showcases the dynamic use of `useForwarder`.
+
+When the facilitator is called, it uses the incoming configuration of token and chain to validate if the forwarder is needed. After which the core facilitation stays 1:1 as the actual EIP-712 signature validation and then meta-transaction execution remains identical.
+
+### Why x402 on SKALE
+
+> This section is opinionated.
+
+**"Why SKALE?"** is a question that I have been getting asked for over 4.5 years now (as of 10/1/2025). I think as a developer you find your preferred tech stacks and for everyone it's a bit different. SKALE however really is unique. The combination of performance, stability, innovation, and feature set is unmatched across the Web3 space.
+
+In the case of x402 -- there is quite literally no network better suited to dominate. I've been asking developers building what they value most with x402. The answer is always one of two things:
+
+1. The cheapest costs possible (i.e gas fees) which allows facilitators to reduce their opex and not have to pass it onto buyers as service fees
+2. Speed. Speed. Speed. They want the chain to be fast and they are prioritizing real finality when possible (i.e Solana > Base).
+
+If you were unaware:
+
+1. SKALE Chains have zero gas fees
+
+> This doesn't mean that SKALE doesn't make money. SKALE Chains are pre-paid monthly by application and chain owners. No different than many of the most successful cloud models in the world like Amazon Web Services or Google Cloud
+
+2. Instant Finality
+
+> Once a transaction is posted, the block and transactions cannot be reversed. The fork-less nature of a SKALE Chain means that current chains which operate around 1-2s block times are faster most L1s and retain better finality with lower risk. Additionally, smaller SKALE Chains with co-located nodes (think Hyperliquid style) could reduce this down to potentially a fraction of the time with instant finality.
+
+Additionally, the last thing is scalability. While some blockchains today may have the capacity for handling a few thousand transactions per second or peaks of higher; the whole world will never run on a single blockchain (for many reasons).
+
+SKALE also makes it possible to run an infinite amount of blockchains for x402, payments, stablecoins, and the broader onchain finance landscape as it continues to grow.
+
+## Conclusion
+
+I think x402 is one of many recent protocols that is incredibly exciting for the future of the machine economy. I previously wrote [The Rise of the Machine Economy](/blog/the-rise-of-the-machine-economy) which outlined my thoughts about how agentic payments will grow.
+
+As onchain payments are still in their infancy, the growth potential here is massive. While Turing-complete blockchains enable programmable payments; the natural integration within the broader internet makes x402 a potential catalyst to bring many businesses onchain.
+
+With this potential growth, the only network that is capable of scaling to handle an infinite amount of payments (of any size, including sub-cent) is SKALE. Based on this, I think that a SKALE Chain (of variable sizing) will become a default part for businesses looking to access x402.
+
+---
+
+My name is Sawyer (a.k.a TheGreatAxios) and I am a software engineer and technical consultant.
+Checkout [the home page](/) for more of my writing and too see many of the projects I've build and support. If you are building a product or company and are looking for help with software architecture or design, product, operations, etc. -- please don't hesitate to DM me on Discord or Telegram at TheGreatAxios or shoot me an email: sawyer@dirtroad.dev.
