@@ -6,6 +6,8 @@ date: 2024-09-08
 title: "Scaling Authority on the EVM"
 ---
 
+import Footer from '../../snippets/_footer.mdx'
+
 # Scaling Authority on the EVM
 
 This technical guide addresses the critical scaling challenges faced by authoritative servers in blockchain applications due to the EVM's sequential nonce requirement. By implementing a Signing Pool architecture using HD wallet-derived child signers, developers can overcome nonce collision issues and scale from handling just a few concurrent requests to hundreds per second, complete with automatic gas balance management and dynamic signer selection for high-throughput applications on zero-gas-fee networks like SKALE.
@@ -230,4 +232,4 @@ Additionally, it is important to note that this solution does **NOT** utilize 
 
 For builders interested in taking advantage of this, make sure to head over to [https://docs.skale.space](https://docs.skale.space) and start building now.
 
-If your project is in need of blockchain consulting, engineering, or solutions architecture, head over to [https://dirtroad.dev](https://dirtroad.dev/)to inquire.
+<Footer />

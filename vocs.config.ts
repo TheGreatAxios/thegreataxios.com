@@ -11,5 +11,27 @@ export default defineConfig({
       icon: "x",
       link: "https://twitter.com/thegreataxios"
     }
+  ],
+  topNav: [
+    {
+      link: "/my-projects",
+      text: "My Projects"
+    },
+    {
+      link: "/sponsor",
+      text: "Sponsor"
+    },
+    {
+      link: "/blog",
+      text: "Blog"
+    },
+    {
+      link: "https://buymeacoffee.com/thegreataxios",
+      text: "Buy me a coffee"
+    },
+    {
+      link: "https://x.com/thegreataxios",
+      text: "Follow me on X"
+    }
   ]
 })
