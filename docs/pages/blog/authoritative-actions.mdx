@@ -4,13 +4,11 @@ authors:
     - "thegreataxios"
 date: 2024-09-16
 title: "Authoritative Actions"
-preview: "Using OpenZeppelin's AccessControl for role-based authoritative servers prevents bot abuse in Web3 games while maintaining decentralization, working best on zero-gas-fee blockchains like SKALE with instant finality."
 ---
 
 # Authoritative Actions
 
-**TL;DR**
-Authoritative servers can enhance Web3 applications by preventing bot abuse and managing game state while maintaining decentralization benefits. Using OpenZeppelin's AccessControl for role-based permissions, developers can create secure authority layers that automatically grant temporary access rights to execute on-chain actions. This approach works best on blockchains with zero gas fees and instant finality like SKALE, where variable transaction costs and slow confirmation times don't undermine the user experience or operational viability.
+This article explores how authoritative servers can enhance Web3 applications by preventing bot abuse and managing game state while preserving decentralization benefits through strategic implementation. By leveraging OpenZeppelin's AccessControl for role-based permissions, developers can create secure authority layers that dynamically grant temporary access rights for on-chain actions, with this approach proving most effective on zero-gas-fee blockchains like SKALE that offer instant finality without the operational challenges posed by variable transaction costs and slow confirmation times.
 
 Authority is a grey area in Web3. We often want to remove authority in favor of decentralization, yet more often than not we go to far and the end result lacks any benefit back to the user. The following works through an example of why using authority the right way can be so impactful towards a decentralized application (dApp), while also exploring why authority is often ignored by applications due to the underlying network.
 
