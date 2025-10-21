@@ -4,10 +4,7 @@ export default defineConfig({
   title: 'thegreataxios blog',
   baseUrl: "https://thegreataxios.com",
   description: "The personal blog of TheGreatAxios",
-  iconUrl: {
-    light: '/thegreataxios.png',
-    dark: '/thegreataxios.png',
-  },
+  iconUrl: "/thegreataxios.png",
   socials: [
     {
       icon: "github",
