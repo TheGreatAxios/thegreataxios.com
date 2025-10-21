@@ -9,6 +9,7 @@
     "preview": "vocs preview"
   },
   "dependencies": {
+    "@vercel/speed-insights": "^1.2.0",
     "lucide-react": "^0.546.0",
     "react": "latest",
     "react-dom": "latest",
