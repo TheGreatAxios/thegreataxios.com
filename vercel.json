@@ -1,22 +1,22 @@
 {
   "redirects": [
     {
-      "source": "/AI+for+Dummies+(who+don't+use+AI)",
+      "source": "/AI+for+Dummies+%28who+don%27t+use+AI%29",
       "destination": "/blog/ai-for-dummies-who-dont-use-ai",
       "permanent": true
     },
     {
-      "source": "/AI%20for%20Dummies%20(who%20don't%20use%20AI)",
+      "source": "/AI%20for%20Dummies%20%28who%20don%27t%20use%20AI%29",
       "destination": "/blog/ai-for-dummies-who-dont-use-ai",
       "permanent": true
     },
     {
-      "source": "/blog/AI+for+Dummies+(who+don't+use+AI)",
+      "source": "/blog/AI+for+Dummies+%28who+don%27t+use+AI%29",
       "destination": "/blog/ai-for-dummies-who-dont-use-ai",
       "permanent": true
     },
     {
-      "source": "/blog/AI%20for%20Dummies%20(who%20don't%20use%20AI)",
+      "source": "/blog/AI%20for%20Dummies%20%28who%20don%27t%20use%20AI%29",
       "destination": "/blog/ai-for-dummies-who-dont-use-ai",
       "permanent": true
     },
