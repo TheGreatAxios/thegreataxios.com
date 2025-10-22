@@ -1,1 +1,0 @@
-import{u as s,j as o}from"./index-Wzuqctek.js";const r={layout:"minimal"};function e(t){const n={div:"div",...s(),...t.components};return o.jsx(n.div,{"data-blog-posts":!0})}function u(t={}){const{wrapper:n}={...s(),...t.components};return n?o.jsx(n,{...t,children:o.jsx(e,{...t})}):e(t)}export{u as default,r as frontmatter};
