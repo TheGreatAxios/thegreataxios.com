@@ -1,0 +1,1915 @@
+# thegreataxios blog
+
+> The personal blog of TheGreatAxios
+
+import ProjectCard from '../snippets/ProjectCard.tsx'
+import ProjectsFooter from '../snippets/ProjectsFooter.mdx'
+
+## My Projects
+
+A collection of open source projects spanning blockchain infrastructure, onchain payments, and developer tools.
+
+<ProjectCard title="x402 Payment Examples" description="Comprehensive examples and tests for x402 onchain payment standard, including both direct and forwarding implementations." github="https://github.com/TheGreatAxios/x402-examples" />
+
+<ProjectCard title="EIP-3009 Forwarder" description="Production-ready EIP-3009 forwarder contracts with comprehensive tests, designed to accelerate x402 adoption on EVM chains." github="https://github.com/TheGreatAxios/eip3009-forwarder" />
+
+<ProjectCard title="SKALE CLI" description="Developer tools and CLI utilities for streamlined SKALE network interactions and deployment workflows." github="https://github.com/TheGreatAxios/skale-cli" />
+
+<ProjectCard title="SKL Supply Dashboard" description="Interactive dashboard providing real-time insights into SKL token economics, supply metrics, and network statistics." github="https://github.com/TheGreatAxios/skl-supply-ui" website="https://skl-supply-ui.pages.dev" />
+
+<ProjectCard title="SKALE Documentation" description="Comprehensive documentation platform for the SKALE network, developer guides, and ecosystem resources." github="https://github.com/skalenetwork/docs.skale.space" website="https://docs.skale.space" />
+
+<ProjectCard title="SKALE RNG Service" description="Verifiable random number generation service built for the SKALE ecosystem with cryptographic security guarantees." github="https://github.com/Dirt-Road-Development/skale-rng" />
+
+<ProjectCard title="Gasless Transactions (Rust)" description="Rust implementation of gasless transaction infrastructure, enabling seamless user experiences without gas fees." github="https://github.com/Dirt-Road-Development/gasless-rs" />
+
+<ProjectCard title="SKALE Oracle SDK" description="Official SDK for integrating with SKALE's decentralized oracle network, enabling real-world data integration." github="https://github.com/skalenetwork/oracle-sdk" />
+
+<ProjectCard title="sFUEL Station" description="Smart contracts for SFUEL distribution and management within the SKALE ecosystem." github="https://github.com/Dirt-Road-Development/sfuel-station" website="https://sfuelstation.com" />
+
+<ProjectCard title="sFUEL Distribution System" description="Automated distribution contracts for SKALE's SFUEL token with fair allocation mechanisms." github="https://github.com/Dirt-Road-Development/sfuel-distribution-contract" />
+
+<ProjectCard title="Monorail Bridge Contracts" description="Infrastructure contracts for the Monorail cross-chain bridge system on SKALE." github="https://github.com/Dirt-Road-Development/monorail-contracts" />
+
+<ProjectCard title="FAIR L1 Blockchain Documentation" description="Technical documentation and guides for the Fairchain ecosystem and its underlying infrastructure." github="https://github.com/thegreataxios/docs.fairchain.ai" website="http://docs-fairchain-ai.pages.dev/" />
+
+<ProjectsFooter />
+
+
+## Sponsor
+
+***
+
+Hi!
+
+My name is Sawyer. I’m a contractor working on a variety of projects, with my largest being SKALE, where I serve as VP of Developer Success.
+
+In addition to that, I write extensively and code regularly.
+
+If you’re interested in sponsoring a blog post, development of a proof of concept, commissioning paid research, or having me test and provide feedback, feel free to email me at [sawyer@dirtroad.dev](mailto\:sawyer@dirtroad.dev) or DM me on Twitter at [thegreataxios](https://x.com/thegreataxios).
+
+You can also [help support me with a coffee](https://buymeacoffee.com/thegreataxios).
+
+
+## AI for Dummies (who don't use AI)
+
+This article explores three practical ways developers who don't use AI-first workflows can leverage artificial intelligence to enhance their productivity. From generating complex CURL requests through terminal AI tools, to implementing obscure native APIs, and creating comprehensive inline documentation for smart contracts, these targeted applications demonstrate how selective AI integration can streamline development tasks without requiring a complete overhaul of traditional coding approaches.
+
+> **Update**
+> This was originally written on Nov 4, 2024. AI has accelerated since then -- it's currently July 12, 2025 -- and while AI is far more capable of many things including full blown software development, campaign creation, research, and more; the following use-cases presented here are still fully valid and used often by me.
+
+Over the last few years I've spent less time coding and more time learning, building documentation, and supporting developers. While I still write software at least two-three times per week and actively juggle a few different software development related projects; I have not really taken advantage of the **AI Boom** at least compared to many of the developers I support and especially from what I've seen at hackathons.
+
+For the engineerings out looking for some unique places to slot AI into your workflow instead of using it for **everything,** I have some that have been interesting for me to explore.
+
+Below are the **Top 3 Uses Cases** I've found for AI as someone who does NOT use Cursor, v0, and other AI tools on a daily basis.
+
+#### **Top 3 Use Cases**
+
+##### 1. Creating CURL Requests
+
+Creating CURL requests is something that I’m sufficient at. I can rip out a quick GET or POST request to a test endpoint. I’ve been using [Warp](https://www.warp.dev/) Terminal — like many other devs — for a number of months now. To be honest, I was originally pretty skeptical when they rolled out the “Ask” Feature late this summer. *What did I learn?* You can ask Warp to create a CURL request with some of the more complicated information pre-generated for you.
+
+Working in the blockchain space, I often want to check “something” on-chain. Example, double check that my wallet has enough gas tokens.
+
+Here is an example conversation I had with my terminal asking it to help me check what the balance of the address was.
+
+TLDR; Using AI to help generate requests can quickly help gather and check on information.
+
+![](https://cdn-images-1.medium.com/max/1600/1*9u1rwC7qsNFC9pnRndhXxA.png)
+
+Make requests to Warp AI to quickly check for me.
+
+##### 2. Code Generation for Obscure Native Language APIs
+
+I recently started building the v2 of a distribution platform for [Eidolon](https://eidolon.gg/). The Eidolon Console allows users to purchase software development kits (SDKs) — primarily in Unity. The platform is built using the Remix framework which is a Node.js full-stack framework that allows development with React on the frontend and mix-n-match hosting options on the server.
+
+I’ve found developing with it is quite enjoyable as you can encapsulate logic on the server directly into the route which makes smaller applications far more maintainable.
+
+Regardless, I fall into what I think is the majority of developers in that I don’t know the majority of the core Node APIs by heart and I definitely need to search quite a bit to figure out which one to use.
+
+In this case, I was able to use AI to help me understand how to design a file download from an action route in Remix and return the proper information to the client.
+
+```ts
+// Other Imports  
+import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";  
+import { Readable } from "node:stream";  
+  
+...  
+  
+export const loader: LoaderFunction = async ({ request }) => {  
+  
+  ...  
+  
+  try {  
+      const response = await s3Client.send(getObjectCommand);  
+      const bodyStream = response.Body as Readable;  
+    
+      // Convert Readable (Node.js stream) to a web ReadableStream  
+      const webStream = new ReadableStream({  
+        start(controller) {  
+          bodyStream.on("data", (chunk) => controller.enqueue(chunk));  
+          bodyStream.on("end", () => controller.close());  
+          bodyStream.on("error", (err) => controller.error(err));  
+        },  
+      });  
+    
+      return new Response(webStream, {  
+        headers: {  
+          "Content-Type": response.ContentType || "application/octet-stream",  
+          "Content-Disposition": `attachment; filename="${fileName}"`,  
+        },  
+      });  
+    } catch (error) {  
+      throw new Response("Error fetching file", { status: 500 });  
+    }  
+}  
+  
+...  
+// Loader + Remix Function Body Below
+```
+
+Additionally, when originally setting navigation to this download route; I was running into issues with no actual download occurring and having to chain together redirects to make a smooth experience. I again prompted AI to determine a better way to download without routing to the new page and staying and it provided this code snippet which resolved the issue.
+
+TLDR; I used AI to help me understand lower level APIs for things that I don’t remember off the top of my head (e.g the window open) and for native API usage which to be candid I never knew to begin with!
+
+```js
+onClick={(e) => {  
+  e.preventDefault();  
+  window.open(  
+  `/api/download?license=${license.id}`,  
+  "_blank"  
+  );  
+}}
+```
+
+##### 3. Creating Inline Documentation
+
+The last one is something that I’ve had other developers chat with me about, but interestingly enough I found it fantastic for smart contracts. While I don’t believe everything needs to be commented fully it is nice to know that libraries can be nicely commented for future developers to build on top of. For example, here is one of the smart contracts I wrote for games to quickly scaffold out on chain Leaderboards. While there may be a bit more than is necessary it was nice to save myself 10–15 minutes of writing comments by using AI.
+
+TLDR; AI is pretty solid at writing clean documentation.
+
+```solidity
+// SPDX-License-Identifier: MIT  
+pragma solidity >=0.8.0 <0.9.0;  
+  
+import "../authority/Authority.sol";  
+  
+/// @title Leaderboard  
+/// @author Your Name  
+/// @notice A contract to manage a leaderboard of scores associated with Ethereum addresses  
+/// @dev This contract inherits from the Authority contract and uses role-based access control  
+contract Leaderboard is Authority {  
+    /// @dev Struct representing a user entry in the leaderboard  
+    struct User {  
+        address user; // The user's Ethereum address  
+        uint64 highScore; // The user's high score  
+        uint64 timestamp; // The timestamp when the score was submitted  
+        uint32 index; // The index of the user in the sorted leaderboard  
+    }  
+  
+    uint32 resetIndex; // Variable used for incremental reset  
+    User[] public leaderboard; // The leaderboard array of User structs  
+    uint32 public maxLength; // The maximum length of the leaderboard  
+    bool public paused; // Flag indicating whether score submission is paused  
+  
+    event IncrementalReset(uint32 indexed amount); // Event emitted when an incremental reset is performed  
+    event Reset(); // Event emitted when the leaderboard is completely reset  
+    event SubmitScore(address indexed user, uint64 indexed highScore); // Event emitted when a score is submitted but not added to the leaderboard  
+    event SubmitScoreAndAdd(address indexed user, uint64 indexed highScore); // Event emitted when a score is submitted and added to the leaderboard  
+  
+    /// @notice Constructor to initialize the contract  
+    /// @param _maxLength The maximum length of the leaderboard  
+    constructor(uint32 _maxLength) {  
+        maxLength = _maxLength;  
+        paused = false;  
+    }  
+  
+    /// @notice Submit a new high score for a user  
+    /// @param user The Ethereum address of the user  
+    /// @param highScore The new high score to be submitted  
+    /// @dev Only callable by the SERVER_ROLE  
+    function submitScore(address user, uint64 highScore) public virtual onlyRole(SERVER_ROLE) {  
+        if (paused) revert("Submitted Scores is Paused");  
+        if (length() >= maxLength && highScore <= leaderboard[length() - 1].highScore) {  
+            emit SubmitScore(user, highScore);  
+            return;  
+        }  
+        _addToLeaderboard(user, highScore, length() >= maxLength ? length() - 1 : length());  
+        _sort(leaderboard, 0, int32(length()));  
+    }  
+  
+    /// @notice Get the current length of the leaderboard  
+    /// @return The length of the leaderboard  
+    function length() public view returns (uint32) {  
+        return uint32(leaderboard.length);  
+    }  
+  
+    /// @dev Internal function to add a new user to the leaderboard  
+    /// @param user The Ethereum address of the user  
+    /// @param highScore The new high score to be added  
+    /// @param index The index at which the new user should be inserted  
+    function _addToLeaderboard(address user, uint64 highScore, uint32 index) internal virtual {  
+        leaderboard.push(User(user, highScore, uint64(block.timestamp), index));  
+        emit SubmitScoreAndAdd(user, highScore);  
+    }  
+  
+    /// @notice Reset the entire leaderboard  
+    /// @dev Only callable by the MANAGER_ROLE  
+    /// @dev Will revert if the leaderboard length is greater than 25,000  
+    function reset() external onlyRole(MANAGER_ROLE) {  
+        if (length() < 25_000) {  
+            delete leaderboard;  
+            emit Reset();  
+        }  
+        revert("Reset must be done in increments");  
+    }  
+  
+    /// @notice Perform an incremental reset of the leaderboard  
+    /// @dev Only callable by the MANAGER_ROLE  
+    /// @dev Removes up to 1,500 entries from the leaderboard  
+    function incrementalReset() public virtual onlyRole(MANAGER_ROLE) {  
+        if (!paused) paused = true;  
+        uint32 removalAmount = length() > 1500 ? 1500 : length();  
+        for (uint32 i = 0; i < removalAmount; i++) {  
+            leaderboard.pop();  
+        }  
+        emit IncrementalReset(removalAmount);  
+    }  
+  
+    /// @dev Internal function to sort the leaderboard array using the quicksort algorithm  
+    /// @param arr The leaderboard array to be sorted  
+    /// @param left The left index of the subarray to be sorted  
+    /// @param right The right index of the subarray to be sorted  
+    function _sort(User[] memory arr, int256 left, int256 right) internal virtual {  
+        int256 i = left;  
+        int256 j = right;  
+        if (i == j) return;  
+  
+        uint256 pivot = arr[uint256(left + (right - left) / 2)].index;  
+        while (i <= j) {  
+            while (arr[uint256(i)].index > pivot) i++;  
+            while (pivot > arr[uint256(j)].index) j--;  
+            if (i <= j) {  
+                (arr[uint256(i)].index, arr[uint256(i)].index) = (arr[uint256(i)].index, arr[uint256(i)].index);  
+                i++;  
+                j--;  
+            }  
+        }  
+  
+        if (left < j)  
+            _sort(arr, left, j);  
+        if (i < right)  
+            _sort(arr, i, right);  
+    }  
+}
+```
+
+Interesting in using the Sediment contracts? Checkout the docs at [https://docs.dirtroad.dev/sediment](https://docs.dirtroad.dev/sediment).
+
+#### **Final Thoughts**
+
+Using AI to code is still something I’m learning to do. However, in the meantime these are three things that make a lot of sense for software engineers to start tinkering with AI to boost their problem solving capabilities or handle tedious tasks (like documentation!).
+
+import Footer from '../../snippets/_footer.mdx'
+
+<Footer />
+
+
+## Authoritative Actions
+
+This article explores how authoritative servers can enhance Web3 applications by preventing bot abuse and managing game state while preserving decentralization benefits through strategic implementation. By leveraging OpenZeppelin's AccessControl for role-based permissions, developers can create secure authority layers that dynamically grant temporary access rights for on-chain actions, with this approach proving most effective on zero-gas-fee blockchains like SKALE that offer instant finality without the operational challenges posed by variable transaction costs and slow confirmation times.
+
+Authority is a grey area in Web3. We often want to remove authority in favor of decentralization, yet more often than not we go to far and the end result lacks any benefit back to the user. The following works through an example of why using authority the right way can be so impactful towards a decentralized application (dApp), while also exploring why authority is often ignored by applications due to the underlying network.
+
+#### An Authoritative Example
+
+Game developers have been finding innovative ways to push the boundaries of what can be done on-chain. However, whether the in-game actions have value or not one of the biggest issues that Web3 games naturally pick up is bots. While bots are not just a Web3 issue, due to the public nature of smart contracts, individuals can often times run bots that can simulate real users without the knowledge of the developer far easier than they can in a traditional game or app.
+
+**The Contracts**\
+For this example, we will have two smart contracts: An ERC-20 token for the game’s economy, and a bounties contract that manages bounties for the players to accept and work towards.
+
+```solidity
+// SPDX-License-Identifier: MIT  
+pragma solidity ^8.20.0;  
+  
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";  
+  
+contract Token is ERC20 {  
+  constructor() ERC20("Token", "TKN") {  
+   _mint(msg.sender, 100000 * 10 ** 18);  
+  }  
+}
+
+// SPDX-License-Identifier: MIT  
+pragma solidity ^8.20.0;  
+  
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";  
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";  
+  
+contract Bounties {  
+   
+  using SafeERC20 for IERC20;  
+  IERC20 public token;  
+  mapping(uint256 => uint256) public bounties;  
+  mapping(address => uint64) public cooldown;  
+    
+  modifier onlyHolder {  
+    require(token.balanceOf(msg.sender) > 0, "Must hold at least 1 wei");  
+    _;  
+  }  
+  
+  event ClaimBounty(uint256 indexed id, address indexed hunter);  
+  constructor(IERC20 _token) {  
+    token = _token;  
+    for (uint256 i = 0; i < 1000; i++) {  
+      bounties[i + 1] = (i + 1) * 5;  
+     }  
+    }  
+    
+  function claimBounty(uint256 id) external onlyHolder {  
+    require(bounties[id] > 0, "Bounty already claimed");  
+    token.safeTransferFrom(address(this), msg.sender, bounties[id);  
+    cooldown[msg.sender] = uint64(block.timestamp);  
+    emit ClaimBounty(id, msg.sender);  
+   }  
+}
+```
+
+In theory, these contracts wouldn’t actually be too bad if we wanted to have a fully permissionless game. However, the claimBounty could easily be spammed/botted. As most Web3 games are backed and operated by the creator and are meant to continue to grow, it would be better for the contracts to have some protection to ensure a smooth gameplay experience for everyone.
+
+#### Authoritative Bounties
+
+```solidity
+// SPDX-License-Identifier: MIT  
+pragma solidity ^8.20.0;  
+  
+import "@openzeppelin/contracts/access/AccessControl.sol";  
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";  
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";  
+  
+contract Bounties is AccessControl {  
+   
+  using SafeERC20 for IERC20;  
+  bytes32 public constant HUNTER_ROLE = keccak256("HUNTER_ROLE");  
+  bytes32 public constant MANAGER_ROLE = keccak256("MANAGER_ROLE");  
+  IERC20 public token;  
+  mapping(uint256 => uint256) public bounties;  
+  mapping(address => uint64) public cooldown;  
+    
+  event ClaimBounty(uint256 indexed id, address indexed hunter);  
+  constructor(IERC20 _token) {  
+    _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);  
+    _grantRole(MANAGER_ROLE, msg.sender);  
+    _setRoleAdmin(HUNTER_ROLE, MANAGER_ROLE);  
+    token = _token;  
+    for (uint256 i = 0; i < 1000; i++) {  
+      bounties[i + 1] = (i + 1) * 5;  
+     }  
+  }  
+    
+  
+  function addHunter(address hunter) external onlyRole(MANAGER_ROLE) {  
+    require(!hasRole(HUNTER_ROLE, hunter), "Already a hunter");  
+    require(uint64(cooldown[hunter]) + uint64(1 days) <= uint64(block.timestamp), "Cooldown not complete");  
+    grantRole(HUNTER_ROLE, hunter);  
+  }  
+  
+  function claimBounty(uint256 id) external onlyRole(HUNTER_ROLE) {  
+    require(bounties[id] > 0, "Bounty already claimed");  
+    token.safeTransferFrom(address(this), msg.sender, bounties[id);  
+    cooldown[msg.sender] = uint64(block.timestamp);  
+    renounceRole(HUNTER_ROLE);  
+    emit ClaimBounty(id, msg.sender);  
+  }  
+}
+```
+
+##### **Addition of Roles**
+
+The addition of the AccessControl contract by [OpenZeppelin](http://htt/) is recommended since it enables the greatest level of flexiblity and scalability. You can setup as many servers as needed with a signer on each and load balance them to manage many calls simultaneously. Additionally, roles compared to ownable makes it simpler to assign different “wallets” to manage different functions while also maintaining scalability.
+
+##### **An Authoritative Function**
+
+The `addHunter` function utilizes the original cooldown functionality in addition to a role. The role is then used temporarily to allow an EOA (externally owned account) to claim a bounty. This authoritative function should be automated through a server **OR** another smart contract. In most cases this is probably best done through one or more servers, however, for games that have dozens or hundreds of smart contracts; the protection could occur in another contract which then calls out to the bounties.
+
+##### **The Authoritative Server**
+
+Authoritative servers have a number of benefits to a Web3 game. The first and most important part is that they can enable secure authority. The server can act automatically on behalf of a game or an app to do some action(s) on chain. The other nice part is that servers are often used by teams even if they are building a Web3 game from Day 1. This is great because it can help avoid extra expenses for indie developers. Lastly, servers are great because they are flexible with how the blockchain interaction occurs. Many developers choose to use private keys or seed phrases through the environment to be the “authoritative signers”, however, servers have alternative options like 3rd-party custodial infra like [Stardust](https://stardust.gg/) or using [Amazon Web Services (AWS) KMS](https://www.npmjs.com/package/@dirtroad/kms-signer). Once the signing is in-place the server can now manage the gameplay automatically for you.
+
+#### Blockchain and Authority
+
+##### **Gas Fees**
+
+Understanding how gas fees plays into authoritative actions is very important. Chains that have variable gas fees are more difficult to build on for the long term due to the lack of stability in operating costs.
+
+Example, if the above transaction costs on average $0.01, then every one player claiming 1,000 bounties would essentially incur $10. Any sort of growth on a chain could instantly make fees spike and operating unsustainable.
+
+Chains that offer zero-gas fees have the leg up from both a standard authority approach as well as for teams looking to put more on-chain.
+
+##### **Consensus and Time to Finality**
+
+Requests from the client to the server take time. Calls from the server to the blockchain take time. Waiting for consensus and then finality takes time.
+
+Creating user experiences to manage waiting for many blocks to confirm  in addition to the normal time of travel between all these calls can be  highly disruptive. Picking chains that have fast consensus and finality is \
+incredible important. Layer-2’s and Layer-3’s may boast sub-second finality; however the additional rollup generally requires multiple minutes to post and be validated by the Layer 1. Pick wisely to find a protocol that is designed for high throughput, low latency applications.
+
+##### **SKALE and Authoritative Actions**
+
+The [SKALE Network](https://skale.space/) is a great option for building games and applications that use authoritative actions. Thanks to the zero gas fees for developers and end-users; builders on SKALE know they don’t need to worry about variable gas fees EVER.
+
+Additionally, with the trio of near-instant finality, no chain forking, and unified validation sending operations from a server to the blockchain and managing the wait time of the user on the client has never been easier.
+
+[Learn more about building on SKALE](https://skale.space/)
+
+import Footer from '../../snippets/_footer.mdx'
+
+<Footer />
+
+
+## Enhancing Unity Game Development
+
+This comprehensive overview showcases Eidolon's modular Unity SDK ecosystem designed to accelerate game development through specialized, lightweight packages that handle everything from OS device data access and physics calculations to Web3 blockchain integration and networking. Each SDK integrates seamlessly with zero conflicts, providing developers with powerful tools for randomization, timer management, controller input handling, and WalletConnect support while enabling faster development cycles for both traditional Web2 and emerging Web3 gaming experiences.
+
+![](https://miro.medium.com/v2/resize\:fit:1400/1*RTBMMqrRkmi0xOmtQwDmcg.jpeg)
+
+Welcome to **Eidolon**! If you are new, the TLDR is that Eidolon is a game development tooling company here to help developers build games better and faster. How do we do this?
+
+1. Top Tier SDKs — with a focus on Unity but some web based and mobile tools in Alpha.
+2. Top Tier Support — we want to help you ship. It's ok to ask for help.
+3. Web2 + Web3 Experience — that's right. We aren't afraid to explore and help developers even in unproven areas.
+
+### Eidolon.OS
+
+**Eidolon.OS** streamlines access to device-specific data, making Unity development more dynamic and responsive to user environments. With this package, developers can effortlessly retrieve system information like OS type, battery level, memory size, and network status. By centralizing access to device data, Eidolon.OS saves developers time from coding platform-specific logic and enhances app performance by intelligently adapting to user devices.
+
+**Code Example**
+
+```csharp
+string deviceModel = OS.GetDeviceModel();
+```
+
+### Eidolon.Newton2D/3D
+
+**Eidolon.Newton2D** and **Newton3D** are physics packages for Unity, optimized for managing 2D and 3D physics interactions. Both provide easy-to-use methods for applying forces, managing constraints, and controlling motion damping. By focusing on common physics tasks, these tools reduce the need for repetitive code and help developers create engaging and realistic environments in games and simulations.
+
+**Code Example**
+
+```csharp
+// 2D Physics  
+Newton2D.ApplyForce(rigidbody, forceDirection, forceMagnitude);  
+  
+// 3D Physics  
+Newton3D.ApplyForce(rigidbody, force);
+```
+
+### Eidolon.Random
+
+**Eidolon.Random** simplifies adding randomness to Unity projects. With versatile functions for generating random values — booleans, colors, vectors, and more — it covers all aspects of randomization, helping developers add unpredictability to gameplay and simulate natural variations.
+
+**Code Example**
+
+```csharp
+Color randomColor = RandomUtil.RandomColor();
+```
+
+### Eidolon.Timer
+
+**Eidolon.Timer** is a flexible timer solution, perfect for games needing precise time management. Offering start, stop, pause, and completion callbacks, it’s a ready-to-use package that replaces complex timer code, making event-based programming simpler.
+
+**Code Example**
+
+```csharp
+float duration = 10f;  
+GameTimer timer = new GameTimer(duration, OnTimerComplete);  
+timer.Start();
+```
+
+### Eidolon.Controller
+
+**Eidolon.Controller** standardizes controller input handling, accommodating popular controllers like PlayStation and Xbox. This package allows developers to detect connected controllers, initialize button mappings, and easily retrieve input data, making cross-platform compatibility simpler.
+
+```csharp
+bool controllerDetected = Controller.DetectConnectedController();
+```
+
+### Eidolon.Web3
+
+**Eidolon.Web3** is an all-encompassing Ethereum compatible SDK for blockchain integration in Unity, abstracting complex operations like wallet interactions, asset management, and smart contract executions. Tailored for Unity, it’s user-friendly with comprehensive documentation, helping developers unlock new possibilities in game economics and ownership.
+
+### Eidolon.WalletConnect
+
+**Eidolon.WalletConnect** enables blockchain-based interactions within Unity, allowing players to connect mobile wallets like MetaMask directly to the game. With QR-based connections and built-in transaction handling, it’s a straightforward solution for integrating blockchain assets and dApps into game experiences.
+
+**Code Example**
+
+```csharp
+private void Awake()  
+{  
+// Instantiate our wallet using a default configuration that will use the chain we set in our project setup.  
+wallet = new WalletConnectWallet();  
+}  
+  
+private async void Start()  
+{  
+// Initialize our wallet and generate the QR Code data  
+string rawQrCodeData = await wallet.Initialize();  
+  
+// Generate and show the QR Code Texture  
+qrCode.texture = await wallet.GenerateQRCodeImage(rawQrCodeData);  
+  
+// Wait for the player to connect and assign their public address to a variable  
+string account = await wallet.AwaitAuthentication();  
+  
+// Optional - Set the account to PlayerPrefs  
+PlayerPrefs.SetString("Account", account);  
+  
+// Display the connected account  
+Debug.Log("Connected Account: " + PlayerPrefs.GetString("Account"));  
+}
+```
+
+### Eidolon.Networking
+
+**Eidolon.Networking** simplifies HTTP requests within Unity. Supporting GET, POST, PUT, and DELETE operations, along with custom headers and error handling, it minimizes setup complexity, allowing developers to efficiently incorporate web-based features.
+
+**Code Example**
+
+```csharp
+string url = "https://api.example.com/data";  
+EidolonRequest.Get(url, headers, response => { Debug.Log($"Response: {response}"); });
+```
+
+Each Eidolon package is designed to save development time, provide focused functionality, and integrate seamlessly with Unity, making them essential tools for efficient game development in the blockchain and web-enabled space.
+
+Additionally, while every Eidolon SDK is designed to be minimal to maintain maximum impact with the smallest footprint; the suite is also 100% modular with every package being able to work in the same codebase with zero conflicts.
+
+import Footer from '../../snippets/_footer.mdx'
+
+<Footer />
+
+
+### MCP Feedback No. 1
+
+The following are personal opinions and perspectives on the Model Context Protocol (MCP) and how teams building developer tooling—both for pure AI and agentic commerce (i.e. x402)—should be thinking about them. If you have any feedback or feel I missed something, please let me know.
+
+* I think the [Vercel](https://vercel.com/docs/mcp/deploy-mcp-servers-to-vercel) and [xmcp](https://xmcp.dev) docs are overall really good for those trying to build an MCP server.
+
+* The base of MCP is technically very simple, but when you start to build, there are actually a number of pieces that need to be learned and considered. I think good documentation and examples are critical to the success of having developers build on top of your libraries. Specifically, where possible, you should provide examples **with and without** different pieces of functionality. The most clear-cut one for me is transports: `stdio` and `Streamable HTTP`. Go ask the average dev what SSE stands for and you'll understand why this is relevant.
+
+* More broadly on documentation and examples: for those looking to extend MCP into something explicit (i.e. x402-enabled MCPs), it's important to provide as many clean and simple examples as possible (e.g. Express, Hono, Next.js, etc.), instead of just one. I also think showing an E2E example (even if separately in a blog) is really helpful. Everyone pushing for MCP adoption—static or agentic—should have at least one E2E example: start, add tool, test, deploy to XYZ provider.
+
+* Props to the larger enterprises—they tend to be really good at having their documentation match their examples in GitHub. I think this is key to having developers build on top of more complex integrations. If you are building examples in docs, match them with examples in GitHub.
+
+* I think this is currently stemming from `@modelcontextprotocol/sdk`, but the use of Zod v3 everywhere is a bit annoying when all the docs just say `npm add zod`. This directly causes friction and either errors during usage or causes the LSP to go haywire. The recommendation is to specify `npm add zod@3` in your documentation/tutorials. See [xmcp](https://xmcp.dev/docs/getting-started/installation#manual-installation), which calls this out properly, as well as [MCPay](https://docs.mcpay.tech/quickstart/sdk).
+
+* The core design of an MCP should be vendor-agnostic. I think Cloudflare currently breaks this with their [MCP implementation](https://developers.cloudflare.com/agents/model-context-protocol/mcp-agent-api/), which has an entirely different design than everyone else. While not bad, it does make it more difficult for me, as I’m uncertain how portable their design is. I also find their “AgentMCP” verbiage a bit confusing, as not all MCPs are designed to be agents.
+
+* Authorization and access controls are mentioned (although a bit buried) in the official MCP documentation. More docs and examples on securing MCPs are needed for as many different authentication schemes as possible—including new and open protocols. How does this play in with trustless agents?
+
+* Maybe an unfair statement since many MCP servers have been created, but I find that the vast majority of MCPs exist to either wrap APIs or inference endpoints. Personally, I just want to see more static content and deterministic functionality. I have minimal proof points, and most stem from my own experiences training small language models, but it seems like there’s an opportunity for static MCPs to enhance SLMs trained on specific use cases.
+
+* The ability to call tools consistently is something that I think is overlooked. When using top language models, it tends not to be as prominent, but there is value in having more consistent tool calling for people building agents using specialized models.
+
+* On the previous point—could this be easily solved through training a LoRA adapter or similar? I.e. should there be adapters focused on tool calling to enhance existing or older models that are cheaper or better at something specific? (I know, crazy to call an old model better.)
+
+* Input and output schemas seem to be semi-standardized. It would be nice to see that become more consistent across MCPs. I think this also helps models become more consistent at calling tools.
+
+* More clarity (maybe through exploration) on using fewer tools. MCP servers with a lot of tools consume a lot of context. Claude Skills has proven to be a strong alternative and is highly praised for removing this.
+
+* More guidance for new developers on where and when MCP is actually useful or needed. MCP has been touted as a “one-size-fits-all” solution for developers coming into agentic systems. We need a better way to communicate what pieces should be used where in these growing systems.
+
+### The Ideal Experience from an MCP Framework
+
+The following are primarily for those implementing MCP frameworks, which are certainly more of a “buy-in” from the developer. Similar to the decision between Next.js, Tanstack, Remix, or Vite, the decision to adopt an MCP framework isn’t something you just throw away and switch. You choose to use the framework because it’s a good fit for your project, team, and needs.
+
+* Provide an init tool to help avoid versioning differences (see [xmcp](https://xmcp.dev/docs/getting-started/installation#automatic-installation)).
+
+* Utilize a configuration file for the validation of features (yes, another one).
+
+```typescript
+interface MCPConfig {
+    location: "local" | "remote";
+    cors: {
+        origin: string;
+    };
+    type: "api" | "agent" | "both";
+    toolLayout: "per-tool" | "aggregated"; // per-tool = 1 tool per action; aggregated uses "select_tool" and "execute_tool" to reduce context consumption
+    version: string; // version of the MCP server
+}
+
+const config: MCPConfig = {
+    location: "remote",
+    authentication: "required",
+    cors: {
+        origin: "*"
+    },
+    type: "api"
+};
+```
+
+* Can the use of the above config enable a form of static analysis that can run during build or setup to check and flag whether things are set up properly?
+
+### My Personal Requests
+
+More clarity on how to use MCPs from anyone touting MCP libraries.
+If you are offering MCPs, make it easy for me to pay you to host them for me.
+If providing agentic coding tools, provide examples of how to consume the MCP in all popular tools (not just Cursor).
+More information (or point me in the right direction) for better authentication schemes, guidance, and security-related resources for MCPs.
+One or two more frameworks to push and compete with xmcp and Vercel. More competition drives innovation.
+A cloud platform built for hosting MCPs—handling sandbox execution, AI Gateway, authentication (without OAuth, please), x402 integration, etc. I’m a big believer in a SaaS model for MCPs. It’s unrealistic to expect most developers to run their own servers. Also a great opportunity to enable fractional resourcing that hot-swaps scoped API keys for different customers. (High risk, high reward?)
+Payment management and tracking software for MCPs. I think there’s a really interesting opportunity with x402 for someone to build middleware that handles tracking, spending, and analytics for the callers (could be cloud or local). For example: my agent calls an MCP server N times per day and spends X via Y.
+
+### Conclusion
+
+This is very much my first ramble on something I’m still learning about myself. I don’t think anyone is doing anything wrong—these are all just my opinions and perspectives. If you agree or disagree, feel free to reach out to collaborate or discuss!
+
+import Footer from '../../snippets/_footer.mdx'
+
+<Footer />
+
+
+## Proof-of-Encryption in the Cloud
+
+This article explores the revolutionary BITE Protocol that implements Proof of Encryption using threshold cryptography and multi-party signatures to enable fully encrypted blockchain transactions resistant to MEV attacks. Unlike traditional trusted execution environments, BITE embeds encryption directly into consensus through provable mathematics, requiring zero Solidity changes while offering cloud API accessibility for encrypted transactions across any programming language, with FAIR L1 blockchain pioneering the implementation before broader SKALE Chain adoption.
+
+**BITE** is an innovative protocol from the SKALE Network ecosystem, launching first on the new **FAIR Layer 1 blockchain**. Designed for seamless integration and massive potential, BITE enables a wide range of critical functions—ushering in a new era of encrypted, private, and MEV-resistant blockchain usage.
+
+The following post explores the key benefits of BITE, FAIR, and the upcoming SKALE Network upgrade, including a **unique way to attain Proof of Encryption (PoE) with zero changes required from developers**.
+
+### The Benefits of BITE
+
+While some of these benefits can arrive sooner depending on SDK implementation and adoption, I’ve organized them into **short**, **mid**, and **long-term** buckets.
+
+#### 🟢 Short Term
+
+* Fully encrypted transactions with 100% protection against MEV, including back-running
+* Onchain traditional finance tools: private and FAIR TWAPs, DCA, and market orders
+* Censorship resistance
+* Simple integration with **zero changes to Solidity**
+
+#### 🟡 Mid Term
+
+* AI-powered onchain trading via enhanced encrypted financial tools
+* End-to-end encryption with re-encryption inside a TEE (Trusted Execution Environment), enabling data forwarding to specific parties for private decryption
+
+#### 🔵 Long Term
+
+* Fully encrypted private state
+* Onchain healthcare and banking use cases
+* Fully encrypted **parallel execution** within the EVM
+
+***
+
+### How Proof of Encryption Works
+
+**Proof of Encryption (PoE)** embeds encryption into the consensus layer of a blockchain. Unlike Layer 2 solutions (e.g. Unichain) that use TEEs in isolation, PoE **does not depend on decentralization alone**—it relies on **provable mathematics**.
+
+> The SKALE Network core team has over seven years of experience building the world’s fastest leaderless BFT consensus. They’ve combined real-world application with rigorous mathematical proofs to pioneer PoE.
+
+#### 🧠 How It Works
+
+PoE uses:
+
+* **Threshold schemes** +
+* **BLS threshold encryption** +
+* **Multi-party threshold signatures** +
+* **Economic PoS security**
+
+This combo allows encrypted transaction propagation, leaderless/asynchronous consensus, and decryption via supermajority—all secured cryptographically and economically.
+
+The result? **Private, MEV-resistant, decentralized consensus**—unlocking trillions in new financial use cases.
+
+***
+
+### How to use BITE
+
+**BITE Protocol** is the implementation of PoE when used with a compatible blockchain like FAIR or (soon) SKALE Chains.
+
+The best part? **Zero changes to your Solidity contracts**.
+
+#### Example Using BITE TypeScript/JavaScript Library
+
+![Image](https://pbs.twimg.com/media/Gwi47chaIAAlWnr?format=jpg\&name=small)
+
+```bash
+npm add @skalenetwork/bite
+```
+
+The library makes it easy to encrypt both transaction data and the `to` address in just a few lines of code.
+
+***
+
+#### What's with the Cloud?
+
+Over the last several years of working in blockchain, I’ve realized one thing: **an innovative product is only useful if it’s easy to implement**. That’s why I collaborated with [@0xRetroDev](https://x.com/0xRetroDev) to build a simpler, cloud-based design for broader adoption.
+
+#### Background
+
+If you’ve heard of **Flashbots**, **CoW Swap**, or **Jito**, you know they’re tied to **MEV** (Maximal Extractable Value). If not, here’s a simplified breakdown:
+
+* **MEV** is profit gained by reordering or inserting transactions.
+* **Bad MEV** = front-running, sandwich attacks, back-running.
+* **Good MEV** = arbitrage, liquidations that help price stability or protocol solvency.
+* **Some firms (e.g. Jito)** make validators more profitable via MEV.
+* **Others (e.g. CoW Swap)** attempt to *protect users* from MEV.
+
+> **Bottom line:** MEV is mostly harmful and extracts value away from users.
+
+#### Simplifying Adoption
+
+Widespread usage builds a **network effect**. Just as Jito dominates Solana validators and MEV-blocker RPCs like CoW Swap are spreading, we aim for BITE to be universally accessible—across stacks, devices, and languages.
+
+#### Phase I: BITE API
+
+A PoC implementation is already live thanks to [@0xRetroDev](https://github.com/0xRetroDev):\
+🔗 [BITE API GitHub Repo](https://github.com/0xRetroDev/bite-api)
+
+This API allows any transaction to be encrypted by calling the endpoint. It’s ideal for:
+
+* Environments without native BITE SDKs
+* Languages outside JavaScript/TypeScript
+* Setting up early MPC experiments or agentic flows
+
+> ⚠️ **Note:** Because `eth_estimateGas` can't work properly with encrypted transactions, this can unintentionally leak user intent if used via 3rd-party RPCs.
+
+A production-ready version will soon be hosted via [Eidolon.gg](https://eidolon.gg) for the FAIR + SKALE Communities.
+
+***
+
+#### Phase II: Private BITE API
+
+To fully solve the **privacy problem**, we propose a unique infrastructure setup modeled on how FAIR and SKALE operate.
+
+##### Infrastructure
+
+1. Run a TEE (Trusted Execution Environment)
+2. Generate a private key *inside* the TEE
+3. Expose the **public** key via API
+
+##### SDK Flow
+
+4. Client requests public key
+5. Client encrypts transaction payload using public key
+6. TEE decrypts using internal private key
+7. TEE re-encrypts using FAIR/SKALE BLS committee key
+8. Returns encrypted payload to client
+9. Client signs + broadcasts
+
+This allows **any client**—C++, Kotlin, IoT, etc.—to securely use BITE without needing full Web3 tooling or native SDK support.
+
+Yes, there are risks and trade-offs here. But I believe this is a great **early-stage design** for broader PoE adoption.
+
+***
+
+### 👋 About Me
+
+Hi, I’m **Sawyer**, a software engineer, developer relations lead, and operational consultant with a background in healthcare and blockchain.
+
+import Footer from '../../snippets/_footer.mdx'
+
+<Footer />
+
+
+## Scaling Authority on the EVM
+
+This technical guide addresses the critical scaling challenges faced by authoritative servers in blockchain applications due to the EVM's sequential nonce requirement. By implementing a Signing Pool architecture using HD wallet-derived child signers, developers can overcome nonce collision issues and scale from handling just a few concurrent requests to hundreds per second, complete with automatic gas balance management and dynamic signer selection for high-throughput applications on zero-gas-fee networks like SKALE.
+
+The [Ethereum Virtual Machine](https://ethereum.org/en/developers/docs/evm/) (EVM) is a distribute decentralized environment that executes code across all nodes in an EVM Network \[like [Ethereum](https://ethereum.org/) and [SKALE](https://skale.space/)]. In order to ensure that transactions cannot be replayed, the EVM utilizes a nonce value per account.
+
+The account — often known as the wallet or the private key — must send transactions with sequential nonces in order to have successful execution. However, this is a direct limitation when exploring applications necessary architecture. Knowing that blockchain is a broader piece of the architectural stack for many; it’s no surprise that many developers lean on various types of centralized services operated by their team to “manage” their application. These centralized services are best referred to as **Authoritative Servers.**
+
+#### Authoritative Servers
+
+Servers that help manage and maintain the state of an application are a necessary evil. There are exceptions to the rule where some applications are able to create a suite of smart contracts that don’t rely on an external manager, however, in most cases the technical overhead is too large or difficult.
+
+Running a server or many servers to manage authority within a game brings its own set of complications. Traditional CRUD APIs using Python + Flask, or Node.js + Express typically fall prey to a number of issues including: race conditions, lack of security, rate limits, etc. Blockchain CRUD APIs through a combination of 3rd party resources (e.g the blockchain) and race conditions can have issues related to scaling the accounts and their nonces.
+
+* **Race Conditions:** A race condition is a software error that can occur when multiple processes or threads attempt to access the same data but the context is uncoordinated.
+* **Lack of Security:** APIs themselves should require some form of authentication to utilize. Often times blockchain engineers don’t create authentication and authorization layers for their apps based on the user wallets which can open up the door for spam against various routes and even drain server gas tokens and funds.
+* **Rate Limits:** When linking to 3rd party services whether a cloud database or a blockchain; rate limits during surges in use of a platform can really cause headaches.
+* **Unscalable Nonces:** The blockchain specific issue occurs on EVM chains that have sequential nonces. During contract execution, the next nonce is usually set by the pending value from the chain itself. However, a single account trying to manage hundreds or thousands of requests at the same time can be overloaded and cause nonces to break.
+
+#### Pitfalls of a Single Account
+
+The use of a single account to manage a server is very common, however, not designed for scalability. Imagine the following Node.js + Express controller:
+
+```ts
+// controller.ts  
+import { Request, Response } from "express";  
+import { Contract, JsonRpcProvider, Wallet } from "ethers";  
+  
+type RequestBody = {  
+  gameId: string;  
+  userWalletAddress: `0x${string}`;  
+}  
+  
+export default async function(req: Request, res: Response) {  
+  // Access to gameId str and userWalletAddress ethereum address  
+  const { gameId, userWalletAddress } : RequestBody = req.body;  
+    
+  try {  
+    // Provider connects to SKALE Calypso Mainnet  
+    const provider = new JsonRpcProvider("https://mainnet.skalenodes.com/v1/honorable-steel-rasalhague");  
+    // Wallet is for the server (one key) and uses the Calypso provider  
+    const wallet = new Wallet("...privateKey", provider);  
+    // Contract connects to a contract on-chain that stores on-chain game analytics  
+    // This contract uses the wallet and provider above  
+    const contract = new Contract("0x...", [...abi], wallet);  
+  
+    await contract.logPlay(gameId, userWalletAddress);  
+  
+    return res.send(200).status("Event Logged");  
+    
+  } catch (err) {  
+    // Avoid sending private information to the client  
+    return res.status(500).send("Internal Server Error");  
+  }  
+}  
+  
+// router.ts  
+import controller from "./controller";  
+import { Router } from "express";  
+  
+const router = Router();  
+router.post("/games/play", controller);  
+export default router;
+```
+
+In the above code, a single wallet is being used to execute transactions for every request that hits the `POST /games/play` endpoint. If multiple requests start to come in at the same time, the blockchain request will begin to error out since the *Pending Nonce* would the the same for multiple requests at which point only the first would succeed.
+
+One solution that has worked well for many of the projects I’ve worked with is to utilize a queue system. This can certainly work to ensure that nonces stay sequential, however, this does slow down responses back to the client during heavy load.
+
+#### Upsides of a Pool
+
+The concept of a **Pool of Signers** came about when I was doing solutions architecture for a Web2 to Web3 game transition. The game itself at the time was fully operational on Android and had a backend already built as part of it’s Web2 v2 build. Moving into the v3 build, the goal was to help bring greater visibility on-chain of the actual game and then utilize this visibility to help manage and validate incentives.
+
+During the initial design of the v3, it became clear that one of the biggest limitations was the existing and actively growing user-base. Since critical actions for the user were gated by the in-game token, it made sense to push as many of those actions as possible to the client for greater scalability and utilization of the blockchain. However, the server acted as a gateway to Web3 for guest accounts as well as offering critical authority based on more traditional API calls from client to server.
+
+It became clear that a single signer on a single server just would not be efficient. From there, two different designs came about. The first was to utilize a pool of multiple signers to handle higher load. This allowed each account in the pool to send one transaction at a time before the next signer was selected. With some strategic decisions made to abstract the Signing Pool over to a separate resource that all the controllers (or underlying services) could call into; it allowed scalability to go from a few requests per second with no issue to hundreds of requests per second with no issue.
+
+```ts
+// engineManager.ts  
+import { HDNodeWallet, JsonRpcProvider, TransactionReceipt, TransactionRequest, Wallet } from "ethers";  
+  
+type InternalSigner = {  
+    wallet: Wallet;  
+    nonce: number;  
+    active: boolean;  
+    checks: {  
+        gas: boolean;  
+    }  
+}  
+  
+class SigningManager {  
+      
+    #currentSignerIndex = 0;  
+    #baseWallet: HDNodeWallet;  
+    #rpcUrl: string;  
+    #signers: {[key: number]: InternalSigner} = {};  
+  
+    protected baseProvider: JsonRpcProvider;  
+  
+    constructor(        seed: string,  
+        signerCount: number = 1,  
+        rpcUrl: string    ) {  
+        this.signerCount = signerCount;  
+        this.#rpcUrl = rpcUrl;  
+        this.baseProvider = new JsonRpcProvider(rpcUrl);  
+        this.#baseWallet = Wallet.fromPhrase(seed, this.baseProvider);  
+        this._initializeWallets(signerCount);  
+    }  
+  
+    private async _initializeWallets(signerCount: number) {  
+        let addresses = [];  
+        for (let i = 0; i < signerCount; i++) {  
+              
+            const _wallet = new Wallet(this.#baseWallet.deriveChild(i).privateKey, new JsonRpcProvider(this.#rpcUrl));  
+          
+            this.#signers[i] = {  
+                wallet: _wallet,  
+                nonce: await _wallet.getNonce(),  
+                active: true  
+            };  
+  
+            addresses.push(_wallet.address);  
+        };  
+  
+        if (process.env.NODE_ENV === "development") console.log(`Wallets for ${this.use}`, addresses.join(",\n"));  
+    }  
+  
+    public async sendTransaction(request: TransactionRequest) : Promise<TransactionReceipt> {  
+        const signerIndex = this.selectSignerIndex();  
+        const signer = this.#signers[signerIndex];  
+        const balance = await this.baseProvider.getBalance(signer.wallet.address);  
+          
+        if (balance === BigInt(0) && balance > BigInt(request.value ?? 0)) {  
+            this.#signers[signerIndex - 1] = {  
+                ...signer,  
+                active: false,  
+                checks: {  
+                    gas: true,  
+                }  
+            };  
+  
+            return await this.sendTransaction(request);  
+        }  
+  
+        const tx = await signer.wallet.sendTransaction({  
+            gasPrice: 100_000, // set for SKALE to maintain lowest gas consumption  
+            ...request  
+        });  
+  
+        return await tx.wait();  
+    }  
+  
+    private get signerCount() {  
+      return Object.keys(this.#signers).length;  
+    }  
+  
+    private selectSignerIndex() {  
+        const signerIndex = this.#currentSignerIndex;  
+  
+        if (signerIndex + 1 === this.signerCount) {  
+            this.#currentSignerIndex = 0;  
+        } else {  
+            this.#currentSignerIndex++;  
+        }  
+  
+        return signerIndex;  
+    }  
+}  
+  
+export default new SigningManager();
+```
+
+````ts
+// controller.ts  
+import { Request, Response } from "express";  
+import { Contract, JsonRpcProvider, Wallet } from "ethers";  
+import SigningManager from "./SigningManager";  
+  
+type RequestBody = {  
+  gameId: string;  
+  userWalletAddress: `0x${string}`;  
+}  
+  
+export default async function(req: Request, res: Response) {  
+  // Access to gameId str and userWalletAddress ethereum address  
+  const { gameId, userWalletAddress } : RequestBody = req.body;  
+    
+  try {  
+    await SigningManager.sendTransaction({  
+      to: "0x...contractAddress",  
+      data: contract.interface.encodeFunctionData(  
+        "logPlay",  
+        [gameId, userWalletAddress]  
+      )  
+    });  
+  
+    return res.send(200).status("Event Logged");  
+    
+  } catch (err) {  
+    // Avoid sending private information to the client  
+    return res.status(500).send("Internal Server Error");  
+  }  
+}```
+
+```ts  
+// router.ts  
+import controller from "./controller";  
+import { Router } from "express";  
+  
+const router = Router();  
+router.post("/games/play", controller);  
+export default router;
+````
+
+The addition of the signing manager not only makes the controls cleaner, but it allows for a range of 1 to 2²⁵⁶-1 signers in the single engine manager. Of course subject to local resources on the machine. Every signer in the batch manager must have the necessary amount of gas, but especially when designing solutions like this on SKALE; you have the ability to have contract calls top up the signers every time so they never running out.
+
+The solutions listed above aren’t for all developers. You can of course modify this in a number of ways including adding different managers per route for maxmium scalability. You should always use a different seed per server to avoid conflicting nonces across multiple machines as well.
+
+Additionally, it is important to note that this solution does **NOT** utilize Account Abstraction/ERC-4337 in any way. That functionality can be useful to handle client operations, however, this is designed for secured authority. The above code examples are all great examples of how to design a highly-scalable authority layer for your next Web3 project.
+
+***
+
+For builders interested in taking advantage of this, make sure to head over to [https://docs.skale.space](https://docs.skale.space) and start building now.
+
+import Footer from '../../snippets/_footer.mdx'
+
+<Footer />
+
+
+## SKALE Governance Update - July 7, 2025
+
+This governance update examines SKALE Network's remarkable achievement of surpassing 1 billion cumulative transactions while maintaining zero gas fees and instant finality. The analysis covers the SKALE DAO's hybrid governance model combining onchain economic voting with offchain technical consensus, and explores how the upcoming FAIR L1 blockchain addresses critical ecosystem challenges by enabling permissionless DeFi deployment and reducing operational costs through a synergistic gas-fee architecture that captures value within the SKALE ecosystem.
+
+I've been building in the SKALE Ecosystem for somewhere in the range of 4-5 years now.
+
+In that time, I've worked with a lot of projects in the ecosystem and Web3 as a whole.
+I have prepared a quick update from my perspective regarding SKALE, active governance initiatives, and the new L1 coming to support the SKALE Ecosystem from the SKALE team called FAIR.
+
+You can read the forum post [here](https://forum.skale.network/t/skale-governance-update-with-a-note-on-fair/658) or read directly here on my blog.
+
+SKALE is one of the most innovative blockchain networks in the world. FAIR is designed to help grow the SKALE ecosystem. Adding a real Layer 1 network to the SKALE ecosystem—if executed correctly—will create a synergistic effect. It also allows the SKALE project to continue its history of innovation while bringing a critical component the network has struggled to attract: decentralized value.
+
+### Background
+
+To the decentralized SKALE Network Community of SKL token holders, SKL delegators, validators, builders, core developers, and users:
+
+SKALE is an open-source, community-driven project that has operated with a clear North Star for over seven (7) years: bringing the power of Ethereum to billions.
+
+Over the years, SKALE has achieved a variety of incredible innovations, including but not limited to:
+
+* The launch of the world’s first natively EVM multi-chain scaling solution in 2020, **the SKALE Network**
+* The launch of the world’s first network of EVM blockchains capable of interchain communication through the **SKALE V2** upgrade
+* The launch of **SKALE V3** in 2024, which doubled throughput (TPS) and reduced block mining time in half, making the already performant network even faster
+
+All of these key industry-changing events and upgrades were done across a decentralized network of operators running hundreds of nodes. Additionally, SKALE brought the world a variety of innovations that the rest of the blockchain space has struggled to replicate without centralization or high fees such as:
+
+* Trusted Execution Environment (TEE)-based security
+* Onchain Machine Learning
+* Provable Random Number Generation
+* Decentralized file storage and Content Delivery Network (CDN)
+* Decentralized TEE-protected oracle
+* Multi-transaction Mode
+* Decentralized and fully autonomous bridging
+
+Arguably the most important and well-known innovation that SKALE has brought to the world—and continues to dominate with to this day—is the zero gas fee model, backed by high collateral, high performance, and a sophisticated economic model.
+
+### Update on SKALE
+
+The past year has been an explosive period of growth and excitement for the SKALE Network.
+
+On the ecosystem side, SKALE hit **1B+ cumulative transactions and 100M+ transactions in a single month** ([source](https://skale.space/blog/skale-ecosystem-recap---april-2025)). Gaming adoption continues to flourish, with launches of amazing games like Gunnies and Data2073 being highly successful, as well as established SKALE Network games like World of Dypians, Pixudi, and BitHotel continuing to grow and push more and more on SKALE. SKALE also rolled out a $2M Indie Game Accelerator, became the first and only blockchain in Unity’s Publisher Program, and more recently onboarded projects in other key areas like AxonDAO—a unique DeSci project focused on enhancing the value and privacy of health data—and many others like XO (AI) and ReneVerse (Advertising).
+
+On the technical front, SKALE announced **BITE Protocol**. BITE, which stands for Blockchain Integrated Threshold Encryption, is the basis for the future of a private and secure EVM that sacrifices nothing in terms of performance or decentralization. This shift will give developers access to trustless privacy by default with all the tools they know and use.
+
+SKALE has also made major technical strides with the announcement of FAIR, the world’s first MEV-resistant Layer 1 blockchain that brings encrypted, asynchronous execution to the EVM. It will pioneer the use of BITE Protocol and set the stage for SKALE Chains to adopt and upgrade to the FAIR SDK.
+
+Supporting tools and infrastructure like the SKALE Portal—which recently upgraded to v4.1—and the SKALE Explorer also saw major UX and infrastructure upgrades alongside a major overhaul to the [SKALE Network Documentation](https://docs.skale.space) from a combination of network constituents, including core developers and 3rd-party contributors.
+
+With FAIR unlocking DeFi and liquidity for SKALE while also offering a key enhancement for network operations, SKALE is well positioned to be the most dominant network of blockchains in the world.
+
+### Refresher on the SKALE DAO and SKALE Network Onchain Governance
+
+The SKALE DAO design embodies similar designs to the most successful Layer 1 ecosystems in the world like Ethereum and Solana, which both utilize an offchain forum and development process backed by various entities, core teams, foundations, as well as other 3rd-party contributors to develop the network.
+
+One difference these projects have from SKALE is that Ethereum and Solana do not have any onchain governance. All network decisions are made ultimately by those who can execute pull requests in GitHub. There is no voting, just conversation and ultimately a decision made by project leaders and contributors.
+
+The SKALE DAO further decentralizes the above process by allowing the SKL delegators to directly collaborate on the economic direction of the network by voting on network economic parameters such as inflation, slashing, chain pricing, etc. It empowers SKL token holders—specifically delegators—to shape the network’s economic direction by proposing initiatives and voting directly on key economic parameters.
+
+It is very important to note that many project decisions that lie outside of the direct economic factors as mentioned above are intentionally excluded from onchain voting and are instead determined through conversations and discussions amongst a large group of stakeholders, concluding with an offchain consensus. Said otherwise, SKALE makes decisions outside of direct economic factors in the same way Ethereum and Solana make decisions. Decisions involving roadmap, product development, engineering project planning and prioritization, grants, marketing strategy, and business development continue to fall under the purview of key network contributors such as validators, dApp developers, and core team contributing entities like SKALE Labs.
+
+You can read more about the DAO governance here:
+
+* [https://snapshot.box/#/s\:skale.eth/proposal/0xebbc76cf6bd1afd7e1271f4339c7c04703dbe8dda78b1a731ffaf126772c0051](https://snapshot.box/#/s\:skale.eth/proposal/0xebbc76cf6bd1afd7e1271f4339c7c04703dbe8dda78b1a731ffaf126772c0051)
+* [https://forum.skale.network/t/a-proposal-for-skale-networks-on-chain-governance-system/447](https://forum.skale.network/t/a-proposal-for-skale-networks-on-chain-governance-system/447)
+
+A good example of this in action is comparing chain pricing decisions and recent product roadmap decisions.
+
+**Chain Pricing**: The core team received a number of requests from key stakeholders to increase pricing of chains to capture more economic value. There was discussion in the forum followed by many discussions between validators, dApp developers, and the core team. Ultimately, a governance proposal was formally submitted and voted on, and the specific outcome was an economic change within a smart contract that changed pricing.
+
+**Broader Roadmap**: Conversely, product roadmap decisions are made in the same manner Ethereum and Solana make decisions—not by onchain voting. In the case of FAIR, many key stakeholders, including validators, developers, and stakers, brought forward feedback to core contributors that SKALE needed to capture more economic value. A consistent idea brought forward was launching a SKALE ecosystem Layer 1 chain. This was publicly discussed on the forum last November: [https://forum.skale.network/t/ideas-from-the-community-the-evolution-of-skale/533](https://forum.skale.network/t/ideas-from-the-community-the-evolution-of-skale/533).
+
+Based on the positive feedback, the core contributors had many discussions with dApp devs, validators, stakers, infrastructure partners, and more. The result of these discussions was that the roadmap should include a Layer 1 chain—but it would need to be a true L1 chain in order to give the ecosystem a real opportunity to capture TVL. This meant that the L1 would need its own native token and could not use the bridged SKL token as its genesis token. This is because the highest point of security of the L1 would be the bridge and not the blockchain—if you hacked the bridge, then the entire chain would be compromised.
+
+A new idea was then brought forward to make the new L1 a dual-token network. This would increase the utility of the SKL token through burning functions in the L1 while enabling the L1 to truly be an L1 that is secured by a native token. This premise was then discussed by numerous stakeholders and contributors, more feedback was integrated, and it was then added to the roadmap and announced in June. It was also announced with the caveat that any changes needing to be made to the SKALE Network smart contracts and core economic functions would first need to be ratified by an onchain vote before being finalized.
+
+### SKALE DAO Initiatives
+
+The SKALE DAO is actively exploring a number of key initiatives, which I’ll outline here:
+
+**SIP-3 Performance Chains**: Already out in the open, SIP-3 is very exciting and I believe nearly ready to bring to the DAO. I’m working with the SKALE team and various potential chain buyers to ensure we are coming in at a price that is both competitive with the broader market while also ensuring that validators are properly compensated for the security they bring—compared to Layer 2s and Layer 3s, which provide no economic security or decentralization.
+
+**FAIR**: While the roadmap itself falls outside the purview of the SKALE DAO, various future actions regarding the synergy between FAIR and SKALE may come to the SKALE DAO—such as the location of key network components related to economics.
+
+Additionally, multiple threads are already open in the SKALE Forum for features and ideas that have been requested by various SKALE developers and teams that are solved by FAIR:
+
+**Permissionless SKALE Performant Technology**: SKALE is incredibly performant and highly stable. Most of the developers I’ve worked with, once they start using SKALE, don’t want to leave. However, developers have been asking to do things like token launchpads, onchain messaging, permissionless DeFi and token creation—things that don’t align well with the containerized design of SKALE Chains, which are generally not designed to support the level of state that permissionless chains do.
+
+**Enhanced DeFi with Gas Fees**: While much of blockchain—especially on the EVM—can be done without a native gas token, as proven by the SKALE Network, many DeFi protocols and key infrastructure components build on the native gas token directly, or at least by default support using it and wrapping automatically. I proposed in the forum a gas fee SKALE Chain and it was met with pretty open feedback. I think FAIR—which combines both gas fees and the permissionless blockchain layer—makes a ton of sense toward solving this proposal.
+
+I believe the SKALE DAO and broader SKALE developer community are in a fantastic position. The next six (6)–12 months are going to be an incredible time to get involved on the forum, with the DAO, or come build on SKALE if you are not already. While the above are some of the active initiatives I’m working through currently with various teams in the SKALE Community, there are also a number of other topics that are being researched based on community requests such as offsetting inflation through SKL burning.
+
+Interested in building on SKALE or contributing to the DAO but not sure where to start? DM me on Twitter, Telegram, or Discord at TheGreatAxios or tag me in a forum post.
+
+### A FAIRer Future
+
+I’m also very excited to share with you a quick update on FAIR and how it fits in with SKALE. I believe FAIR is going to be one of the most important components of helping SKALE succeed both in the short and long term. The following are my opinions from collaborating with SKALE Labs and the NODE Foundation on the design and sharing my goals for this chain:
+
+#### Solving the DeFi Puzzle
+
+DeFi and liquidity are both critical factors developers use to evaluate what network to build on or use. Time and time again, we see developers choose blockchains that seem promising on paper—but fall short in practice. The reason? They’re propped up by millions in inactive TVL that doesn’t actually support real usage.
+
+When launched in 2020, SKALE chose to focus on high-performance applications with a focus on gaming due to the unique network design. While it has paid off quite well and allowed SKALE to consistently win developers building games and looking for the fastest blockchain, SKALE has struggled to attract DeFi and TVL.
+
+FAIR is an opportunity for the SKALE Network to address the value issue by offering a fully permissionless chain where anybody can deploy tokens, RWAs (Real World Assets), stablecoins, NFTs (non-fungible tokens), and protocols—without needing to work through a SKALE Chain owner or operator to attain permission to deploy.
+
+#### Solving SKALE’s Scaling Block
+
+While there are many blockchains being created today, most of them are really just glorified servers running an EVM. They lack the decentralization, the fault tolerance, and the economic security collateral that a network like SKALE has to offer.
+
+However, two areas that SKALE currently struggles with are operational costs and value capture. With SKALE Manager running on Ethereum and base liquidity being sourced from Ethereum as well, key network operation costs for users can often be $5–$15 in ETH when gas prices are low—and easily stretch into the dozens or hundreds of dollars when gas spikes during congestion. Compute-intensive operations like creating SKALE Chains, which cost over 0.5 ETH (over $1,350 at time of writing), are not feasible for more cost-effective SKALE Chains. Additionally, all gas fees spent on operations are lost to the Ethereum ecosystem and not captured by the SKALE ecosystem.
+
+FAIR has the opportunity to solve both problems at once—with both cheaper fees (the chain will have a gas token), while also allowing a synergistic chain to capture the revenue spent instead of bleeding to a competitor.
+
+### Conclusion
+
+FAIR is the biggest upgrade coming to SKALE, in my opinion, since V2. A true technical innovation that other blockchains just can’t compete with, the native MEV resistance and future privacy features coming with BITE Protocol—alongside the direct benefits that SKALE will attain—are exciting.
+
+Ultimately, my goal is to help bring these ideas to life and contribute what I can to the vision. I can honestly say that everyone I’ve talked to about this is incredibly excited and are using words like “it makes total sense” when hearing about the FAIR and SKALE synergy.
+
+Validators, developers, and token holders alike are excited—and I’m excited to work with everyone to bring this vision to life.
+
+import Footer from '../../snippets/_footer.mdx'
+
+<Footer />
+
+
+## SKALE's Secret Sauce for Game Developers
+
+This comprehensive guide explores how SKALE Network revolutionizes game development by providing blockchain infrastructure that replaces traditional servers, databases, and storage systems with zero-gas, high-performance alternatives. Supporting 500-13,000 transactions per second with instant finality and native random number generation, SKALE enables developers to build asset-based games, real-time multiplayer experiences, leaderboards, and autonomous worlds while eliminating the cost barriers that make blockchain impractical for gaming on other networks.
+
+SKALE offers developers solutions to streamline game development, reduce server management costs, and remove scaling challenges. With features like zero gas fees and instant transaction finality, this blockchain network empowers you to create robust multiplayer experiences and manage in-game assets efficiently, keeping your focus on crafting exceptional games.
+
+A big thank you to [Ben Miller, Head of Partner Marketing at SKALE Labs](https://x.com/benjmiller88) for all his incredible feedback and edits on this detailed blog.
+
+![](https://cdn-images-1.medium.com/max/1600/1*46VMG7ljY0ZDUG0lmmRuVQ.jpeg)
+
+### Game Development with SKALE
+
+***
+
+#### SKALE Primer
+
+SKALE is a blockchain network home to many Layer 1 blockchains. You can think of a blockchain as a hybrid compute machine \[kind of like a cloud server] that offers compute and storage to a developer without requiring the developer host the server directly. These machines are operated by 3rd parties known as validators. The term validator comes from “someone who validates” i.e. the one who is building the chain.
+
+If you are familiar with Web3 as a whole, a nice analogy for a SKALE Chain is **a mini Ethereum with super powers**. Offering all the capabilities of the first programmable blockchain plus the super powers seen here.
+
+##### Super Powers of a SKALE Chain
+
+**Zero Gas Fees**
+
+Historically blockchains have used fees at the transaction level called **gas fees** or **transaction fees** depending on the ecosystem you are in where every **write** or **action** costs the sender some amount in fees. Gas fees are one of the most popular pain points for gamers who have a very fair complaint that gas fees prohibit them for focusing on the game.
+
+SKALE eliminates gas fees entirely with an innovative Blockchain-as-a-Service (BaaS) model. [Learn more about SKALE Chain Pricing in the SKALE Forum](https://forum.skale.network/t/enhancing-the-evolution-of-skale-chain-pricing-and-moving-into-network-growth-phase-2/468).
+
+**Instant Finality**
+
+Traditional databases have instant settlement and finality. *What does this mean?* When you send a **write** to \[most] databases, it takes a single cycle for it to be able to be **read** back and final in the database. The majority of blockchains do not work this way. They either require many cycles or **blocks** to become final OR they rely on other chains to prove their finality. This makes them highly inadequate and inefficient for gaming.
+
+SKALE Chains and the underlying consensus operate in a similar manner to traditional server and database systems. When a transaction is sent on a SKALE Chain it is immediately known whether it will be successful or not. After submission to the chain, it takes a single cycle (i.e. 1 block) to ensure that it is final and will be fully readable back. These blocks generally take around one (1) second, however, they can be even faster as a chain is put under more load.
+
+**High Throughput**
+
+Every computer and software system in the world has limitations. Traditional systems and blockchain systems share many similarities and differences. One of the most common is that reads are more common than writes and so systems are optimized for this. On average, a blockchain will experience a minimum of 5–10 reads for every one write due to the amount of calls that are made to access key information needed to execute and check for a transaction.
+
+SKALE Chains by default are highly fault tolerant by making use of 16 high performance machines operated by 3rd party validators. Each of these machines is easily capable of handling tens of thousands of concurrent requests while simultaneously building the chain through **execution of functions and storage of information** at a minimum rate of **500 calls per second** and a theoretical maximum of **\~13,000 calls per second**.
+
+> For those familiar with blockchain, calls are equal to transactions.
+
+**Native Random Number Generation**
+
+Random numbers are one of the most commonly used features within software development. They are especially prominent within game development. SKALE Chains offer native RNG capabilities directly in Solidity that allow for the **infinite creation of provable random numbers** to be used for anything the developer sees fit.
+
+Random values can be used for map creation, asset allocation, randomized selection, seed generation, and more. SKALE is the only blockchain that offers RNG functionality directly at the chain level **for free**. Other chains rely on 3rd party services like Chainlink or Pyth which can be both highly centralized, slow, costly, and complicated to develop with.
+
+***
+
+#### Popular Web3 Gaming Approaches
+
+The following approaches are some of the most common types of games types and higher level mechanics that make sense to bring onchain.
+
+1. **Asset-Based Games (e.g., Farmers, Clickers, Strategy Games)**
+   SKALE is ideal for handling in-game assets such as inventory, upgrades, and items in asset-based games. By leveraging blockchain technology, developers can create a transparent, player-owned economy, where players truly own their in-game assets. This opens up new opportunities for trading, crafting, and evolving the game world over time, all while maintaining a seamless player experience.
+2. **First-Person Shooters (FPS) and Real-Time Games**
+   Traditional FPS games rely on local servers for player interactions, typically grouping players based on geographical proximity to reduce lag. With SKALE, developers can utilize decentralized blockchain infrastructure to handle crucial gameplay elements in real-time, such as loadouts, player positioning, statistics, and map configurations. This allows for a more dynamic and interactive experience, especially in large-scale multiplayer games.
+3. **Leaderboards and Rankings**
+   SKALE is well-suited for managing competitive elements like leaderboards and rankings. Blockchain’s immutability ensures that rankings are transparent and tamper-proof, giving players confidence that their achievements are accurately represented and securely stored. Moreover, with SKALE’s scalability, even large-scale leaderboards can be handled efficiently, ensuring that players from all around the world can compete in real-time without lag or delays.
+4. **Player Lobbies and Matchmaking**
+   Managing player lobbies and matchmaking in real-time can be a logistical nightmare for developers using centralized services. SKALE enables decentralized matchmaking systems, where player data and session information are securely stored and easily accessible across a distributed network. This ensures a fair and transparent matchmaking process while allowing for seamless lobby creation and management.
+5. **Massively Multiplayer Online (MMO) Games with Dynamic Economies**
+   MMOs are perhaps the best example of a game type that benefits from decentralized infrastructure. With SKALE, developers can extend their games’ economic systems by enabling decentralized marketplaces, dynamic item economies, and player-driven world-building. The scalability of SKALE ensures that even in large MMO worlds, player interactions and in-game economies can be managed securely and efficiently, without the bottlenecks associated with centralized servers.
+6. **Turn-Based Games**
+   In turn-based games, player moves and game states must be securely stored and shared in a way that ensures fairness and transparency. SKALE enables developers to store turn data and game states on the blockchain, allowing for decentralized decision-making and eliminating the need for centralized server management. This leads to a more player-driven, secure, and transparent gaming experience.
+7. \*\*Open and Autonomous Worlds (Minecraft-Style Games) \*\*
+   Blockchain technology’s decentralized nature and transparency make it ideal for creating open, player-driven worlds that can be modified, extended, and evolved autonomously. Similar to Minecraft, players in SKALE-powered worlds can develop, build, and create content in a persistent environment where the game’s code and assets are publicly accessible. This allows for community-driven mods, world extensions, and dynamic, player-controlled content. The blockchain ensures that these modifications are secure, transparent, and permanent, fostering a rich, collaborative environment that grows with the community over time.
+
+***
+
+#### Development Mechanics
+
+In addition to the high level approaches above, there are some lower level mechanics that developers can mix and match when looking to enhance their games with blockchain. The following is designed based on the technology of the SKALE Network since it takes into account critical features such as zero gas fees, instant finality, native RNG, and high throughput.
+
+##### Digital Collectibles
+
+Arguably the place where Web3 gaming got its start is in the form of digital collectibles, commonly known as Non Fungible Tokens \[or NFTs] within the blockchain space. These assets come in many different forms however the general goal is to allow assets to be represented on a chain and be owned directly by users.
+
+The great part about digital collectibles is from an operational perspective they can be created and used in many different ways including both valuable and in-game only collectibles. Collectibles can also be made non-transferable (i.e. soulbound). Lastly, collectibles can be made incredibly custom to where you can use multiple collectibles to create others or even make a single asset fungible through additional tokenization.
+
+For instance if you have collectible items in-game already, these can be converted into digital collectibles and stored on-chain (items, weapons, etc).
+
+##### In Game Currencies
+
+In game currencies are incredibly popular within most games. Blockchain can be used to create both soft and hard currencies with many different flexible mechanics. These can also be specifically modified to guarantee they stay off of exchanges and other “trading” platforms so that they are only usable within a game, on a specific chain, or within a certain subset of users.
+
+> One of the nice parts about using digital collectibles or in-game currencies on blockchain is the automation mechanics available. Ensuring that users are paid out rewards or achievements based on something else is very simple thanks to smart contracts.
+
+You can learn more about deploying collectibles and in-game currencies with [Sequence](https://sequence.skale.space/landing); one of the most popular gaming providers on SKALE.
+
+##### Efficient Analytics
+
+The Ethereum Virtual Machine (EVM) is uniquely designed to be highly efficient at processing and emitting events to many clients in parallel. This can be useful for building programs like leaderboards and lobby systems. The following explores the basics of using the blockchain for analytics and how you can connect that with your game and its players.
+
+There are three ways a blockchain can be used for analytics:
+
+1. The EVM has a specific type of action called an **Event**. Events can take many pieces of information and emit them so that they can be listened to by many different clients. Publishing information through events will allow many players or games to share data with each other
+2. Storage in the EVM can be set to public or private by the creator of the program. This means that developers who want to make statistics available to their community for easy access for building modifications, extensions, or DLCs can do so with blockchain. Exposing state through public read only functions will enable others to build smart contracts that can extend and access the information in a safe and secure way.
+3. Onchain analytics are also great for achievement systems. Examples include:
+
+* Every N number of kills per player in a FPS automatically mint them some special random assets
+* Every N number of some event i.e 1st, 10th, 25th, 50th, 100th, 500th, 1000th, …, Nth of every single event -> mint an achievement that is permanent on chain.
+
+Interested in adding onchain achievements to your game? Contact [Eidolon Labs](https://eidolon.gg/) to work with the experts who built one of the first onchain achievement systems in the form of Untitled Platform.
+
+##### Blockchain for Compute
+
+Blockchains that have many nodes are very unique in that they act as a unique combination of compute and data storage. However, when comparing them to traditional compute types it’s important to understand that it’s a bit of a hybrid design. For example, there are two common compute types seen in cloud computing today: traditional server based compute and serverless/edge compute.
+
+**Traditional Servers**
+
+Traditional servers, often referred to as Virtual Private Servers (VPS), are often considered inefficient for smaller applications that don’t have consistent load over time and ideal for high performance applications and businesses that need consistent compute. SKALE Chains can directly replace traditional server and database requirements thanks to both **read** and **write** capabilities.
+
+This is ideal for applications and games of all sizes, but especially beneficial for those just starting out. No need to worry about infrastructure, maintaining nodes, securing servers, etc; when the SKALE Chain does it for you. Additionally — scalability \[no pun intended] is one of the most common things even veteran teams struggle with. Going from one (1) server to hundreds during short bursts of high capacity is incredibly complicated.
+
+Delegating server based actions to a blockchain can help guarantee that you are set up for success. For example, let’s say you want to probably generate a random map for a PVP match (in the multiplayer line of thought), you can utilize some basic data structures like multiple arrays (i.e a matrix) and SKALE RNG to create as many 10x10 grids as you want and return them. Additionally, thanks to computers and storage being in the same place you can optionally take those and link them to a game with the PVP state.
+
+**Serverless**
+
+There is a newer paradigm that has gained a lot of popularity in the last few years. Serverless is the act of not running an explicit server but having executable and lightweight functions that can run at a moment’s notice as close as possible to the user. The idea behind this is that you don’t pay for compute you don’t use and so it’s considered to be very cost effective for projects just starting out. It’s also highly scalable since the “scaling up” portion of the stack is delegated to the cloud provider instead of managed by you. While this might help with scalability, it's common to hear companies that start with serverless switch to traditional long running servers when they hit a certain amount of usage.
+
+**Blockchain**
+
+Enter blockchain. Technically, it acts as a hybrid compute option that retains the best parts of traditional servers and serverless. By default it is long running and with SKALE’s unique economic model it’s incredibly cost efficient. However, like serverless it runs across many computers by default (i.e. the SKALE Nodes) who can permisionlessley execute the functions deployed to a chain. This by default gives the blockchain capabilities that allow for both short term cost efficiency and long term scalability all in one.
+
+##### Multiplayer
+
+While already discussed throughout many of the above approaches and mechanics; blockchain thrives for real time multiplayer gaming when:
+
+* The blockchain can handle sufficient throughput \[like SKALE]
+* The blockchain can handle real time requests
+* The blockchain can offer instant finality
+* The blockchain can process highly complex game functions
+* The blockchain can handle a high number of simultaneous connections
+* The blockchain has no fees so that more compute can be done onchain
+
+With SKALE hitting all of the needed boxes, multiplayer mechanics is a great way to utilize blockchain as a tool without having to be crypto or Web3.
+
+##### Blockchain as a Database
+
+In game development, handling large volumes of data efficiently and at scale is crucial. This typically involves using a combination of **databases** (SQL/NoSQL), **caches** (Redis, Memcached), and **file storage systems** (AWS S3, Google Cloud Storage) to manage game data such as player information, game states, asset storage, and user interactions. However, blockchain technology — especially a blockchain with zero gas fees, huge compute limits (268 million block gas limit), and larger contract sizes (64 KB) — can offer a more integrated, secure, and decentralized alternative to these conventional systems.
+
+Traditionally, databases are used to store game data such as player profiles, game progress, statistics, inventory, and in-game assets. However, blockchain can act as an immutable, decentralized database for these types of data, providing key benefits:
+
+* **Immutability and Security:**
+  Data stored on the blockchain can be made immutable, meaning it cannot be altered once recorded. This is ideal for critical game data such as player achievements, transaction records, or inventory items. By using blockchain for this purpose, developers can ensure data integrity and transparency without worrying about data tampering or corruption.
+* **Decentralized Data Ownership:**
+  In traditional database systems, data is stored on centralized servers owned by a third party, creating a potential vulnerability. Blockchain, on the other hand, distributes data across a network of nodes, ensuring that players themselves have control over their data. This is particularly important in asset-based games or games that involve unique digital items or currencies (e.g., NFTs), where players want real ownership.
+* **Scalability and High-Volume Data Handling:**
+  With a \~268 million block gas limit and zero gas fees, SKALE is capable of handling the massive data throughput required by modern games. This allows for the storage of millions of player profiles, inventory data, game stats, and other dynamic data without performance degradation.
+
+> **Example:** In an MMO, players’ inventory data, equipped items, and character stats can be stored on the blockchain. Each player would have a decentralized, immutable record of their assets and progress that could be accessed and verified without reliance on centralized servers.
+
+##### Blockchain as a Cache
+
+In traditional game architecture, caches are used to store frequently accessed data (e.g., player profiles, game state, leaderboard rankings) to speed up retrieval times. With blockchain, especially one with zero gas fees like SKALE, this need can be eliminated:
+
+* **Instant Access to Onchain Data:**
+  Data can be retrieved directly from the blockchain without needing an intermediary caching layer. Since SKALE operates with zero gas fees, developers don’t have to worry about the transaction costs typically associated with writing to the storage layer and reads are always free. Players can access data in real time without the latency or costs of traditional caching systems. *Additionally, the use of blockchain sync nodes placed strategically around the world can greatly reduce latency for gamers.*
+* **No More Cache Invalidation Issues:**
+  Traditional caches have to handle cache invalidation (ensuring outdated data is refreshed), which can be complex and error-prone. SKALE data is **always up-to-date thanks to instant finality**, and since every transaction or update is public and verified on the chain, there is no need for additional systems to ensure data freshness.
+* **Reduced Need for Expensive Caching Services:**
+  As the need for complex caching systems is removed, developers can save on infrastructure costs. The blockchain itself serves as a dynamic, high-performance store for frequently accessed game data.
+
+> Example: In an FPS or real-time strategy game, player stats and leaderboard rankings can be stored on-chain and accessed in real time without the need for separate caching infrastructure. The blockchain’s low-cost, high-speed retrieval replaces the need for a dedicated caching system like Redis or Memcached.
+
+##### Blockchain for File Storage, Replication, and Availability
+
+Games often require file storage for assets such as textures, 3D models, animations, and other game data. SKALE offers two ways to store assets directly onchain.
+
+1. **Smart Contract Storage**: while this is technically doable on ALL blockchains; low block gas limits, small contract sizes, and variable gas fees can make this both difficult and costly. SKALE eliminates those barriers allowing text-based files like JSON to be stored directly onchain for free.
+2. **Native Filestorage**: a feature native only to SKALE is SKALE Filestorage. SKALE Chains upon creation can optionally allocate some portion of their nodes to filestorage. This allows files to be uploaded to the chain and replicated across all the nodes and served directly from the blockchain.
+
+The following explores in greater depth multiple ways that SKALE can be used to store and serve files.
+
+* **Smart Contracts as Asset Containers:**
+  Instead of relying on cloud storage solutions like AWS S3 to hold game assets, developers can store these assets directly within smart contracts. SKALE’s large contract size (64 KB) allows for storing more data on-chain, making it a viable option for smaller game assets. For example, textures or small game models can be encoded into the blockchain, ensuring transparency and verifiability. Additionally, many files can be dynamically manipulated on chain so that they can be used in conjunction with other smart contracts to manipulate their data.
+* **Cost-Effective File Storage:**
+  With zero gas fees, SKALE makes storing and accessing game assets on-chain more affordable compared to traditional cloud storage models, where developers are often charged based on the amount of data stored and the frequency of access.
+* **Decentralized CDN:**
+  Traditional CDNs are one of the most solutions developers use to speed up their applications. While boasting incredible speed; CDNs can be very costly. SKALE allows for decentralized file access and availability, reducing the risk of data loss, tampering, or centralization while also enabling CDN capabilities that are pre-paid \[inclusive of egress charges]
+
+> **Example:** In a collectible card game (CCG), each card could be an asset stored on the blockchain. Instead of storing card images and metadata on external servers, they can be securely stored within the blockchain itself. The card’s metadata (e.g., stats, images, abilities) could be embedded in the blockchain, ensuring transparency, ownership, and ease of access.
+
+##### Summary
+
+If you read this entire article whether in one sitting or many, thank you for spending the time. I hope you learned something valuable and most importantly recognize that the right technology means you don’t have to be a “Web3” game or launch a token to be a blockchain game. There are many amazing ways to use blockchain and more specifically SKALE to level up your game.
+
+For game developers interested in adding blockchain mechanics to your game, head over to the SKALE Indie Game Accelerator at [https://skale.space/skale-indie-games-accelerator](https://skale.space/skale-indie-games-accelerator) to learn more.
+
+import Footer from '../../snippets/_footer.mdx'
+
+<Footer />
+
+
+## The Power of Random
+
+This article explores SKALE Network's native random number generation system that uses threshold signatures from consensus nodes to create provably random numbers at zero gas cost. Unlike external oracles like Chainlink VRF, SKALE's RNG is free, synchronous, and built directly into the blockchain, enabling developers to generate unique NFT attributes and implement innovative game mechanics like Shape Storm's single-ownership roguelike where players can only hold one randomly-generated shape at a time.
+
+[Shape Storm by Eidolon](https://shapestorm.eidolon.gg/) is a rougelike that uses the blockchain for optional ownership and analytics. As rougelikes are heavily on randomization it was a natural fit to explore using the blockchain for provable randomness. SKALE offers a native random number generation endpoint that allowed the Eidolon team to take Shape Storm to a whole new level by having all the core attributes from players shapes be randomly generated on-chain and stored as as a playable NFT. This also lends itself to a future exploration of survival mechanics with upgradeable random values.
+
+Additionally, the unique random values lends itself to the single-ownership system where a user can only own a single NFT from Shape Storm at a time. They can choose to send it elsewhere or remove it, but if they get rid of their current shape there is no guarantee the next one will be better.
+
+Read on for a deep dive into RNG on SKALE and the implementation within the Shape Storm smart contract.
+
+***
+
+#### SKALE RNG
+
+Every [SKALE](https://skale.space/) Chain has a random number generator contract pre-compiled and available. A new random number is generated for every block based on the threshold signature of that block. As SKALE Chain consensus is asynchronous and leaderless the blocks must be signed by at least 11/16 nodes \[on the SKALE Chain]. The signature from each node is glued together so that single node can influence the resulting signature. This process ensures that the results cannot be manipulated by a single entity.
+
+The process for actually attaining the random number generation looks like this:
+
+1. The signatures for the current block are retrieved
+2. The BLAKE3 hash of the signatures is created
+3. The resulting hex RNG is presented and consumable in Solidity
+
+As it is available through a pre-compiled contract on every chain, a major advantage of this compared to a 3rd party RNG generator like [Chainlink’s](https://chain.link/) VRF is that the random number is directly available as a read and does not need to be set/shared/consumed in a callback or require additional payment. It’s free as gas fees on SKALE are 100% free!
+
+> *A quick reminder that SKALE RNG only works on SKALE.*
+
+The function in Solidity looks like this:
+
+```solidity
+// Reminder, this is Solidity (.sol)  
+// SPDX-License-Identifer: MIT  
+pragma solidity ^0.8.13;  
+  
+contract A {  
+  
+    function getRandom() public view returns (bytes32 addr) {  
+        assembly {  
+            let freemem := mload(0x40)  
+            let start_addr := add(freemem, 0)  
+            if iszero(staticcall(gas(), 0x18, 0, 0, start_addr, 32)) {  
+              invalid()  
+            }  
+            addr := mload(freemem)  
+        }  
+    }  
+}
+```
+
+#### RNG Package
+
+The above code, while simple enough to use for a single random number, requires some additional work to generate **many** random numbers in a single function. To make this easy to consume, [Dirt Road Development](https://dirtroad.dev/) has created a utility package called [skale-rng](https://docs.dirtroad.dev/skale/skale-rng). This NPM package can be added to your codebase and offers a number of pre-built utilities to quickly iterate on the RNG value to grab many random numbers. It also helps with selecting and maintaining ranges for the random numbers.
+
+#### Shape Storm & RNG
+
+In the code below you will notice a few things:
+
+1. The first use of random number value is **getRandomRange(4)** where the value is then ternary checked to ensure that it is never 0. This is because with 0 being the default “empty” value in the EVM it made more sense to start at 1 for this array. Based on that the number is expected to be between 1–4.
+2. After this you will notice the next function used is **getNextRandomRange(X, Y).** This function was chosen to ensure that the one random number in the block could be \[bitwise] operated on and re-hashed to generate more random numbers. The X value can be any number that some bitwise action will occur on in relation to the original rng value in order to generate a new integer which can be hashed and re-cast to a uint256 in order to give us a new random number. The Y is the maximum value in-range (inclusive). This function is used over and over to generate a whole bunch of random numbers — at no cost — all in one shot.
+
+The end result of this is that every shape is represented as a unique NFT in ERC-721 format!
+
+```solidity
+// Reminder, this is Solidity (.sol)  
+// SPDX-License-Identifer: MIT  
+pragma solidity ^0.8.13;  
+  
+import "@dirtroad/skale-rng/contracts/RNG.sol";  
+  
+contract ShapeStorm is RNG {  
+  
+  function _mint(address to) internal {  
+        uint8 rng = uint8(getRandomRange(4));  
+        uint8 shapeNumber = rng == 0 ? 1 : rng;  
+  
+        if(currentTokenId + 1 > maxTokenSupply) revert MaxSupplyReached();  
+        ShapeStats memory baseShapeStats = baseStats[shapeNumber];  
+  
+        uint8 rotateSpeed = _validateNumber(MINIMUM_ROTATE_SPEED, uint8(getNextRandomRange(3, baseShapeStats.rotateSpeed)));  
+        uint8 maxSpeed = _validateNumber(MINIMUM_MOVEMENT_SPEED, uint8(getNextRandomRange(4, baseShapeStats.maxSpeed)));  
+        uint8 dashSpeed = _validateNumber(DASH_SPEED_BOOST, uint8(getNextRandomRange(5, baseShapeStats.dashSpeed)));  
+        uint8 bulletDamage = _validateNumber(BULLET_DAMAGE, uint8(getNextRandomRange(6, baseShapeStats.bulletDamage)));  
+        uint8 shootCooldown = _validateNumber(SHOOT_COOLDOWN, uint8(getNextRandomRange(7, baseShapeStats.shootCooldown)));  
+        uint8 shieldCapacity = _validateNumber(SHIELD_CAPACITY, uint8(getNextRandomRange(8, baseShapeStats.shieldCapacity)));  
+  
+        uint256 newTokenId = currentTokenId++;  
+        tokenStats[newTokenId] = ShapeStats(baseShapeStats.shape, rotateSpeed, maxSpeed, dashSpeed, bulletDamage, shootCooldown, shieldCapacity);  
+  
+        _safeMint(to, newTokenId);  
+  
+  }
+}
+```
+
+import Footer from '../../snippets/_footer.mdx'
+
+<Footer />
+
+
+## The Rise of the Machine Economy
+
+This article examines how blockchain infrastructure, particularly SKALE Network's zero-gas, high-performance platform, will enable the emergence of a machine-driven economy powered by autonomous AI agents. By combining technologies like x402 for programmable payments, small language models for efficient AI processing, and decentralized identifiers for verifiable interactions, we can create seamless workflows where machines transact, collaborate, and execute economic activities without human intervention.
+
+### What is SKALE?
+
+SKALE is a network of Ethereum-compatible blockchains designed for speed, efficiency, and scale. It offers zero gas fees, native multi-chain functionality, and a high-performance Ethereum Virtual Machine (EVM) implementation built in C++.
+
+What makes SKALE unique is the range of features built directly into the network. Developers get onchain random number generation (RNG), a native oracle, a fully decentralized bridge connecting Ethereum and SKALE Chains, and onchain file storage—all without relying on external services. These features make SKALE a true decentralized cloud for compute and storage.
+
+On top of that, SKALE delivers the only single-slot finality EVM in production today. Consensus is mathematically provable, fully asynchronous, and leaderless, allowing transactions to finalize in about a second with strong security guarantees. This combination of speed, scale, and native capabilities sets SKALE apart as one of the most advanced blockchain platforms available today.
+
+**ELI5 Analogy:** Imagine Ethereum (and most L1s and L2s) are like busy cities with one main highway. SKALE builds an entire network of highways that are just as safe but much faster, and every car on them gets free gas. Not only that, each highway comes with built-in tools like storage garages, toll-free bridges, and even random dice rollers for games. It's like giving blockchain apps their own superhighway to run smoothly without traffic jams.
+
+#### A Focus on Compute
+
+SKALE set its sights on being home to **high-performance, compute-intensive decentralized applications**, especially in areas like onchain gaming, DePIN, and real-time data processing.
+The screenshot below is from [dAppRadar](https://dappradar.com)-- one of the leading data and analytics platforms in the blockchain space -- on 8/22/25 and shows that 3 of the top 5 games in blockchain are on SKALE. If you double click into each you will see that all three do a significant amount if not the majority of their compute on SKALE.
+
+![dappradar-top-5-games-8-22-25](../images/dappradar-top-5-games-8-22-25.png)
+
+The architecture—featuring customizable, zero-gas chains with high throughput and low latency—makes it the go-to blockchain platform for apps that literally live in the world of millions of transactions. The above dApps are built across the [Nebula](https://portal.skale.space/chains/nebula) and [Calypso](https://portal.skale.space/chains/calyspo) SKALE Hub Chains.
+
+When people talk about SKALE being built for heavy workloads, the best example is **Exorde**. Exorde is a decentralized data and sentiment-analysis protocol that depends on millions of transactions every single day. Contributors across the world continuously crawl tens of millions of URLs and submit data to the chain, which translates into **over 2 million daily transactions** and nearly **1,000,000,000 (billion) total transactions** onchain so far. On any gas-metered chain this level of activity would cost hundreds of millions of dollars, making the model completely unsustainable. On SKALE, those same transactions are processed at **zero gas cost to users**.
+
+This isn't just a matter of being "cheaper." Without SKALE's zero-gas model, [Exorde](https://exorde.network) simply could not exist in a decentralized way. Running millions of writes per day would be financially impossible on Ethereum mainnet or even on most L2s, where gas adds up fast. What SKALE provides is effectively a decentralized compute cloud that can handle workloads which are normally reserved for centralized servers. It shows that SKALE's architecture isn't just optimized for high throughput—it unlocks entirely new categories of applications that only make sense when gas costs are removed from the equation.
+
+#### The Blockchain Wars
+
+Over the past 6-12 months the blockchain wars (yes I'm calling it that) have really been heating up. The number of blockchains that have either been announced or launched is continuing to increase. In addition, there are more [Rollup-as-a-Service (RaaS)](https://www.alchemy.com/overviews/what-are-rollups-as-a-service-appchains) providers and more application-chain networks being spun out, including [Base Appchains](https://www.coinbase.com/developer-platform/discover/launches/base-appchains).
+
+Time for some opinions. These are my personal opinions and do not reflect the stance of any of the companies I am contracted by.
+
+**#1 - Most blockchains will die. Most tokens will die. Those that will succeed need differentiation. Speed is not differentiation.**
+
+**#2 - Layer 2s will continue to be cannibalized by Base and Ethereum scaling the L1 will kick-off a max extinction event for L2s**
+
+**#3 - Big Layer 1s that are just forks of Geth, have slow consensus, and are racing to the bottom for cheaper fees will all die.**
+
+A summary of my opinions and why they matter. The majority of blockchains you see today have no usage. Appchains on average have even less usage with many going unused for weeks, months, or even years at a time.
+
+#### Who will buy Appchains?
+
+I think that the biggest buyers of application chains over the next 5 years will be large corporations and governments. With compute becoming cheaper, it's feasible for a company to have a fleet of blockchains doing different things, in different locations, with different ownership structures, and different access points.
+
+A fantastic read from Toyota, [this research report](https://www.toyota-blockchain-lab.org/library/mon-orchestrating-trust-into-mobility-ecosystems) dives into how they are planning to use multiple Avalanche subnets to coordinate identity, information, payments, and data. While they are choosing to use Avalanche for their Proof-of-Concept they call out the following as important:
+
+"We chose Avalanche because its design centered on multiple L1s (formerly Subnets), its fast finality, and its native ICM align with MON's philosophy of *building locally, collaborating globally.*" -- [Toyota Blockchain Lab](https://www.toyota-blockchain-lab.org/library/mon-orchestrating-trust-into-mobility-ecosystems#:~\:text=We%20chose%20Avalanche%20because%20its%20design%20centered%20on%20multiple%20L1s%20\(formerly%20Subnets\)%2C%20its%20fast%20finality%2C%20and%20its%20native%20ICM%20align%20with%20MON's%20philosophy%20of%20building%20locally%2C%20collaborating%20globally.)
+
+Based on the above, SKALE is and will remain a top contender thanks to being the only multichain network with instant finality and zero gas fees that also has sustainable mechanics.
+
+### Collaborative Technologies
+
+#### What is x402?
+
+[x402](https://www.x402.org) revives the HTTP 402 "Payment Required" status and turns it into a painless, real-time payments system using stablecoins. It was introduced by Coinbase to enable [internet-native payments](https://www.coinbase.com/developer-platform/discover/launches/x402). It allows APIs, agents, and applications to transact without juggling API keys or subscriptions. Think of it as embedding payments directly into the web with zero friction—no fees, instant settlement, and blockchain-agnostic at its core.
+
+If you want to dive deeper, check out this [research paper on multi-agent economies](https://arxiv.org/abs/2507.19550). It explores how autonomous agents can use X402 for discovery and payments, enabling seamless HTTP-based micropayments backed by blockchain.
+
+#### What are Small Language Models (SLMs)?
+
+When I talk about SLMs, I'm talking about the smaller, lighter versions of big language models. They're compact, fast, and cheap to run, but still surprisingly capable. Because they don't need massive cloud compute, they're great for things like edge devices, personal assistants, or any use case where privacy matters. They're basically a practical way to get a lot of AI power without the huge overhead.
+
+They retain the general capabilities of LLMs. For this reason, it makes sense that as individuals and companies look to gatekeep resources, APIs, MCP-access, agent-access in order to either profit or at a minimum ensure they are covering costs; SLMs could be a huge unlock offchain.
+
+I do believe there is the potential to explore running SLMs on SKALE Chains directly as well, but I'll cover that in a different write-up.
+
+#### What is DID?
+
+Decentralized Identifiers ([DIDs](https://w3c-ccg.github.io/did-primer/)) are, I think, a missing piece of the puzzle to connecting blockchain to the broader internet. Years ago when I was building Lilius, it was one of the areas we were doing heavy research and exploring to help bolster user identity.
+
+There has been a significant amount of research and growth in this area:
+
+* [https://ethereum.org/en/decentralized-identity/](https://ethereum.org/en/decentralized-identity/)
+* [https://github.com/decentralized-identity/ethr-did-resolver](https://github.com/decentralized-identity/ethr-did-resolver)
+* [https://github.com/uport-project/ethr-did-registry](https://github.com/uport-project/ethr-did-registry)
+
+One of the outstanding questions with both x402 and agentic collaboration is identity and proving. With SKALE's zero gas fee nature, storing DIDs onchain could be done in some cases for free and in others for flat rates (to avoid DoS attacks).
+
+### A Machine-compatible Future
+
+This section will read a bit like a movie. Let's start with the ending.
+
+**Blockchains are built for machines, not people. A decentralized and easy UX that isn't bad is nearly impossible to come by and not feasible for the average human being.**
+
+The broader positioning of blockchain is very interesting. Over the years the "pitch" to the average user has combined ideas like **own your own money** and **be your own bank** to **blockchain is the next version of the internet, i.e Web3**.
+
+I think the latter has always been the area that was more interesting to me. Building applications for the traditional *Web2* world can at times be very frustrating due to the large number of hoops a developer has to jump through to access information, payment rails, etc. Additionally, many things in Web2 that a developer needs to make a successful application have a high cost of either entry or use.
+
+The perfect example is payment processing, which often times charges 2.3% + $0.30 minimum to process transactions or private application stores like Apple, which have historically charged 15-30% on transactions.
+
+The promise of blockchain to a developer is the ability to side-step many of these hidden fees and linear costs in favor of something more equitable to both you and your users.
+
+#### The Pitfalls
+
+Blockchains are built for machines, not humans, and that creates some real headaches for developers and users alike.
+
+1. **UX Friction** – Wallets, gas fees, confirmations, and failed transactions make even simple interactions frustrating. Humans usually just want to click a button and see instant results, but blockchains make this difficult.
+
+2. **Cost Barriers** – Transaction fees and the overhead of smart contract execution can make small-scale applications prohibitively expensive. Even simple micropayments or automated interactions become costly if you're relying on general-purpose blockchains with variable gas fees.
+
+   > FAIR is not grouped in the general purpose category directly for me in the sense of cost barriers because of its inherent differentiation with Proof-of-Encryption. I'm willing to pay a premium for enhanced security on a general-purpose L1.
+
+3. **Complexity in Automation** – If you want agents or APIs to act autonomously, you quickly run into problems. Without verifiable credentials, you have no proof that actions were executed by the right system. Without programmable money, you have no way to allocate funds to machines or automate workflows without constant human oversight, considering that traditional payment rails cannot settle instantly and often charge dozens to hundreds of basis points per transaction.
+
+4. **Security Risks** – Autonomous systems can behave unpredictably or "hallucinate" in edge cases. Without immutable guardrails, you risk agents misallocating funds or performing unintended actions.
+
+5. **Slow Interoperability** – Moving value or data between chains or off-chain systems can be slow and expensive, making it hard to scale applications that rely on multiple networks or financial platforms.
+
+#### My Blue Sky Future
+
+Now imagine solving these problems with a stack of modern tools and a little architectural elegance:
+
+1. **Seamless UX for Humans and Machines** – Humans continue to interact via a simple browser or app interface, while machines (agents, APIs, MCP servers) interface directly with **SKALE** and **FAIR**. Humans never see the complexity, but autonomous agents can execute actions, settle payments, and respond in real-time.
+
+2. **Verifiable Actions via DIDs** – Each agent or API can carry a **Decentralized Identifier (DID)** with verifiable credentials. This proves that every action—whether a payment, API call, or task completion—was executed correctly and securely, creating trust without intermediaries.
+
+3. **Tokenized Workflows with x402** – With **x402**, payments and tokens flow seamlessly between humans and machines and machine-to-machine. Onramps, exchanges, and an expanding variety of stablecoins allow unique allocation strategies: your AI agent can earn, hold, and spend money autonomously while staying under human-enforced rules.
+
+4. **Immutable Guardrails on SKALE** – Smart contracts on SKALE can enforce spending limits or rules for machines (agents, APIs), preventing accidental "hallucinations" or misallocations. APIs and traditional servers can automatically receive payments, then dynamically route funds back to agents or financial applications. The reason SKALE shines here is **instant finality and zero gas fees**, letting agents operate continuously without bottlenecks.
+
+5. **Expanded Financial Access with FAIR** – Suppose your agent or MCP server earned $1,000 today through x402 payments. With FAIR L1 integration, those funds can instantly be deposited into a decentralized AMM, lending platform, or other financial service—turning autonomous work into real, deployable capital in real time.
+
+This is the vision of a **machine-compatible future**: humans enjoy smooth experiences, agents act autonomously but verifiably, and money and data flow instantly and securely across decentralized networks. By combining DIDs, SLMs, x402, [SKALE](https://skale.space), [FAIR](https://fairchain.ai), and MCP servers, we can finally build applications where humans, AI, and financial systems interact seamlessly—without friction or unnecessary intermediaries.
+
+### Conclusion: Appchains for the Machine Economy
+
+This brings us to the inevitable conclusion. The future of blockchain is not a single, congested superhighway but a sprawling, interconnected network of specialized application chains. As the internet evolves into a truly machine compatible ecosystem, the demands on this infrastructure will be relentless. Autonomous agents running on SLMs will need to transact millions of times a day, verified by DIDs and settled instantly via protocols like x402. For these systems, gas fees are not just a cost; they are a critical point of failure.
+
+This is where SKALE's architecture transitions from a competitive advantage to a fundamental necessity. Its zero gas, instant finality model is not merely a feature, it is the native habitat for high frequency, compute intensive applications. The very multi chain design that a company like Toyota seeks for its complex data and mobility ecosystems is the core principle SKALE has already perfected.
+
+As enterprises and developers move beyond speculation and begin building the high throughput applications of tomorrow, they will not be looking for the cheapest chain, but the only one where their business model is economically viable. SKALE is not just a contender in the appchain race; it is the logical endgame. It is the decentralized cloud where the machine economy will finally be built.
+
+import Footer from '../../snippets/_footer.mdx'
+
+<Footer />
+
+
+## The Role of Pay-Per-Tool in an Agentic World
+
+The role of agents and AI tooling is expanding very quickly. With
+new releases, tools, models, and innovations coming out every day, it's important to understand the role of tools in agentic systems and why the consumption model may be in need of an economic change. This blog introduces the concept of a tool, walks through an example of a tool, and explores why pay-per-tool is the next logical step.
+
+### What is a tool?
+
+Tools are software designed to perform a specific task that are designed to be called by language models. A tool can provide access to complex programming logic, external APIs, or even other models.
+
+One of the more common tools that is used across many agentic applications is the ability to search the web. With models being trained on specific sets of data, they tend to have a *cutoff date*, which is when the information used to train the model was last updated.
+
+This means that for an LLM to have access to the most recent information, it needs to be able to crawl the web and retrieve up-to-date info.
+
+Looking at [OpenAI](https://platform.openai.com/docs/guides/tools), their standard set of tools includes web search, calling to remote MCPs, file search, image generation, code interpreter, and more.
+
+In summary, tools are a critical component of agentic systems that allow large and small language models to have access to more information and functionality that may not be available in the model directly.
+
+### Why is Pay-Per-Tool the next logical step?
+
+As AI continues to grow in both complexity and usage, a major question is the cost of services and information. It's no secret that the cost of operations for artificial intelligence is enormous, with a significant amount of subsidization and free usage being offered by many of the top companies.
+
+However, as the technology continues to mature and become more mainstream, specifically mainstream for agentic use cases beyond prompt-based LLMs like ChatGPT and Claude, there is a need for agents to have access to more functionality and information—but at whose expense?
+
+Cloudflare introduced [pay per crawl](https://blog.cloudflare.com/introducing-pay-per-crawl) to address the changing landscape of consumption. While the motives were slightly different, the end goal is the same: to allow compensation for access to resources.
+
+The next logical step is to explore a high-level view of how pay-per-tool covers a number of tools and how it can be used to create a more dynamic and scalable agentic system.
+
+### How does Pay-Per-Tool work?
+
+Pay-per-tool is a concept or view of how a simple flow of an agent calling a tool pays for the resource and the provider of the resource receives compensation.
+
+Using x402, tools can be paid for per use. This means that the user only pays for the tool they use rather than signing up for hundreds of subscriptions. Additionally, this allows tooling providers to properly pass on the costs as the internet changes and pay-per-crawl becomes a reality.
+
+![Flow of Pay-Per-Tool](../images/pay-per-tool.png)
+
+More specifically, pay-per-tool is already being explored through a number of open protocols, including the [Agent Payment Protocol](https://ap2-protocol.org) from Google, [x402](https://x402.org) from Coinbase, and [Agentic Commerce Protocol](https://www.agenticcommerce.dev) from OpenAI and Stripe.
+
+### x402: The Default Solution for Pay-Per-Tool
+
+x402 is the internet-native payments protocol from Coinbase that is designed to work within the traditional internet by utilizing the mostly (previously) dormant HTTP 402 status code for `payment required`.
+
+This allows existing web services like APIs and websites to easily adopt the protocol and start charging for access. We have already seen x402 explored in collaboration with other protocols like AP2 from Google and the ERC-8004 trustless agents framework being put forward by the Ethereum Foundation.
+
+The reason I believe x402 is so key and will play such a big role is a combination of the simplicity and extensibility of the protocol itself. The current design has already allowed a number of services providing tools for agents like Firecrawl and Freepik to start enabling agentic access without the need to build a new API or develop a complex payment system.
+
+### Blockchain Scalability and Costs
+
+One of the larger value propositions that x402 brings to the table is the ability to have payments move at the speed of blockchains instead of traditional financial institutions. In reality, even Ethereum with \~12-minute finality is still faster than most traditional credit card payment settlement and ACH/cross-border processing times.
+
+As you start to explore alternative Layer 1 blockchains like Solana, the speed of settlement becomes even more apparent with \~12–15 seconds of finality.
+
+My belief is and always will be that the fastest will never be good enough and will always be too slow. As more entities begin utilizing blockchain infrastructure for their operations, the speed of settlement will only continue to decrease.
+
+Based on the above, the best blockchain in the world today for real-time payments, especially for agentic micropayments, is [SKALE](https://skale.space).
+
+With instant single-slot finality, consensus is completed in just a single block that is processed and executed in around one second on the current architecture. This can be sped up by improving consensus, resizing chains, changing node location (see Hyperliquid), and even improving hardware of the nodes.
+
+However, even if all of that were to be done (see Solana), the speed of settlement is still not enough, with the costs of agentic tools needing to be valued to the tune of billions of requests per day.
+
+The words "it's cheap enough" have been spoken by teams building on blockchain for the last 5+ years and have so far proven true. Why? Outside of the occasional spike, the costs of operations have been consistently good enough for current use cases to the tune of hundreds of transactions per second.
+
+#### A Scalability Scenario
+
+Cloudflare, as of 2023, was serving 46 million HTTP requests per second according to [Alex Bocharov's blog post](https://blog.cloudflare.com/scalable-machine-learning-at-cloudflare/).
+
+Breaking this down, let's assume 0.01% of these requests are agents searching the web. This would equate to 4,000 requests per second—fully capable of being handled by a single SKALE Chain.
+
+Using an arbitrary cost of 70,000 gas units per micropayment, the expected block gas limit would need to be at least 280,000,000 gas units per block (just to cover the consumption of the micropayments) excluding any other usage. SKALE, having one of the largest block gas limits at \~268,000,000 gas units per block, would be able to handle this with ease just by bumping the gas limit slightly.
+
+Most EVM chains tend to limit the gas limit to \~30–50 million gas units per block, as they lack the capacity to handle this amount of compute.
+
+Additionally, with most blockchains being designed to increase the base gas fee per block as the demand for compute increases from block space being filled, the cost of operations would continue to spike and stay elevated on most blockchains under this type of load.
+
+Even Solana, with local fee markets, would see elevated costs due to constant interaction with specific accounts.
+
+SKALE, on the other hand, operates more like a decentralized cloud provider—offering pre-paid compute resources and the ability to quickly add more compute to handle spikes in demand. SKALE is capable of handling the above scenario with zero spikes in cost due to the pre-paid nature of the network.
+
+This means that while other networks would come to a standstill and see massive volatility and potential stability issues, SKALE would be able to handle the needed load to serve a significant portion of the onchain settlement of micropayments via x402 for agents on just a single SKALE Chain.
+
+Additionally, SKALE is almost able to add an infinite amount of SKALE Chains. This means that as more agents come online, more chains can be procured to handle the ever-increasing demand. Forty million requests per second could be handled by 4,000 sChains, each serving 10,000 requests per second.
+
+With thousands or even tens of thousands of servers in data centers and locations from many providers scattered all over the world, this is an incredibly feasible scenario for SKALE to be positioned to handle for the agentic world.
+
+#### Reducing Costs to Increase Demand
+
+One of the biggest challenges facing the adoption of pay-per-tool is the cost of operations combined with onchain costs and limits. With gas fees on chains like Solana and Base—both of which are two of the more popular x402 chains today—being around \~$0.001 for a single transaction, that is close to 15% of the actual cost of the payment being around $0.01, which is the most common cost for an x402 payment today.
+
+This is a major barrier to entry for many providers and users alike. The cost of operations is too high, and the onchain costs are too high.
+
+With the reduction or removal of gas fees, the cost of operations can be scaled down significantly. This is especially relevant for many x402-enabled endpoints that are currently being used to serve basic content like images, text, price feeds, and more that can arguably cost a fraction of a penny to serve.
+
+By scaling the costs down, agents can now afford to do more without the fear of running out of funds or being throttled by the human-set budget.
+
+With zero gas fees and instant finality, the cost of operations can be scaled down to literally one wei on a SKALE Chain in any token, with far more complex settlement and management contracts.
+
+### Conclusion
+
+The future of agentic systems is looking bright, but the cost of operations and the ability to scale is a major concern. The vision of pay-per-tool is key to ensuring that the future of agentic systems is capable of scaling to meet the needs of the growing market while being built in a way that is sustainable for providers and users alike.
+
+If you are interested in deploying your own MCP server, agent, or resources for the agentic world on SKALE, reach out to me with the information below.
+
+import Footer from '../../snippets/_footer.mdx'
+
+<Footer />
+
+
+## x402 via EIP-3009 Forwarding
+
+x402 is Coinbase's open protocol for internet-native payments that enables seamless blockchain transactions using ERC-3009 USDC. This article explores how to extend x402 to any blockchain through EIP-3009 forwarding contracts, with a focus on SKALE Network's zero-gas infrastructure that enables instant, cost-free transactions across any token on EVM-compatible chains.
+
+x402 is an open protocol for internet native payments created at Coinbase. Coinbase has been deeply aligned with Circle, and chose to build x402 process around the the use of ERC-3009 native USDC.
+
+With an increasing number of blockchains being created, many of which are utilizing bridged assets instead of official deployments from stablecoin issuers, this article explores ERC-3009, forwarding payments with ERC-3009 Forwarder, implementing with minimal facilitator changes, and more.
+
+While enables x402 on any blockchain, a major unlock of this initiative was to bring x402 to SKALE, the only network of infinite block space with zero gas fees and instant finality.
+
+### Technology Overview
+
+The following section provides an introduction to x402, blockchains, SKALE Network, stablecoins and tokenization, ERC-3009, and the ERC-3009 Forwarder. If you are already familiar with these topics and want to skip to the implementation, click [here](#implementation).
+
+#### x402
+
+[x402](https://x402.org) by Coinbase is an open protocol for internet native payments. This allows for access to be given to resources in a new manner; without the need for traditional login/registration, OAuth, or complex registration. It also bakes monetization directly into the flow for resource access.
+
+Specifically, x402 is blockchain agnostic and runs at the speed of blockchain. The faster the blockchain, the faster your payment. While designed for digital dollars, the standard is technically agnostic to allow for any token to be used as payment.
+
+Additionally, it was built with a number of key use cases in mind such as agentic payments to allow for real time API access to resources, micro transactions for access and creation of content, and more broadly a native integration into any web based service allowing for monetization to occur without a middleman.
+
+#### SKALE
+
+[SKALE](https://skale.space) is a network of blockchains capable of bringing an infinite amount of block space to the world in the form of SKALE Chains. SKALE Chains are EVM compatible blockchains that are run by the pool of SKALE validator nodes. With a unique economic model that allows communities, developers, businesses, enterprises, and governments to purchase their own blockchains for  a flat fee, the underlying SKALE Chain can be configured and utilized in whatever way they see fit, including zero gas fee transactions.
+
+With the instant finality, large block size, and zero gas fee nature of a SKALE Chain; it's an ideal fit to bring zero cost operations to x402 for every token; a far greater opportunity for developers and stablecoin issuers compared to using subsidized USDC on certain chains.
+
+#### Stablecoins
+
+If you are unfamiliar with stablecoins, they are a cryptocurrency designed to remain at a stable value in relation to some other asset. The largest stablecoins today are Tether USD (USDT) and Circle USD (USDC) which are tokens issued by their respective companies intended to stay pegged at the value of $1 USD per token.
+
+The usage of stablecoins within x402 makes a lot of sense for many of the core use cases called out such as for cloud compute and storage providers. Stablecoins with zero gas fees is an even stronger pull to providers who don't have to weigh the cost of gas into their services.
+
+#### ERC-3009 & Forwarding Contract
+
+ERC-3009 allows the transfer of fungible assets through signed authorization. Through the use of meta-transactions, signatures are used to approve the movement of assets. This brings with it many unique benefits which are explored in the official [EIP-3009](https://eips.ethereum.org/EIPS/eip-3009).
+
+The unique part about 3009, is that it's actually implemented within a few stablecoins, such as USDC and EURC by Circle, but very few others. While this limits blockchains and tokens without ERC-3009 native tokens, it does not stop us from moving forward.
+
+While there are a number of ways to implement the meta-transactions, for to start I chose to go with a **Forwarding** contract for ERC-3009 since that is what the majority of facilitators are currently offering. My belief is that when a technology is new we can always explore more complex and fine-tuned designs, however, the easier it is to integrate into existing tooling the faster we can bring the usage over to SKALE and everyone can benefit from the zero gas fees.
+
+> The current forwarding contract is not audited. This contract is offered without any guarantees or warranties under the MIT License. See the full license [here](https://github.com/TheGreatAxios/eip3009-wrapper/blob/main/LICENSE).
+
+### Implementation
+
+The following section explores all the code written and steps taken to achieve a working implementation.
+
+#### Forwarding Payments with ERC-3009
+
+The entire setup of facilitators currently relies on ERC-3009 compatible tokens, i.e USDC.
+Therefore, to ensure that we could utilize as much of the existing facilitator as possible we needed to implement a `Forwarding` contract. While slightly more inefficient, the gas costs are irrelevant on a chain like SKALE and the extra approval is a price worth paying to achieve my goal (I can iron it out later).
+
+I created the [EIP-3009 Forwarder](https://github.com/TheGreatAxios/eip3009-forwarder) which uses the core structure of the core proposal, but through a forwarding contract. *The difference?* The sender who is signing the authorization must first approve the token being spent via authorization.
+
+As mentioned above, I think this is an acceptable tradeoff. This specific forwarding contract is designed to support a single token only. This was again done to mimic the setup and flows of a traditional facilitator.
+
+#### x402 Example Scripts
+
+Once the forwarding contract was built with a small test suite, it made sense to ensure this worked directly. I then setup a `Bun` mono-repo [here](https://github.com/TheGreatAxios/x402-examples) which has a config folder and an ethers-v6 example.
+
+Make note of the first key step within the script below, which is the approval checks and approve as needed functionality.
+
+```typescript
+// ===================
+// STEP A: User approves ERC-20 (with smart allowance check)
+// ===================
+console.log("Step A: Checking and setting allowance");
+
+const approveAmount = ethers.parseUnits("1", token.decimals); // 1 token
+const currentAllowance = await erc20Contract.allowance(userAddress, FORWARDER_ADDRESS);
+const minimumRequired = (approveAmount * 20n) / 100n; // 20% of approve amount
+
+console.log(`Current allowance: ${ethers.formatUnits(currentAllowance, token.decimals)}`);
+console.log(`Minimum required (20%): ${ethers.formatUnits(minimumRequired, token.decimals)}`);
+
+if (currentAllowance < minimumRequired) {
+	console.log("Insufficient allowance, approving...");
+	const approveTx = await erc20Contract.approve(FORWARDER_ADDRESS, approveAmount);
+	await approveTx.wait();
+	console.log(`✓ Approved! Tx: ${approveTx.hash}`);
+} else {
+	console.log("✓ Sufficient allowance exists, skipping approval");
+}
+```
+
+This code ensures some amount is approved to the forwarder in advance which can then be used for micro-transactions.
+
+> I think in these cases it's an acceptable flow for agents as they can do a single approval for small batches i.e $10 of $0.01 gets you 1000 transactions.
+
+You can deploy the forwarding contract and play with these scripts directly. The example script working to execute a USDC (without ERC-3009) payment on SKALE Europa Testnet can be seen here:
+
+```shell
+Step A: Checking and setting allowance
+Current allowance: 999999999999.78
+Minimum required (20%): 0.2
+✓ Sufficient allowance exists, skipping approval
+User balance: 49.78 USDC
+
+Step B: User signs authorization for 0.01 token transfer
+Nonce: 0x94c1a3e2f911070928b2d1cee1c31736decabe7ac044b020f4b808806b58eb8b
+Valid from: 2025-10-04T05:34:14.000Z
+Valid until: 2025-10-04T06:34:14.000Z
+Nonce already used: false
+Domain separator: 0x056b9108f4b1e6aca877b44e3afa782d7a46328ecb25ee6d4eb037c02cfeaaa0
+Domain: {
+  name: "USDC Forwarder",
+  version: "1",
+  chainId: 1444673419,
+  verifyingContract: "0x7779B0d1766e6305E5f8081E3C0CDF58FcA24330",
+}
+Authorization value: {
+  from: "0xdEAC50014a531969d76D9236d209912F4B1AacDB",
+  to: "0xD1A64e20e93E088979631061CACa74E08B3c0f55",
+  value: "0.01 (10000)",
+  validAfter: 1759556054,
+  validBefore: 1759559654,
+  nonce: "0x94c1a3e2f911070928b2d1cee1c31736decabe7ac044b020f4b808806b58eb8b",
+}
+✓ User signed authorization: 0xa8e092aea8b4b0001d...
+Signature components: v=28, r=0xa8e092aea8b4b0001dd9e1f72c718855e0ff0b91668dd9d92ba3df474b051370, s=0x3f1380d002c243e432f2292aaed3bac5cb64b1f4a494e128d6e3fa33e722cfa7
+
+Step C: Relayer executes the transfer (pays gas)
+Final allowance check: 999999999999.78
+✓ Transfer executed! Tx: 0x6e0da427fa6976cbc3100f155c77113fc2508249fcb042763baeb3af264370da
+✓ Gas paid by relayer: 92297 units
+✓ 0.01 tokens transferred from 0xdEAC50014a531969d76D9236d209912F4B1AacDB to 0xD1A64e20e93E088979631061CACa74E08B3c0f55
+
+🎉 Gasless transfer complete!
+- User paid 0 gas for the transfer
+- Relayer paid the gas fees
+- Transfer executed via signed authorization
+```
+
+#### Minimal Facilitator Modifications
+
+The facilitator is an optional service within the x402 flow that simplifies the process of verifying and settling payments. While optional, it can help accelerate the adoption and addition of x402 into applications that don't have the experience or the resources to build the necessary functionality.
+
+The two key functions that a facilitator offers are:
+
+1. Verification of payment payloads submitted by clients (buyers).
+2. Settling of payments on the blockchain on behalf of the servers
+
+This enables any web server to utilize the blockchain to handle payments and settlement without the need of direct connection to the blockchain within their existing servers.
+
+The majority of facilitators (and x402 payments) have been focused on Base so far. While Coinbase/Base may be subsidizing all gas fees for USDC transactions making x402 cheap, there are no guarantees that lasts forever OR benefits toward non-USDC stablecoins and tokens.
+
+With the core protocol being built around the usage of USDC to start, the facilitators are utilizing an Ethereum Improvement Proposal (EIP) labeled EIP-3009 which allows transfer with authorization; further extending EIP-712 signatures and meta-transactions directly within the token contract.
+
+However, as not all blockchains are able to attain a native deployment by Circle and with many existing stablecoins like USDT not being natively EIP-3009 compatible, I set out to ensure that that facilitators could work with any token with minimal modifications.
+
+The proposed changes include using an [`EIP-3009 Forwarder`](https://github.com/thegreataxios/eip3009-forwarder) smart contract in Solidity which wallets can approve to spend tokens on their behalf. With such a design, it allows any token on any blockchain to be utilized with almost no changes to an EVM facilitator as the current flows remain almost identical.
+
+To prove this, I made a [pull request](https://github.com/faremeter/faremeter/pull/58) to Faremeter by [Corbits](https://corbits.dev) to add support to their facilitator. The majority of changes come from additional configuration as you can see in the following:
+
+```typescript
+type NetworkInfo = {
+	address: Address;
+	contractName: string;
+	/* Added Below */
+	forwarder?: Address;
+	forwarderName?: string;
+	forwarderVersion?: string;
+};
+```
+
+The most complicated changes were needed within the actual EVM facilitator code, of which the original changes were actually pretty light. They simply had to allow the facilitator to defer to a forwarder when present else fallback to the actual ERC-20 with ERC-3009 support.
+
+I wound up refactoring the whole file to better re-use code, but an example here:
+
+```typescript
+async function createContractConfig(
+  useForwarder: boolean,
+  chainId: number,
+  forwarderVersion: string | undefined,
+  forwarderName: string | undefined,
+  forwarderAddress: `0x${string}` | undefined,
+  publicClient: PublicClient,
+  asset: `0x${string}`,
+  contractName: string,
+): Promise<ContractConfig> {
+  const address = getContractAddress(useForwarder, forwarderAddress, asset);
+
+  const domain = useForwarder
+    ? generateForwarderDomain(chainId, {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        version: forwarderVersion!,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        name: forwarderName!,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        verifyingContract: forwarderAddress!,
+      })
+    : await generateDomain(publicClient, chainId, asset);
+
+  // Validate contract name for non-forwarder cases
+  if (!useForwarder && domain.name !== contractName) {
+    throw new Error(
+      `On chain contract name (${domain.name}) doesn't match configured asset name (${contractName})`,
+    );
+  }
+
+  return { address, domain };
+}
+```
+
+from [here](https://github.com/faremeter/faremeter/blob/76f2e79ee2906ae4e60330186c350bfd31e520a1/packages/payment-evm/src/exact/facilitator.ts#L81) showcases the dynamic use of `useForwarder`.
+
+When the facilitator is called, it uses the incoming configuration of token and chain to validate if the forwarder is needed. After which the core facilitation stays 1:1 as the actual EIP-712 signature validation and then meta-transaction execution remains identical.
+
+#### Why x402 on SKALE
+
+> This section is opinionated.
+
+**"Why SKALE?"** is a question that I have been getting asked for over 4.5 years now (as of 10/1/2025). I think as a developer you find your preferred tech stacks and for everyone it's a bit different. SKALE however really is unique. The combination of performance, stability, innovation, and feature set is unmatched across the Web3 space.
+
+In the case of x402 -- there is quite literally no network better suited to dominate. I've been asking developers building what they value most with x402. The answer is always one of two things:
+
+1. The cheapest costs possible (i.e gas fees) which allows facilitators to reduce their opex and not have to pass it onto buyers as service fees
+2. Speed. Speed. Speed. They want the chain to be fast and they are prioritizing real finality when possible (i.e Solana > Base).
+
+If you were unaware:
+
+1. SKALE Chains have zero gas fees
+
+> This doesn't mean that SKALE doesn't make money. SKALE Chains are pre-paid monthly by application and chain owners. No different than many of the most successful cloud models in the world like Amazon Web Services or Google Cloud
+
+2. Instant Finality
+
+> Once a transaction is posted, the block and transactions cannot be reversed. The fork-less nature of a SKALE Chain means that current chains which operate around 1-2s block times are faster most L1s and retain better finality with lower risk. Additionally, smaller SKALE Chains with co-located nodes (think Hyperliquid style) could reduce this down to potentially a fraction of the time with instant finality.
+
+Additionally, the last thing is scalability. While some blockchains today may have the capacity for handling a few thousand transactions per second or peaks of higher; the whole world will never run on a single blockchain (for many reasons).
+
+SKALE also makes it possible to run an infinite amount of blockchains for x402, payments, stablecoins, and the broader onchain finance landscape as it continues to grow.
+
+### Conclusion
+
+I think x402 is one of many recent protocols that is incredibly exciting for the future of the machine economy. I previously wrote [The Rise of the Machine Economy](/blog/the-rise-of-the-machine-economy) which outlined my thoughts about how agentic payments will grow.
+
+As onchain payments are still in their infancy, the growth potential here is massive. While Turing-complete blockchains enable programmable payments; the natural integration within the broader internet makes x402 a potential catalyst to bring many businesses onchain.
+
+With this potential growth, the only network that is capable of scaling to handle an infinite amount of payments (of any size, including sub-cent) is SKALE. Based on this, I think that a SKALE Chain (of variable sizing) will become a default part for businesses looking to access x402.
+
+***
+
+import Footer from '../../snippets/_footer.mdx'
+
+<Footer />
+

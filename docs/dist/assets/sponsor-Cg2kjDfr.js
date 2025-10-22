@@ -1,0 +1,7 @@
+import{u as o,j as e}from"./index-Wzuqctek.js";const s={layout:"minimal",title:"Sponsor",description:"undefined"};function t(r){const n={a:"a",div:"div",h1:"h1",header:"header",hr:"hr",p:"p",...o(),...r.components};return e.jsxs(e.Fragment,{children:[e.jsx(n.header,{children:e.jsxs(n.h1,{id:"sponsor",children:["Sponsor",e.jsx(n.a,{"aria-hidden":"true",tabIndex:"-1",href:"#sponsor",children:e.jsx(n.div,{"data-autolink-icon":!0})})]})}),`
+`,e.jsx(n.hr,{}),`
+`,e.jsx(n.p,{children:"Hi!"}),`
+`,e.jsx(n.p,{children:"My name is Sawyer. I’m a contractor working on a variety of projects, with my largest being SKALE, where I serve as VP of Developer Success."}),`
+`,e.jsx(n.p,{children:"In addition to that, I write extensively and code regularly."}),`
+`,e.jsxs(n.p,{children:["If you’re interested in sponsoring a blog post, development of a proof of concept, commissioning paid research, or having me test and provide feedback, feel free to email me at ",e.jsx(n.a,{href:"mailto:sawyer@dirtroad.dev",children:"sawyer@dirtroad.dev"})," or DM me on Twitter at ",e.jsx(n.a,{href:"https://x.com/thegreataxios",children:"thegreataxios"}),"."]}),`
+`,e.jsxs(n.p,{children:["You can also ",e.jsx(n.a,{href:"https://buymeacoffee.com/thegreataxios",children:"help support me with a coffee"}),"."]})]})}function i(r={}){const{wrapper:n}={...o(),...r.components};return n?e.jsx(n,{...r,children:e.jsx(t,{...r})}):t(r)}export{i as default,s as frontmatter};
