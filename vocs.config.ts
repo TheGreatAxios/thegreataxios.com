@@ -15,6 +15,7 @@ export default defineConfig({
       link: "https://twitter.com/thegreataxios"
     }
   ],
+  ogImageUrl: "/thegreataxios.png",
   topNav: [
     {
       link: "/",
