@@ -1,13 +1,12 @@
 import { defineConfig } from 'vocs'
 
+const basePath = process.env.NODE_ENV === "production" ? "https://thegreataxios.com" : "http://localhost:5173";
+
 export default defineConfig({
   title: 'thegreataxios blog',
-  baseUrl: "https://thegreataxios.com",
+  baseUrl: basePath,
   description: "The personal blog of TheGreatAxios",
-  iconUrl: {
-    light: "thegreataxios.png",
-    dark: "thegreataxios.png"
-  },
+  iconUrl: `/thegreataxios.png`,
   socials: [
     {
       icon: "github",
@@ -18,7 +17,7 @@ export default defineConfig({
       link: "https://twitter.com/thegreataxios"
     }
   ],
-  ogImageUrl: "thegreataxios.png",
+  ogImageUrl: `${basePath}/thegreataxios.png`,
   topNav: [
     {
       link: "/",
