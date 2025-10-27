@@ -6,7 +6,7 @@ export default defineConfig({
   title: 'thegreataxios blog',
   baseUrl: basePath,
   description: "The personal blog of TheGreatAxios",
-  iconUrl: `/thegreataxios.png`,
+  iconUrl: `/thegreataxios.jpg`,
   socials: [
     {
       icon: "github",
@@ -17,7 +17,7 @@ export default defineConfig({
       link: "https://twitter.com/thegreataxios"
     }
   ],
-  ogImageUrl: `${basePath}/thegreataxios.png`,
+  ogImageUrl: `${basePath}/thegreataxios.jpg`,
   topNav: [
     {
       link: "/",
