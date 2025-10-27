@@ -1,4 +1,4 @@
-import { Github } from "lucide-react";
+import { Github, Globe } from "lucide-react";
 
 <div style={{
   borderTop: '1px solid #e1e5e9',
@@ -44,6 +44,14 @@ import { Github } from "lucide-react";
        onMouseOut={(e) => { e.target.style.textDecoration = 'none'; }}>
       <span><Github /></span>
       <span>Checkout my GitHub</span>
+    </a>
+
+    <a href="https://dirtroad.dev"
+       style={{ color: '#3b82f6', textDecoration: 'none', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+       onMouseOver={(e) => { e.target.style.textDecoration = 'underline'; }}
+       onMouseOut={(e) => { e.target.style.textDecoration = 'none'; }}>
+      <span><Globe /></span>
+      <span>Dirt Road Dev Builder Documentation</span>
     </a>
 
     <a href="https://buymeacoffee.com/thegreataxios"
