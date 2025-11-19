@@ -1,6 +1,6 @@
 import { defineConfig } from 'vocs'
 
-const basePath = process.env.NODE_ENV === "production" ? "https://thegreataxios.com" : "http://localhost:5173";
+const basePath = process.env.PUBLIC_BASE_URL || (process.env.NODE_ENV === "production" ? "https://thegreataxios.com" : "http://localhost:5173");
 
 export default defineConfig({
   title: 'thegreataxios blog',
