@@ -1,0 +1,82 @@
+---
+layout: minimal
+authors:
+    - "thegreataxios"
+date: 2025-11-14
+title: "The Barista Test"
+---
+
+# The Barista Test
+
+This article explores privacy expectations in financial transactions through what I'm calling "The Barista Test"—the idea that when you buy a coffee, the barista can't see into your bank account. They see just enough to process and execute the action. Banks and financial services have access to just what you give them or what they hold, and the government can overreach all of it. That is the level of privacy expected today, and it's a standard we should apply to agentic systems and onchain payments.
+
+## What is The Barista Test?
+
+When you buy a coffee, the barista doesn't see your entire financial history. They don't see your account balance, your other transactions, or your spending patterns. They see just enough to process the payment: that you have sufficient funds and that the transaction can be completed. That's it.
+
+I think this is the baseline privacy expectation people have for financial transactions. You give the minimum information necessary to complete the transaction, and nothing more. The barista doesn't need to know your net worth, your other purchases, or your financial goals. They just need to know the coffee costs $5 and you can pay for it.
+
+This principle extends to other financial interactions. Your bank sees your account balance and transaction history because they hold your money. But they don't necessarily see what you're buying at the coffee shop—that's between you and the payment processor. The government can access all of it with proper authorization, but that's a separate layer of oversight.
+
+I think this is the privacy model we should expect from agentic systems and onchain payments. Agents should see just enough to complete their tasks. Payment systems should reveal only what's necessary for the transaction. And there should be clear boundaries about who can see what.
+
+## The Current State of Financial Privacy
+
+Traditional payment systems actually do a pretty good job with this. When you use a credit card, the merchant sees that the payment was approved, but they don't see your credit limit, your other purchases, or your account balance. The payment processor sees more, but they're bound by regulations and contracts. Your bank sees everything, but they're also bound by privacy laws.
+
+The government can access all of it, but that requires legal processes—warrants, subpoenas, etc. It's not automatic. There are checks and balances.
+
+I think this model works because it creates layers of privacy:
+
+- **The merchant** sees the least: payment approved/denied, amount, maybe last 4 digits of card
+- **The payment processor** sees more: full card number, transaction details, but bound by PCI-DSS and contracts
+- **The bank** sees everything: all transactions, balances, account history, but bound by privacy laws
+- **The government** can see everything with proper authorization: warrants, subpoenas, etc.
+
+Each layer has different privacy expectations and different levels of access. This is the barista test in action.
+
+## Why This Matters for Agents and Onchain Payments
+
+When we're building agentic systems and onchain payments, I think we should apply the same principles. An agent making a payment shouldn't need to see your entire wallet balance. It should see just enough to complete the transaction. A payment processor shouldn't need to see all your other transactions. It should see just what's necessary for verification and settlement.
+
+With [x402](https://x402.org), this becomes even more important. Agents will be making payments on your behalf. They need to be able to spend money, but they don't necessarily need to see everything. You should be able to set budgets and limits without revealing your entire financial picture.
+
+Onchain, this is trickier. Blockchains are transparent by default. Your wallet address, your balance, your transaction history—it's all public. But I think we can still apply the barista test. An agent making a payment doesn't need to know about your other wallets or your other transactions. It just needs to know it can spend X amount from this specific wallet.
+
+## The Challenge of Onchain Transparency
+
+Blockchains are transparent. That's a feature, not a bug. But it creates privacy challenges. When you make a payment onchain, anyone can see it. They can see your wallet address, the amount, the recipient, and potentially trace it back to other transactions.
+
+I think this is where privacy-preserving technologies come in. Zero-knowledge proofs, privacy coins, mixing services—these are all attempts to bring the barista test to blockchain. You can prove you have sufficient funds without revealing your entire balance. You can make a payment without revealing your identity. You can complete a transaction without exposing your entire financial history.
+
+But these technologies are still emerging. Most onchain payments today are fully transparent. I think we need to be honest about this limitation while working toward better privacy solutions.
+
+## Applying The Barista Test to Agentic Systems
+
+When building agentic systems, I think we should design them with the barista test in mind. An agent should see just enough to complete its task. If it's making a payment, it should see the budget and the payment amount, but not necessarily your entire wallet. If it's accessing an API, it should see just the permissions it needs, not your entire account.
+
+With [MCP servers](https://modelcontextprotocol.io), this is already somewhat built in. Tools have specific scopes and permissions. An agent can call a tool without seeing everything the tool has access to. But I think we can do better. We should be more explicit about what information is shared and why.
+
+With x402, agents will be making economic decisions. They'll need to know budgets and limits, but they don't necessarily need to see your entire financial picture. You should be able to give an agent a spending limit without revealing your total balance. You should be able to authorize a payment without exposing your other transactions.
+
+## The Government Overreach Layer
+
+The barista test also acknowledges that the government can overreach. With proper authorization—warrants, subpoenas, etc.—the government can access your financial information. This is a separate layer from the day-to-day privacy you expect.
+
+Onchain, this is different. Everything is public by default. The government doesn't need a warrant to see your onchain transactions—they're already visible. But I think this is where privacy-preserving technologies become even more important. If you want financial privacy onchain, you need to use the right tools.
+
+I think we should be honest about this. Onchain payments are more transparent than traditional payments. That's a tradeoff. But we can still apply the barista test to what agents and services see, even if the underlying blockchain is transparent.
+
+## Conclusion
+
+The barista test is a simple principle: see just enough to complete the transaction, nothing more. I think this should be the baseline privacy expectation for agentic systems and onchain payments.
+
+We're still figuring out how to apply this to blockchain and agents. Privacy-preserving technologies are emerging, but they're not yet mainstream. Most onchain payments are still fully transparent. But I think we can still design systems that respect the barista test at the application layer, even if the underlying blockchain is transparent.
+
+As we build the machine economy, I think privacy will become even more important. Agents will be making payments on your behalf. They'll need access to funds, but they shouldn't need access to everything. The barista test gives us a framework for thinking about this.
+
+If you have thoughts on this or feel I missed something, I'd love to hear them. I'm still learning about this space myself.
+
+import Footer from '../../snippets/_footer.mdx'
+
+<Footer />
