@@ -1,0 +1,153 @@
+---
+layout: minimal
+authors:
+    - "thegreataxios"
+date: 2024-09-16
+title: "Authoritative Actions"
+---
+
+# Authoritative Actions
+
+This article explores how authoritative servers can enhance Web3 applications by preventing bot abuse and managing game state while preserving decentralization benefits through strategic implementation. By leveraging OpenZeppelin's AccessControl for role-based permissions, developers can create secure authority layers that dynamically grant temporary access rights for on-chain actions, with this approach proving most effective on zero-gas-fee blockchains like SKALE that offer instant finality without the operational challenges posed by variable transaction costs and slow confirmation times.
+
+Authority is a grey area in Web3. We often want to remove authority in favor of decentralization, yet more often than not we go to far and the end result lacks any benefit back to the user. The following works through an example of why using authority the right way can be so impactful towards a decentralized application (dApp), while also exploring why authority is often ignored by applications due to the underlying network.
+
+### An Authoritative Example
+
+Game developers have been finding innovative ways to push the boundaries of what can be done on-chain. However, whether the in-game actions have value or not one of the biggest issues that Web3 games naturally pick up is bots. While bots are not just a Web3 issue, due to the public nature of smart contracts, individuals can often times run bots that can simulate real users without the knowledge of the developer far easier than they can in a traditional game or app.
+
+**The Contracts**  
+For this example, we will have two smart contracts: An ERC-20 token for the game’s economy, and a bounties contract that manages bounties for the players to accept and work towards.
+
+```solidity
+// SPDX-License-Identifier: MIT  
+pragma solidity ^8.20.0;  
+  
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";  
+  
+contract Token is ERC20 {  
+  constructor() ERC20("Token", "TKN") {  
+   _mint(msg.sender, 100000 * 10 ** 18);  
+  }  
+}
+
+// SPDX-License-Identifier: MIT  
+pragma solidity ^8.20.0;  
+  
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";  
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";  
+  
+contract Bounties {  
+   
+  using SafeERC20 for IERC20;  
+  IERC20 public token;  
+  mapping(uint256 => uint256) public bounties;  
+  mapping(address => uint64) public cooldown;  
+    
+  modifier onlyHolder {  
+    require(token.balanceOf(msg.sender) > 0, "Must hold at least 1 wei");  
+    _;  
+  }  
+  
+  event ClaimBounty(uint256 indexed id, address indexed hunter);  
+  constructor(IERC20 _token) {  
+    token = _token;  
+    for (uint256 i = 0; i < 1000; i++) {  
+      bounties[i + 1] = (i + 1) * 5;  
+     }  
+    }  
+    
+  function claimBounty(uint256 id) external onlyHolder {  
+    require(bounties[id] > 0, "Bounty already claimed");  
+    token.safeTransferFrom(address(this), msg.sender, bounties[id);  
+    cooldown[msg.sender] = uint64(block.timestamp);  
+    emit ClaimBounty(id, msg.sender);  
+   }  
+}
+```
+
+In theory, these contracts wouldn’t actually be too bad if we wanted to have a fully permissionless game. However, the claimBounty could easily be spammed/botted. As most Web3 games are backed and operated by the creator and are meant to continue to grow, it would be better for the contracts to have some protection to ensure a smooth gameplay experience for everyone.
+
+### Authoritative Bounties
+
+```solidity
+// SPDX-License-Identifier: MIT  
+pragma solidity ^8.20.0;  
+  
+import "@openzeppelin/contracts/access/AccessControl.sol";  
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";  
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";  
+  
+contract Bounties is AccessControl {  
+   
+  using SafeERC20 for IERC20;  
+  bytes32 public constant HUNTER_ROLE = keccak256("HUNTER_ROLE");  
+  bytes32 public constant MANAGER_ROLE = keccak256("MANAGER_ROLE");  
+  IERC20 public token;  
+  mapping(uint256 => uint256) public bounties;  
+  mapping(address => uint64) public cooldown;  
+    
+  event ClaimBounty(uint256 indexed id, address indexed hunter);  
+  constructor(IERC20 _token) {  
+    _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);  
+    _grantRole(MANAGER_ROLE, msg.sender);  
+    _setRoleAdmin(HUNTER_ROLE, MANAGER_ROLE);  
+    token = _token;  
+    for (uint256 i = 0; i < 1000; i++) {  
+      bounties[i + 1] = (i + 1) * 5;  
+     }  
+  }  
+    
+  
+  function addHunter(address hunter) external onlyRole(MANAGER_ROLE) {  
+    require(!hasRole(HUNTER_ROLE, hunter), "Already a hunter");  
+    require(uint64(cooldown[hunter]) + uint64(1 days) <= uint64(block.timestamp), "Cooldown not complete");  
+    grantRole(HUNTER_ROLE, hunter);  
+  }  
+  
+  function claimBounty(uint256 id) external onlyRole(HUNTER_ROLE) {  
+    require(bounties[id] > 0, "Bounty already claimed");  
+    token.safeTransferFrom(address(this), msg.sender, bounties[id);  
+    cooldown[msg.sender] = uint64(block.timestamp);  
+    renounceRole(HUNTER_ROLE);  
+    emit ClaimBounty(id, msg.sender);  
+  }  
+}
+```
+
+#### **Addition of Roles**
+
+The addition of the AccessControl contract by [OpenZeppelin](https://docs.openzeppelin.com/contracts/5.x/access-control) is recommended since it enables the greatest level of flexiblity and scalability. You can setup as many servers as needed with a signer on each and load balance them to manage many calls simultaneously. Additionally, roles compared to ownable makes it simpler to assign different “wallets” to manage different functions while also maintaining scalability.
+
+#### **An Authoritative Function**
+
+The `addHunter` function utilizes the original cooldown functionality in addition to a role. The role is then used temporarily to allow an EOA (externally owned account) to claim a bounty. This authoritative function should be automated through a server **OR** another smart contract. In most cases this is probably best done through one or more servers, however, for games that have dozens or hundreds of smart contracts; the protection could occur in another contract which then calls out to the bounties.
+
+#### **The Authoritative Server**
+
+Authoritative servers have a number of benefits to a Web3 game. The first and most important part is that they can enable secure authority. The server can act automatically on behalf of a game or an app to do some action(s) on chain. The other nice part is that servers are often used by teams even if they are building a Web3 game from Day 1. This is great because it can help avoid extra expenses for indie developers. Lastly, servers are great because they are flexible with how the blockchain interaction occurs. Many developers choose to use private keys or seed phrases through the environment to be the “authoritative signers”, however, servers have alternative options like 3rd-party custodial infra like [Stardust](https://stardust.gg/) or using [Amazon Web Services (AWS) KMS](https://www.npmjs.com/package/@dirtroad/kms-signer). Once the signing is in-place the server can now manage the gameplay automatically for you.
+
+### Blockchain and Authority
+
+#### **Gas Fees**
+
+Understanding how gas fees plays into authoritative actions is very important. Chains that have variable gas fees are more difficult to build on for the long term due to the lack of stability in operating costs.
+
+Example, if the above transaction costs on average $0.01, then every one player claiming 1,000 bounties would essentially incur $10. Any sort of growth on a chain could instantly make fees spike and operating unsustainable.
+
+Chains that offer zero-gas fees have the leg up from both a standard authority approach as well as for teams looking to put more on-chain.
+
+#### **Consensus and Time to Finality**
+
+Requests from the client to the server take time. Calls from the server to the blockchain take time. Waiting for consensus and then finality takes time.
+
+Creating user experiences to manage waiting for many blocks to confirm  in addition to the normal time of travel between all these calls can be  highly disruptive. Picking chains that have fast consensus and finality is   
+incredible important. Layer-2’s and Layer-3’s may boast sub-second finality; however the additional rollup generally requires multiple minutes to post and be validated by the Layer 1. Pick wisely to find a protocol that is designed for high throughput, low latency applications.
+
+#### **SKALE and Authoritative Actions**
+
+The [SKALE Network](https://skale.space/) is a great option for building games and applications that use authoritative actions. Thanks to the zero gas fees for developers and end-users; builders on SKALE know they don’t need to worry about variable gas fees EVER.
+
+Additionally, with the trio of near-instant finality, no chain forking, and unified validation sending operations from a server to the blockchain and managing the wait time of the user on the client has never been easier.
+
+[Learn more about building on SKALE](https://skale.space/)

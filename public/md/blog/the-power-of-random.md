@@ -1,0 +1,99 @@
+---
+layout: minimal
+authors:
+    - "thegreataxios"
+date: 2024-09-05
+title: "The Power of Random"
+---
+
+# The Power of Random
+
+This article explores SKALE Network's native random number generation system that uses threshold signatures from consensus nodes to create provably random numbers at zero gas cost. Unlike external oracles like Chainlink VRF, SKALE's RNG is free, synchronous, and built directly into the blockchain, enabling developers to generate unique NFT attributes and implement innovative game mechanics like Shape Storm's single-ownership roguelike where players can only hold one randomly-generated shape at a time.
+
+[Shape Storm by Eidolon](https://shapestorm.eidolon.gg/) is a rougelike that uses the blockchain for optional ownership and analytics. As rougelikes are heavily on randomization it was a natural fit to explore using the blockchain for provable randomness. SKALE offers a native random number generation endpoint that allowed the Eidolon team to take Shape Storm to a whole new level by having all the core attributes from players shapes be randomly generated on-chain and stored as as a playable NFT. This also lends itself to a future exploration of survival mechanics with upgradeable random values.
+
+Additionally, the unique random values lends itself to the single-ownership system where a user can only own a single NFT from Shape Storm at a time. They can choose to send it elsewhere or remove it, but if they get rid of their current shape there is no guarantee the next one will be better.
+
+Read on for a deep dive into RNG on SKALE and the implementation within the Shape Storm smart contract.
+
+---
+
+### SKALE RNG
+
+Every [SKALE](https://skale.space/) Chain has a random number generator contract pre-compiled and available. A new random number is generated for every block based on the threshold signature of that block. As SKALE Chain consensus is asynchronous and leaderless the blocks must be signed by at least 11/16 nodes [on the SKALE Chain]. The signature from each node is glued together so that single node can influence the resulting signature. This process ensures that the results cannot be manipulated by a single entity.
+
+The process for actually attaining the random number generation looks like this:
+
+1. The signatures for the current block are retrieved
+2. The BLAKE3 hash of the signatures is created
+3. The resulting hex RNG is presented and consumable in Solidity
+
+As it is available through a pre-compiled contract on every chain, a major advantage of this compared to a 3rd party RNG generator like [Chainlink’s](https://chain.link/) VRF is that the random number is directly available as a read and does not need to be set/shared/consumed in a callback or require additional payment. It’s free as gas fees on SKALE are 100% free!
+
+> _A quick reminder that SKALE RNG only works on SKALE._
+
+The function in Solidity looks like this:
+```solidity
+// Reminder, this is Solidity (.sol)  
+// SPDX-License-Identifer: MIT  
+pragma solidity ^0.8.13;  
+  
+contract A {  
+  
+    function getRandom() public view returns (bytes32 addr) {  
+        assembly {  
+            let freemem := mload(0x40)  
+            let start_addr := add(freemem, 0)  
+            if iszero(staticcall(gas(), 0x18, 0, 0, start_addr, 32)) {  
+              invalid()  
+            }  
+            addr := mload(freemem)  
+        }  
+    }  
+}
+```
+
+### RNG Package
+
+The above code, while simple enough to use for a single random number, requires some additional work to generate **many** random numbers in a single function. To make this easy to consume, [Dirt Road Development](https://dirtroad.dev/) has created a utility package called [skale-rng](https://docs.dirtroad.dev/skale/skale-rng). This NPM package can be added to your codebase and offers a number of pre-built utilities to quickly iterate on the RNG value to grab many random numbers. It also helps with selecting and maintaining ranges for the random numbers.
+
+### Shape Storm & RNG
+
+In the code below you will notice a few things:
+
+1. The first use of random number value is **getRandomRange(4)** where the value is then ternary checked to ensure that it is never 0. This is because with 0 being the default “empty” value in the EVM it made more sense to start at 1 for this array. Based on that the number is expected to be between 1–4.
+2. After this you will notice the next function used is **getNextRandomRange(X, Y).** This function was chosen to ensure that the one random number in the block could be [bitwise] operated on and re-hashed to generate more random numbers. The X value can be any number that some bitwise action will occur on in relation to the original rng value in order to generate a new integer which can be hashed and re-cast to a uint256 in order to give us a new random number. The Y is the maximum value in-range (inclusive). This function is used over and over to generate a whole bunch of random numbers — at no cost — all in one shot.
+
+The end result of this is that every shape is represented as a unique NFT in ERC-721 format!
+
+```solidity
+// Reminder, this is Solidity (.sol)  
+// SPDX-License-Identifer: MIT  
+pragma solidity ^0.8.13;  
+  
+import "@dirtroad/skale-rng/contracts/RNG.sol";  
+  
+contract ShapeStorm is RNG {  
+  
+  function _mint(address to) internal {  
+        uint8 rng = uint8(getRandomRange(4));  
+        uint8 shapeNumber = rng == 0 ? 1 : rng;  
+  
+        if(currentTokenId + 1 > maxTokenSupply) revert MaxSupplyReached();  
+        ShapeStats memory baseShapeStats = baseStats[shapeNumber];  
+  
+        uint8 rotateSpeed = _validateNumber(MINIMUM_ROTATE_SPEED, uint8(getNextRandomRange(3, baseShapeStats.rotateSpeed)));  
+        uint8 maxSpeed = _validateNumber(MINIMUM_MOVEMENT_SPEED, uint8(getNextRandomRange(4, baseShapeStats.maxSpeed)));  
+        uint8 dashSpeed = _validateNumber(DASH_SPEED_BOOST, uint8(getNextRandomRange(5, baseShapeStats.dashSpeed)));  
+        uint8 bulletDamage = _validateNumber(BULLET_DAMAGE, uint8(getNextRandomRange(6, baseShapeStats.bulletDamage)));  
+        uint8 shootCooldown = _validateNumber(SHOOT_COOLDOWN, uint8(getNextRandomRange(7, baseShapeStats.shootCooldown)));  
+        uint8 shieldCapacity = _validateNumber(SHIELD_CAPACITY, uint8(getNextRandomRange(8, baseShapeStats.shieldCapacity)));  
+  
+        uint256 newTokenId = currentTokenId++;  
+        tokenStats[newTokenId] = ShapeStats(baseShapeStats.shape, rotateSpeed, maxSpeed, dashSpeed, bulletDamage, shootCooldown, shieldCapacity);  
+  
+        _safeMint(to, newTokenId);  
+  
+  }
+}
+```

@@ -7,83 +7,146 @@ import ProjectsFooter from '../snippets/ProjectsFooter.mdx'
 
 # My Projects
 
-A collection of open source projects spanning blockchain infrastructure, onchain payments, and developer tools.
+<div
+  style={{
+    background: "linear-gradient(135deg, #eff6ff 0%, #ffffff 60%)",
+    border: "1px solid #dbeafe",
+    borderRadius: "14px",
+    padding: "0.85rem 1rem",
+    marginBottom: "1rem"
+  }}
+>
+  <p style={{ margin: 0, color: "#1e3a8a", fontSize: "0.96rem", lineHeight: "1.5" }}>
+    A collection of open source projects spanning AI agents, onchain payments, and developer infrastructure.
+  </p>
+</div>
+
+<div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "0.8rem" }}>
 
 <ProjectCard
-  title="x402 Payment Examples"
-  description="Comprehensive examples and tests for x402 onchain payment standard, including both direct and forwarding implementations."
-  github="https://github.com/TheGreatAxios/x402-examples"
+  title="Agent Skills"
+  tags={["AI"]}
+  description="A growing collection of reusable agent skills, workflows, and patterns for practical AI engineering and automation."
+  github="https://github.com/thegreataxios/agent-skills"
+/>
+
+<ProjectCard
+  title="Agent0 Watchtower"
+  tags={["AI", "ERC-8004"]}
+  description="Monitoring and watchdog tooling for Agent0 operations and reliability workflows."
+  github="https://github.com/TheGreatAxios/watchtower"
+/>
+
+<ProjectCard
+  title="Armory"
+  tags={["x402"]}
+  description="An opinionated TypeScript x402 SDK with the #1 goal of delivering the best possible developer experience."
+  github="https://github.com/thegreataxios/armory"
+  website="https://armory.sh"
 />
 
 <ProjectCard
   title="EIP-3009 Forwarder"
+  tags={["x402"]}
   description="Production-ready EIP-3009 forwarder contracts with comprehensive tests, designed to accelerate x402 adoption on EVM chains."
   github="https://github.com/TheGreatAxios/eip3009-forwarder"
 />
 
 <ProjectCard
-  title="SKALE CLI"
-  description="Developer tools and CLI utilities for streamlined SKALE network interactions and deployment workflows."
-  github="https://github.com/TheGreatAxios/skale-cli"
+  title="FAIR Documentation"
+  tags={["Docs"]}
+  description="Technical documentation and guides for the Fairchain ecosystem and its underlying infrastructure."
+  github="https://github.com/thegreataxios/docs.fairchain.ai"
+  website="http://docs-fairchain-ai.pages.dev/"
 />
 
 <ProjectCard
-  title="SKL Supply Dashboard"
-  description="Interactive dashboard providing real-time insights into SKL token economics, supply metrics, and network statistics."
-  github="https://github.com/TheGreatAxios/skl-supply-ui"
-  website="https://skl-supply-ui.pages.dev"
-/>
-
-<ProjectCard
-  title="SKALE Documentation"
-  description="Comprehensive documentation platform for the SKALE network, developer guides, and ecosystem resources."
-  github="https://github.com/skalenetwork/docs.skale.space"
-  website="https://docs.skale.space"
-/>
-
-<ProjectCard
-  title="SKALE RNG Service"
-  description="Verifiable random number generation service built for the SKALE ecosystem with cryptographic security guarantees."
-  github="https://github.com/Dirt-Road-Development/skale-rng"
-/>
-
-<ProjectCard
-  title="Gasless Transactions (Rust)"
+  title="Gasless SDK"
+  tags={["SDK"]}
   description="Rust implementation of gasless transaction infrastructure, enabling seamless user experiences without gas fees."
   github="https://github.com/Dirt-Road-Development/gasless-rs"
 />
 
 <ProjectCard
-  title="SKALE Oracle SDK"
-  description="Official SDK for integrating with SKALE's decentralized oracle network, enabling real-world data integration."
-  github="https://github.com/skalenetwork/oracle-sdk"
+  title="LLMs.txt Generator"
+  tags={["AI"]}
+  description="Utility for generating clean llms.txt and llms-full.txt outputs from documentation sources."
+  github="https://github.com/TheGreatAxios/llms-txt-generator"
+/>
+
+<ProjectCard
+  title="Marrow"
+  tags={["AI", "App"]}
+  description="An agentic tool that creates content that converts."
+  website="https://marrow.sh"
+/>
+
+<ProjectCard
+  title="sFUEL Distribution System"
+  tags={["Solidity"]}
+  description="Automated distribution contracts for SKALE's SFUEL token with fair allocation mechanisms."
+  github="https://github.com/Dirt-Road-Development/sfuel-distribution-contract"
 />
 
 <ProjectCard
   title="sFUEL Station"
+  tags={["App"]}
   description="Smart contracts for SFUEL distribution and management within the SKALE ecosystem."
   github="https://github.com/Dirt-Road-Development/sfuel-station"
   website="https://sfuelstation.com"
 />
 
 <ProjectCard
-  title="sFUEL Distribution System"
-  description="Automated distribution contracts for SKALE's SFUEL token with fair allocation mechanisms."
-  github="https://github.com/Dirt-Road-Development/sfuel-distribution-contract"
+  title="SKALE CLI"
+  tags={["CLI"]}
+  description="Developer tools and CLI utilities for streamlined SKALE network interactions and deployment workflows."
+  github="https://github.com/TheGreatAxios/skale-cli"
 />
 
 <ProjectCard
-  title="Monorail Bridge Contracts"
-  description="Infrastructure contracts for the Monorail cross-chain bridge system on SKALE."
-  github="https://github.com/Dirt-Road-Development/monorail-contracts"
+  title="SKALE Documentation"
+  tags={["Docs"]}
+  description="Comprehensive documentation platform for the SKALE network, developer guides, and ecosystem resources."
+  github="https://github.com/skalenetwork/docs.skale.space"
+  website="https://docs.skale.space"
 />
 
 <ProjectCard
-  title="FAIR L1 Blockchain Documentation"
-  description="Technical documentation and guides for the Fairchain ecosystem and its underlying infrastructure."
-  github="https://github.com/thegreataxios/docs.fairchain.ai"
-  website="http://docs-fairchain-ai.pages.dev/"
+  title="SKALE Oracle SDK"
+  tags={["SDK"]}
+  description="Official SDK for integrating with SKALE's decentralized oracle network, enabling real-world data integration."
+  github="https://github.com/skalenetwork/oracle-sdk"
 />
+
+<ProjectCard
+  title="SKALE RNG Service"
+  tags={["Solidity"]}
+  description="Verifiable random number generation service built for the SKALE ecosystem with cryptographic security guarantees."
+  github="https://github.com/Dirt-Road-Development/skale-rng"
+/>
+
+<ProjectCard
+  title="SKL Supply Dashboard"
+  tags={["Data"]}
+  description="Interactive dashboard providing real-time insights into SKL token economics, supply metrics, and network statistics."
+  github="https://github.com/TheGreatAxios/skl-supply-ui"
+  website="https://skl-supply-ui.pages.dev"
+/>
+
+<ProjectCard
+  title="TextMerchant"
+  tags={["AI", "x402"]}
+  description="A conversion-focused platform for high-performing written content."
+  website="https://textmerchant.com"
+/>
+
+<ProjectCard
+  title="x402 Payment Examples"
+  tags={["x402"]}
+  description="Comprehensive examples and tests for x402 onchain payment standard, including both direct and forwarding implementations."
+  github="https://github.com/TheGreatAxios/x402-examples"
+/>
+
+</div>
 
 <ProjectsFooter />
-

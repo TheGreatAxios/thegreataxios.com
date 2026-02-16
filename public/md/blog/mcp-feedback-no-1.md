@@ -1,0 +1,63 @@
+---
+layout: minimal
+authors:
+    - "thegreataxios"
+date: 2025-10-21
+title: "MCP Feedback No. 1"
+---
+
+## MCP Feedback No. 1
+
+The following are personal opinions and perspectives on the Model Context Protocol (MCP) and how teams building developer tooling—both for pure AI and agentic commerce (i.e. x402)—should be thinking about them. If you have any feedback or feel I missed something, please let me know.
+
+- I think the [Vercel](https://vercel.com/docs/mcp/deploy-mcp-servers-to-vercel) and [xmcp](https://xmcp.dev) docs are overall really good for those trying to build an MCP server.
+
+- The base of MCP is technically very simple, but when you start to build, there are actually a number of pieces that need to be learned and considered. I think good documentation and examples are critical to the success of having developers build on top of your libraries. Specifically, where possible, you should provide examples **with and without** different pieces of functionality. The most clear-cut one for me is transports: `stdio` and `Streamable HTTP`. Go ask the average dev what SSE stands for and you'll understand why this is relevant.
+
+- More broadly on documentation and examples: for those looking to extend MCP into something explicit (i.e. x402-enabled MCPs), it's important to provide as many clean and simple examples as possible (e.g. Express, Hono, Next.js, etc.), instead of just one. I also think showing an E2E example (even if separately in a blog) is really helpful. Everyone pushing for MCP adoption—static or agentic—should have at least one E2E example: start, add tool, test, deploy to XYZ provider.
+
+- Props to the larger enterprises—they tend to be really good at having their documentation match their examples in GitHub. I think this is key to having developers build on top of more complex integrations. If you are building examples in docs, match them with examples in GitHub.
+
+- I think this is currently stemming from `@modelcontextprotocol/sdk`, but the use of Zod v3 everywhere is a bit annoying when all the docs just say `npm add zod`. This directly causes friction and either errors during usage or causes the LSP to go haywire. The recommendation is to specify `npm add zod@3` in your documentation/tutorials. See [xmcp](https://xmcp.dev/docs/getting-started/installation#manual-installation), which calls this out properly, as well as [MCPay](https://docs.mcpay.tech/quickstart/sdk).
+
+- The core design of an MCP should be vendor-agnostic. I think Cloudflare currently breaks this with their [MCP implementation](https://developers.cloudflare.com/agents/model-context-protocol/mcp-agent-api/), which has an entirely different design than everyone else. While not bad, it does make it more difficult for me, as I’m uncertain how portable their design is. I also find their “AgentMCP” verbiage a bit confusing, as not all MCPs are designed to be agents.
+
+- Authorization and access controls are mentioned (although a bit buried) in the official MCP documentation. More docs and examples on securing MCPs are needed for as many different authentication schemes as possible—including new and open protocols. How does this play in with trustless agents?
+
+- Maybe an unfair statement since many MCP servers have been created, but I find that the vast majority of MCPs exist to either wrap APIs or inference endpoints. Personally, I just want to see more static content and deterministic functionality. I have minimal proof points, and most stem from my own experiences training small language models, but it seems like there’s an opportunity for static MCPs to enhance SLMs trained on specific use cases.
+
+- The ability to call tools consistently is something that I think is overlooked. When using top language models, it tends not to be as prominent, but there is value in having more consistent tool calling for people building agents using specialized models.
+
+- On the previous point—could this be easily solved through training a LoRA adapter or similar? I.e. should there be adapters focused on tool calling to enhance existing or older models that are cheaper or better at something specific? (I know, crazy to call an old model better.)
+
+- Input and output schemas seem to be semi-standardized. It would be nice to see that become more consistent across MCPs. I think this also helps models become more consistent at calling tools.
+
+- More clarity (maybe through exploration) on using fewer tools. MCP servers with a lot of tools consume a lot of context. Claude Skills has proven to be a strong alternative and is highly praised for removing this.
+
+- More guidance for new developers on where and when MCP is actually useful or needed. MCP has been touted as a “one-size-fits-all” solution for developers coming into agentic systems. We need a better way to communicate what pieces should be used where in these growing systems.
+
+## My Personal Requests & Ideal Experience
+
+- More clarity on how to use MCPs from anyone touting MCP libraries.
+
+- If you are offering MCPs, make it easy for me to pay you to host them for me.
+
+- If providing agentic coding tools, provide examples of how to consume the MCP in all popular tools (not just Cursor).
+
+- More information (or point me in the right direction) for better authentication schemes, guidance, and security-related resources for MCPs.
+
+- One or two more frameworks to push and compete with xmcp and Vercel. More competition drives innovation. Preferably if one of these can just fully abstract all of the "MCP" code away and just let me focus on the logic that would be lovely. (Happy to provide further guidance, but this is where the magic SaaS is at in my opionion)
+
+- A cloud platform built for hosting MCPs—handling sandbox execution, AI Gateway, authentication (without OAuth, please), x402 integration, etc. I’m a big believer in a SaaS model for MCPs. It’s unrealistic to expect most developers to run their own servers. Also a great opportunity to enable fractional resourcing that hot-swaps scoped API keys for different customers. (High risk, high reward?)
+
+- Payment management and tracking software for MCPs. I think there’s a really interesting opportunity with x402 for someone to build middleware that handles tracking, spending, and analytics for the callers (could be cloud or local). For example: my agent calls an MCP server N times per day and spends X via Y.
+
+- Make it easier or standardized to define whether the MPC is a "per-tool" or "aggregated" toolset. For agents, this would ideally allow them to determine if they should call an MCP server that has "math_add" "math_subtract" or an MCP that has "search_tool" -> "add two numbers, a + b". More general purpose models seem like they are able to better benfit from aggregated toolsets (tbd) while smaller specialized models may be better for train adapters on specific tools.
+
+- If integrating with x402, give me a set of 2-3 defaults: Base, SKALE, and Solana. I don't want to have to keep specifying the same thing over and over again. I should be able to but just default me to the most common chains + the best technically.
+
+- Don't force me to specify bypass methods. Middleware should handle that for me since the bypass methods are primarily standardized at this point. I should be able to change WHO can bypass based on IP/secrets/JWT/etc.
+
+## Conclusion
+
+This is very much my first ramble on something I’m still learning about myself. I don’t think anyone is doing anything wrong—these are all just my opinions and perspectives. If you agree or disagree, feel free to reach out to collaborate or discuss!

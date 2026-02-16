@@ -1,0 +1,129 @@
+---
+layout: minimal
+authors:
+    - "thegreataxios"
+date: 2025-07-07
+title: "SKALE Governance Update - July 7, 2025"
+---
+
+# SKALE Governance Update - July 7, 2025
+
+This governance update examines SKALE Network's remarkable achievement of surpassing 1 billion cumulative transactions while maintaining zero gas fees and instant finality. The analysis covers the SKALE DAO's hybrid governance model combining onchain economic voting with offchain technical consensus, and explores how the upcoming FAIR L1 blockchain addresses critical ecosystem challenges by enabling permissionless DeFi deployment and reducing operational costs through a synergistic gas-fee architecture that captures value within the SKALE ecosystem.
+
+I've been building in the SKALE Ecosystem for somewhere in the range of 4-5 years now.
+
+In that time, I've worked with a lot of projects in the ecosystem and Web3 as a whole.
+I have prepared a quick update from my perspective regarding SKALE, active governance initiatives, and the new L1 coming to support the SKALE Ecosystem from the SKALE team called FAIR.
+
+You can read the forum post [here](https://forum.skale.network/t/skale-governance-update-with-a-note-on-fair/658) or read directly here on my blog.
+
+SKALE is one of the most innovative blockchain networks in the world. FAIR is designed to help grow the SKALE ecosystem. Adding a real Layer 1 network to the SKALE ecosystem—if executed correctly—will create a synergistic effect. It also allows the SKALE project to continue its history of innovation while bringing a critical component the network has struggled to attract: decentralized value.
+
+## Background
+
+To the decentralized SKALE Network Community of SKL token holders, SKL delegators, validators, builders, core developers, and users:
+
+SKALE is an open-source, community-driven project that has operated with a clear North Star for over seven (7) years: bringing the power of Ethereum to billions.
+
+Over the years, SKALE has achieved a variety of incredible innovations, including but not limited to:
+
+- The launch of the world’s first natively EVM multi-chain scaling solution in 2020, **the SKALE Network**
+- The launch of the world’s first network of EVM blockchains capable of interchain communication through the **SKALE V2** upgrade
+- The launch of **SKALE V3** in 2024, which doubled throughput (TPS) and reduced block mining time in half, making the already performant network even faster
+
+All of these key industry-changing events and upgrades were done across a decentralized network of operators running hundreds of nodes. Additionally, SKALE brought the world a variety of innovations that the rest of the blockchain space has struggled to replicate without centralization or high fees such as:
+
+- Trusted Execution Environment (TEE)-based security
+- Onchain Machine Learning
+- Provable Random Number Generation
+- Decentralized file storage and Content Delivery Network (CDN)
+- Decentralized TEE-protected oracle
+- Multi-transaction Mode
+- Decentralized and fully autonomous bridging
+
+Arguably the most important and well-known innovation that SKALE has brought to the world—and continues to dominate with to this day—is the zero gas fee model, backed by high collateral, high performance, and a sophisticated economic model.
+
+## Update on SKALE
+
+The past year has been an explosive period of growth and excitement for the SKALE Network.
+
+On the ecosystem side, SKALE hit **1B+ cumulative transactions and 100M+ transactions in a single month** ([source](https://skale.space/blog/skale-ecosystem-recap---april-2025)). Gaming adoption continues to flourish, with launches of amazing games like Gunnies and Data2073 being highly successful, as well as established SKALE Network games like World of Dypians, Pixudi, and BitHotel continuing to grow and push more and more on SKALE. SKALE also rolled out a $2M Indie Game Accelerator, became the first and only blockchain in Unity’s Publisher Program, and more recently onboarded projects in other key areas like AxonDAO—a unique DeSci project focused on enhancing the value and privacy of health data—and many others like XO (AI) and ReneVerse (Advertising).
+
+On the technical front, SKALE announced **BITE Protocol**. BITE, which stands for Blockchain Integrated Threshold Encryption, is the basis for the future of a private and secure EVM that sacrifices nothing in terms of performance or decentralization. This shift will give developers access to trustless privacy by default with all the tools they know and use.
+
+SKALE has also made major technical strides with the announcement of FAIR, the world’s first MEV-resistant Layer 1 blockchain that brings encrypted, asynchronous execution to the EVM. It will pioneer the use of BITE Protocol and set the stage for SKALE Chains to adopt and upgrade to the FAIR SDK.
+
+Supporting tools and infrastructure like the SKALE Portal—which recently upgraded to v4.1—and the SKALE Explorer also saw major UX and infrastructure upgrades alongside a major overhaul to the [SKALE Network Documentation](https://docs.skale.space) from a combination of network constituents, including core developers and 3rd-party contributors.
+
+With FAIR unlocking DeFi and liquidity for SKALE while also offering a key enhancement for network operations, SKALE is well positioned to be the most dominant network of blockchains in the world.
+
+## Refresher on the SKALE DAO and SKALE Network Onchain Governance
+
+The SKALE DAO design embodies similar designs to the most successful Layer 1 ecosystems in the world like Ethereum and Solana, which both utilize an offchain forum and development process backed by various entities, core teams, foundations, as well as other 3rd-party contributors to develop the network.
+
+One difference these projects have from SKALE is that Ethereum and Solana do not have any onchain governance. All network decisions are made ultimately by those who can execute pull requests in GitHub. There is no voting, just conversation and ultimately a decision made by project leaders and contributors.
+
+The SKALE DAO further decentralizes the above process by allowing the SKL delegators to directly collaborate on the economic direction of the network by voting on network economic parameters such as inflation, slashing, chain pricing, etc. It empowers SKL token holders—specifically delegators—to shape the network’s economic direction by proposing initiatives and voting directly on key economic parameters.
+
+It is very important to note that many project decisions that lie outside of the direct economic factors as mentioned above are intentionally excluded from onchain voting and are instead determined through conversations and discussions amongst a large group of stakeholders, concluding with an offchain consensus. Said otherwise, SKALE makes decisions outside of direct economic factors in the same way Ethereum and Solana make decisions. Decisions involving roadmap, product development, engineering project planning and prioritization, grants, marketing strategy, and business development continue to fall under the purview of key network contributors such as validators, dApp developers, and core team contributing entities like SKALE Labs.
+
+You can read more about the DAO governance here:
+
+- https://snapshot.box/#/s:skale.eth/proposal/0xebbc76cf6bd1afd7e1271f4339c7c04703dbe8dda78b1a731ffaf126772c0051
+- https://forum.skale.network/t/a-proposal-for-skale-networks-on-chain-governance-system/447
+
+A good example of this in action is comparing chain pricing decisions and recent product roadmap decisions.
+
+**Chain Pricing**: The core team received a number of requests from key stakeholders to increase pricing of chains to capture more economic value. There was discussion in the forum followed by many discussions between validators, dApp developers, and the core team. Ultimately, a governance proposal was formally submitted and voted on, and the specific outcome was an economic change within a smart contract that changed pricing.
+
+**Broader Roadmap**: Conversely, product roadmap decisions are made in the same manner Ethereum and Solana make decisions—not by onchain voting. In the case of FAIR, many key stakeholders, including validators, developers, and stakers, brought forward feedback to core contributors that SKALE needed to capture more economic value. A consistent idea brought forward was launching a SKALE ecosystem Layer 1 chain. This was publicly discussed on the forum last November: https://forum.skale.network/t/ideas-from-the-community-the-evolution-of-skale/533.
+
+Based on the positive feedback, the core contributors had many discussions with dApp devs, validators, stakers, infrastructure partners, and more. The result of these discussions was that the roadmap should include a Layer 1 chain—but it would need to be a true L1 chain in order to give the ecosystem a real opportunity to capture TVL. This meant that the L1 would need its own native token and could not use the bridged SKL token as its genesis token. This is because the highest point of security of the L1 would be the bridge and not the blockchain—if you hacked the bridge, then the entire chain would be compromised.
+
+A new idea was then brought forward to make the new L1 a dual-token network. This would increase the utility of the SKL token through burning functions in the L1 while enabling the L1 to truly be an L1 that is secured by a native token. This premise was then discussed by numerous stakeholders and contributors, more feedback was integrated, and it was then added to the roadmap and announced in June. It was also announced with the caveat that any changes needing to be made to the SKALE Network smart contracts and core economic functions would first need to be ratified by an onchain vote before being finalized.
+
+## SKALE DAO Initiatives
+
+The SKALE DAO is actively exploring a number of key initiatives, which I’ll outline here:
+
+**SIP-3 Performance Chains**: Already out in the open, SIP-3 is very exciting and I believe nearly ready to bring to the DAO. I’m working with the SKALE team and various potential chain buyers to ensure we are coming in at a price that is both competitive with the broader market while also ensuring that validators are properly compensated for the security they bring—compared to Layer 2s and Layer 3s, which provide no economic security or decentralization.
+
+**FAIR**: While the roadmap itself falls outside the purview of the SKALE DAO, various future actions regarding the synergy between FAIR and SKALE may come to the SKALE DAO—such as the location of key network components related to economics.
+
+Additionally, multiple threads are already open in the SKALE Forum for features and ideas that have been requested by various SKALE developers and teams that are solved by FAIR:
+
+**Permissionless SKALE Performant Technology**: SKALE is incredibly performant and highly stable. Most of the developers I’ve worked with, once they start using SKALE, don’t want to leave. However, developers have been asking to do things like token launchpads, onchain messaging, permissionless DeFi and token creation—things that don’t align well with the containerized design of SKALE Chains, which are generally not designed to support the level of state that permissionless chains do.
+
+**Enhanced DeFi with Gas Fees**: While much of blockchain—especially on the EVM—can be done without a native gas token, as proven by the SKALE Network, many DeFi protocols and key infrastructure components build on the native gas token directly, or at least by default support using it and wrapping automatically. I proposed in the forum a gas fee SKALE Chain and it was met with pretty open feedback. I think FAIR—which combines both gas fees and the permissionless blockchain layer—makes a ton of sense toward solving this proposal.
+
+I believe the SKALE DAO and broader SKALE developer community are in a fantastic position. The next six (6)–12 months are going to be an incredible time to get involved on the forum, with the DAO, or come build on SKALE if you are not already. While the above are some of the active initiatives I’m working through currently with various teams in the SKALE Community, there are also a number of other topics that are being researched based on community requests such as offsetting inflation through SKL burning.
+
+Interested in building on SKALE or contributing to the DAO but not sure where to start? DM me on Twitter, Telegram, or Discord at TheGreatAxios or tag me in a forum post.
+
+## A FAIRer Future
+
+I’m also very excited to share with you a quick update on FAIR and how it fits in with SKALE. I believe FAIR is going to be one of the most important components of helping SKALE succeed both in the short and long term. The following are my opinions from collaborating with SKALE Labs and the NODE Foundation on the design and sharing my goals for this chain:
+
+### Solving the DeFi Puzzle
+
+DeFi and liquidity are both critical factors developers use to evaluate what network to build on or use. Time and time again, we see developers choose blockchains that seem promising on paper—but fall short in practice. The reason? They’re propped up by millions in inactive TVL that doesn’t actually support real usage.
+
+When launched in 2020, SKALE chose to focus on high-performance applications with a focus on gaming due to the unique network design. While it has paid off quite well and allowed SKALE to consistently win developers building games and looking for the fastest blockchain, SKALE has struggled to attract DeFi and TVL.
+
+FAIR is an opportunity for the SKALE Network to address the value issue by offering a fully permissionless chain where anybody can deploy tokens, RWAs (Real World Assets), stablecoins, NFTs (non-fungible tokens), and protocols—without needing to work through a SKALE Chain owner or operator to attain permission to deploy.
+
+### Solving SKALE’s Scaling Block
+
+While there are many blockchains being created today, most of them are really just glorified servers running an EVM. They lack the decentralization, the fault tolerance, and the economic security collateral that a network like SKALE has to offer.
+
+However, two areas that SKALE currently struggles with are operational costs and value capture. With SKALE Manager running on Ethereum and base liquidity being sourced from Ethereum as well, key network operation costs for users can often be $5–$15 in ETH when gas prices are low—and easily stretch into the dozens or hundreds of dollars when gas spikes during congestion. Compute-intensive operations like creating SKALE Chains, which cost over 0.5 ETH (over $1,350 at time of writing), are not feasible for more cost-effective SKALE Chains. Additionally, all gas fees spent on operations are lost to the Ethereum ecosystem and not captured by the SKALE ecosystem.
+
+FAIR has the opportunity to solve both problems at once—with both cheaper fees (the chain will have a gas token), while also allowing a synergistic chain to capture the revenue spent instead of bleeding to a competitor.
+
+## Conclusion
+
+FAIR is the biggest upgrade coming to SKALE, in my opinion, since V2. A true technical innovation that other blockchains just can’t compete with, the native MEV resistance and future privacy features coming with BITE Protocol—alongside the direct benefits that SKALE will attain—are exciting.
+
+Ultimately, my goal is to help bring these ideas to life and contribute what I can to the vision. I can honestly say that everyone I’ve talked to about this is incredibly excited and are using words like “it makes total sense” when hearing about the FAIR and SKALE synergy.
+
+Validators, developers, and token holders alike are excited—and I’m excited to work with everyone to bring this vision to life.

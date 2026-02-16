@@ -1,3 +1,9 @@
 .vocs_H2 {
     border: none !important;
 }
+
+:root,
+:root.light,
+:root.dark {
+    color-scheme: light !important;
+}

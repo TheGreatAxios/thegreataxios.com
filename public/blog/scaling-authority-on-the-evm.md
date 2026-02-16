@@ -1,0 +1,233 @@
+---
+layout: minimal
+authors:
+    - "thegreataxios"
+date: 2024-09-08
+title: "Scaling Authority on the EVM"
+---
+
+# Scaling Authority on the EVM
+
+This technical guide addresses the critical scaling challenges faced by authoritative servers in blockchain applications due to the EVM's sequential nonce requirement. By implementing a Signing Pool architecture using HD wallet-derived child signers, developers can overcome nonce collision issues and scale from handling just a few concurrent requests to hundreds per second, complete with automatic gas balance management and dynamic signer selection for high-throughput applications on zero-gas-fee networks like SKALE.
+
+The [Ethereum Virtual Machine](https://ethereum.org/en/developers/docs/evm/) (EVM) is a distribute decentralized environment that executes code across all nodes in an EVM Network [like [Ethereum](https://ethereum.org/) and [SKALE](https://skale.space/)]. In order to ensure that transactions cannot be replayed, the EVM utilizes a nonce value per account.
+
+The account — often known as the wallet or the private key — must send transactions with sequential nonces in order to have successful execution. However, this is a direct limitation when exploring applications necessary architecture. Knowing that blockchain is a broader piece of the architectural stack for many; it’s no surprise that many developers lean on various types of centralized services operated by their team to “manage” their application. These centralized services are best referred to as **Authoritative Servers.**
+
+### Authoritative Servers
+
+Servers that help manage and maintain the state of an application are a necessary evil. There are exceptions to the rule where some applications are able to create a suite of smart contracts that don’t rely on an external manager, however, in most cases the technical overhead is too large or difficult.
+
+Running a server or many servers to manage authority within a game brings its own set of complications. Traditional CRUD APIs using Python + Flask, or Node.js + Express typically fall prey to a number of issues including: race conditions, lack of security, rate limits, etc. Blockchain CRUD APIs through a combination of 3rd party resources (e.g the blockchain) and race conditions can have issues related to scaling the accounts and their nonces.
+
+- **Race Conditions:** A race condition is a software error that can occur when multiple processes or threads attempt to access the same data but the context is uncoordinated.
+- **Lack of Security:** APIs themselves should require some form of authentication to utilize. Often times blockchain engineers don’t create authentication and authorization layers for their apps based on the user wallets which can open up the door for spam against various routes and even drain server gas tokens and funds.
+- **Rate Limits:** When linking to 3rd party services whether a cloud database or a blockchain; rate limits during surges in use of a platform can really cause headaches.
+- **Unscalable Nonces:** The blockchain specific issue occurs on EVM chains that have sequential nonces. During contract execution, the next nonce is usually set by the pending value from the chain itself. However, a single account trying to manage hundreds or thousands of requests at the same time can be overloaded and cause nonces to break.
+
+### Pitfalls of a Single Account
+
+The use of a single account to manage a server is very common, however, not designed for scalability. Imagine the following Node.js + Express controller:
+
+```ts
+// controller.ts  
+import { Request, Response } from "express";  
+import { Contract, JsonRpcProvider, Wallet } from "ethers";  
+  
+type RequestBody = {  
+  gameId: string;  
+  userWalletAddress: `0x${string}`;  
+}  
+  
+export default async function(req: Request, res: Response) {  
+  // Access to gameId str and userWalletAddress ethereum address  
+  const { gameId, userWalletAddress } : RequestBody = req.body;  
+    
+  try {  
+    // Provider connects to SKALE Calypso Mainnet  
+    const provider = new JsonRpcProvider("https://mainnet.skalenodes.com/v1/honorable-steel-rasalhague");  
+    // Wallet is for the server (one key) and uses the Calypso provider  
+    const wallet = new Wallet("...privateKey", provider);  
+    // Contract connects to a contract on-chain that stores on-chain game analytics  
+    // This contract uses the wallet and provider above  
+    const contract = new Contract("0x...", [...abi], wallet);  
+  
+    await contract.logPlay(gameId, userWalletAddress);  
+  
+    return res.send(200).status("Event Logged");  
+    
+  } catch (err) {  
+    // Avoid sending private information to the client  
+    return res.status(500).send("Internal Server Error");  
+  }  
+}  
+  
+// router.ts  
+import controller from "./controller";  
+import { Router } from "express";  
+  
+const router = Router();  
+router.post("/games/play", controller);  
+export default router;
+```
+
+In the above code, a single wallet is being used to execute transactions for every request that hits the `POST /games/play` endpoint. If multiple requests start to come in at the same time, the blockchain request will begin to error out since the _Pending Nonce_ would the the same for multiple requests at which point only the first would succeed.
+
+One solution that has worked well for many of the projects I’ve worked with is to utilize a queue system. This can certainly work to ensure that nonces stay sequential, however, this does slow down responses back to the client during heavy load.
+
+### Upsides of a Pool
+
+The concept of a **Pool of Signers** came about when I was doing solutions architecture for a Web2 to Web3 game transition. The game itself at the time was fully operational on Android and had a backend already built as part of it’s Web2 v2 build. Moving into the v3 build, the goal was to help bring greater visibility on-chain of the actual game and then utilize this visibility to help manage and validate incentives.
+
+During the initial design of the v3, it became clear that one of the biggest limitations was the existing and actively growing user-base. Since critical actions for the user were gated by the in-game token, it made sense to push as many of those actions as possible to the client for greater scalability and utilization of the blockchain. However, the server acted as a gateway to Web3 for guest accounts as well as offering critical authority based on more traditional API calls from client to server.
+
+It became clear that a single signer on a single server just would not be efficient. From there, two different designs came about. The first was to utilize a pool of multiple signers to handle higher load. This allowed each account in the pool to send one transaction at a time before the next signer was selected. With some strategic decisions made to abstract the Signing Pool over to a separate resource that all the controllers (or underlying services) could call into; it allowed scalability to go from a few requests per second with no issue to hundreds of requests per second with no issue.
+
+```ts
+// engineManager.ts  
+import { HDNodeWallet, JsonRpcProvider, TransactionReceipt, TransactionRequest, Wallet } from "ethers";  
+  
+type InternalSigner = {  
+    wallet: Wallet;  
+    nonce: number;  
+    active: boolean;  
+    checks: {  
+        gas: boolean;  
+    }  
+}  
+  
+class SigningManager {  
+      
+    #currentSignerIndex = 0;  
+    #baseWallet: HDNodeWallet;  
+    #rpcUrl: string;  
+    #signers: {[key: number]: InternalSigner} = {};  
+  
+    protected baseProvider: JsonRpcProvider;  
+  
+    constructor(        seed: string,  
+        signerCount: number = 1,  
+        rpcUrl: string    ) {  
+        this.signerCount = signerCount;  
+        this.#rpcUrl = rpcUrl;  
+        this.baseProvider = new JsonRpcProvider(rpcUrl);  
+        this.#baseWallet = Wallet.fromPhrase(seed, this.baseProvider);  
+        this._initializeWallets(signerCount);  
+    }  
+  
+    private async _initializeWallets(signerCount: number) {  
+        let addresses = [];  
+        for (let i = 0; i < signerCount; i++) {  
+              
+            const _wallet = new Wallet(this.#baseWallet.deriveChild(i).privateKey, new JsonRpcProvider(this.#rpcUrl));  
+          
+            this.#signers[i] = {  
+                wallet: _wallet,  
+                nonce: await _wallet.getNonce(),  
+                active: true  
+            };  
+  
+            addresses.push(_wallet.address);  
+        };  
+  
+        if (process.env.NODE_ENV === "development") console.log(`Wallets for ${this.use}`, addresses.join(",\n"));  
+    }  
+  
+    public async sendTransaction(request: TransactionRequest) : Promise<TransactionReceipt> {  
+        const signerIndex = this.selectSignerIndex();  
+        const signer = this.#signers[signerIndex];  
+        const balance = await this.baseProvider.getBalance(signer.wallet.address);  
+          
+        if (balance === BigInt(0) && balance > BigInt(request.value ?? 0)) {  
+            this.#signers[signerIndex - 1] = {  
+                ...signer,  
+                active: false,  
+                checks: {  
+                    gas: true,  
+                }  
+            };  
+  
+            return await this.sendTransaction(request);  
+        }  
+  
+        const tx = await signer.wallet.sendTransaction({  
+            gasPrice: 100_000, // set for SKALE to maintain lowest gas consumption  
+            ...request  
+        });  
+  
+        return await tx.wait();  
+    }  
+  
+    private get signerCount() {  
+      return Object.keys(this.#signers).length;  
+    }  
+  
+    private selectSignerIndex() {  
+        const signerIndex = this.#currentSignerIndex;  
+  
+        if (signerIndex + 1 === this.signerCount) {  
+            this.#currentSignerIndex = 0;  
+        } else {  
+            this.#currentSignerIndex++;  
+        }  
+  
+        return signerIndex;  
+    }  
+}  
+  
+export default new SigningManager();
+```
+
+```ts
+// controller.ts  
+import { Request, Response } from "express";  
+import { Contract, JsonRpcProvider, Wallet } from "ethers";  
+import SigningManager from "./SigningManager";  
+  
+type RequestBody = {  
+  gameId: string;  
+  userWalletAddress: `0x${string}`;  
+}  
+  
+export default async function(req: Request, res: Response) {  
+  // Access to gameId str and userWalletAddress ethereum address  
+  const { gameId, userWalletAddress } : RequestBody = req.body;  
+    
+  try {  
+    await SigningManager.sendTransaction({  
+      to: "0x...contractAddress",  
+      data: contract.interface.encodeFunctionData(  
+        "logPlay",  
+        [gameId, userWalletAddress]  
+      )  
+    });  
+  
+    return res.send(200).status("Event Logged");  
+    
+  } catch (err) {  
+    // Avoid sending private information to the client  
+    return res.status(500).send("Internal Server Error");  
+  }  
+}```
+
+```ts  
+// router.ts  
+  
+const router = Router();  
+router.post("/games/play", controller);  
+export default router;
+```
+
+The addition of the signing manager not only makes the controls cleaner, but it allows for a range of 1 to 2²⁵⁶-1 signers in the single engine manager. Of course subject to local resources on the machine. Every signer in the batch manager must have the necessary amount of gas, but especially when designing solutions like this on SKALE; you have the ability to have contract calls top up the signers every time so they never running out.
+
+The solutions listed above aren’t for all developers. You can of course modify this in a number of ways including adding different managers per route for maxmium scalability. You should always use a different seed per server to avoid conflicting nonces across multiple machines as well.
+
+Additionally, it is important to note that this solution does **NOT** utilize Account Abstraction/ERC-4337 in any way. That functionality can be useful to handle client operations, however, this is designed for secured authority. The above code examples are all great examples of how to design a highly-scalable authority layer for your next Web3 project.
+
+---
+
+For builders interested in taking advantage of this, make sure to head over to [https://docs.skale.space](https://docs.skale.space) and start building now.
+
+import Footer from '../../snippets/_footer.mdx'
+
+<Footer />

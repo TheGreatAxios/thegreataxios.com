@@ -1,0 +1,198 @@
+---
+layout: minimal
+authors:
+    - "thegreataxios"
+date: 2025-03-13
+title: "SKALE's Secret Sauce for Game Developers"
+---
+
+# SKALE's Secret Sauce for Game Developers
+
+This comprehensive guide explores how SKALE Network revolutionizes game development by providing blockchain infrastructure that replaces traditional servers, databases, and storage systems with zero-gas, high-performance alternatives. Supporting 500-13,000 transactions per second with instant finality and native random number generation, SKALE enables developers to build asset-based games, real-time multiplayer experiences, leaderboards, and autonomous worlds while eliminating the cost barriers that make blockchain impractical for gaming on other networks.
+
+SKALE offers developers solutions to streamline game development, reduce server management costs, and remove scaling challenges. With features like zero gas fees and instant transaction finality, this blockchain network empowers you to create robust multiplayer experiences and manage in-game assets efficiently, keeping your focus on crafting exceptional games.
+
+A big thank you to [Ben Miller, Head of Partner Marketing at SKALE Labs](https://x.com/benjmiller88) for all his incredible feedback and edits on this detailed blog.
+
+![](https://cdn-images-1.medium.com/max/1600/1*46VMG7ljY0ZDUG0lmmRuVQ.jpeg)
+
+## Game Development with SKALE
+
+---
+
+### SKALE Primer
+
+SKALE is a blockchain network home to many Layer 1 blockchains. You can think of a blockchain as a hybrid compute machine [kind of like a cloud server] that offers compute and storage to a developer without requiring the developer host the server directly. These machines are operated by 3rd parties known as validators. The term validator comes from “someone who validates” i.e. the one who is building the chain.
+
+If you are familiar with Web3 as a whole, a nice analogy for a SKALE Chain is **a mini Ethereum with super powers**. Offering all the capabilities of the first programmable blockchain plus the super powers seen here.
+
+#### Super Powers of a SKALE Chain
+
+**Zero Gas Fees**
+
+Historically blockchains have used fees at the transaction level called **gas fees** or **transaction fees** depending on the ecosystem you are in where every **write** or **action** costs the sender some amount in fees. Gas fees are one of the most popular pain points for gamers who have a very fair complaint that gas fees prohibit them for focusing on the game.
+
+SKALE eliminates gas fees entirely with an innovative Blockchain-as-a-Service (BaaS) model. [Learn more about SKALE Chain Pricing in the SKALE Forum](https://forum.skale.network/t/enhancing-the-evolution-of-skale-chain-pricing-and-moving-into-network-growth-phase-2/468).
+
+**Instant Finality**
+
+Traditional databases have instant settlement and finality. _What does this mean?_ When you send a **write** to [most] databases, it takes a single cycle for it to be able to be **read** back and final in the database. The majority of blockchains do not work this way. They either require many cycles or **blocks** to become final OR they rely on other chains to prove their finality. This makes them highly inadequate and inefficient for gaming.
+
+SKALE Chains and the underlying consensus operate in a similar manner to traditional server and database systems. When a transaction is sent on a SKALE Chain it is immediately known whether it will be successful or not. After submission to the chain, it takes a single cycle (i.e. 1 block) to ensure that it is final and will be fully readable back. These blocks generally take around one (1) second, however, they can be even faster as a chain is put under more load.
+
+**High Throughput**
+
+Every computer and software system in the world has limitations. Traditional systems and blockchain systems share many similarities and differences. One of the most common is that reads are more common than writes and so systems are optimized for this. On average, a blockchain will experience a minimum of 5–10 reads for every one write due to the amount of calls that are made to access key information needed to execute and check for a transaction.
+
+SKALE Chains by default are highly fault tolerant by making use of 16 high performance machines operated by 3rd party validators. Each of these machines is easily capable of handling tens of thousands of concurrent requests while simultaneously building the chain through **execution of functions and storage of information** at a minimum rate of **500 calls per second** and a theoretical maximum of **~13,000 calls per second**.
+
+> For those familiar with blockchain, calls are equal to transactions.
+
+**Native Random Number Generation**
+
+Random numbers are one of the most commonly used features within software development. They are especially prominent within game development. SKALE Chains offer native RNG capabilities directly in Solidity that allow for the **infinite creation of provable random numbers** to be used for anything the developer sees fit.
+
+Random values can be used for map creation, asset allocation, randomized selection, seed generation, and more. SKALE is the only blockchain that offers RNG functionality directly at the chain level **for free**. Other chains rely on 3rd party services like Chainlink or Pyth which can be both highly centralized, slow, costly, and complicated to develop with.
+
+---
+
+### Popular Web3 Gaming Approaches
+
+The following approaches are some of the most common types of games types and higher level mechanics that make sense to bring onchain.
+
+1. **Asset-Based Games (e.g., Farmers, Clickers, Strategy Games)**
+	SKALE is ideal for handling in-game assets such as inventory, upgrades, and items in asset-based games. By leveraging blockchain technology, developers can create a transparent, player-owned economy, where players truly own their in-game assets. This opens up new opportunities for trading, crafting, and evolving the game world over time, all while maintaining a seamless player experience.
+2. **First-Person Shooters (FPS) and Real-Time Games**
+    Traditional FPS games rely on local servers for player interactions, typically grouping players based on geographical proximity to reduce lag. With SKALE, developers can utilize decentralized blockchain infrastructure to handle crucial gameplay elements in real-time, such as loadouts, player positioning, statistics, and map configurations. This allows for a more dynamic and interactive experience, especially in large-scale multiplayer games.
+3. **Leaderboards and Rankings**
+    SKALE is well-suited for managing competitive elements like leaderboards and rankings. Blockchain’s immutability ensures that rankings are transparent and tamper-proof, giving players confidence that their achievements are accurately represented and securely stored. Moreover, with SKALE’s scalability, even large-scale leaderboards can be handled efficiently, ensuring that players from all around the world can compete in real-time without lag or delays.
+4. **Player Lobbies and Matchmaking**
+    Managing player lobbies and matchmaking in real-time can be a logistical nightmare for developers using centralized services. SKALE enables decentralized matchmaking systems, where player data and session information are securely stored and easily accessible across a distributed network. This ensures a fair and transparent matchmaking process while allowing for seamless lobby creation and management.
+5. **Massively Multiplayer Online (MMO) Games with Dynamic Economies**
+    MMOs are perhaps the best example of a game type that benefits from decentralized infrastructure. With SKALE, developers can extend their games’ economic systems by enabling decentralized marketplaces, dynamic item economies, and player-driven world-building. The scalability of SKALE ensures that even in large MMO worlds, player interactions and in-game economies can be managed securely and efficiently, without the bottlenecks associated with centralized servers.
+6. **Turn-Based Games**
+    In turn-based games, player moves and game states must be securely stored and shared in a way that ensures fairness and transparency. SKALE enables developers to store turn data and game states on the blockchain, allowing for decentralized decision-making and eliminating the need for centralized server management. This leads to a more player-driven, secure, and transparent gaming experience.
+7. **Open and Autonomous Worlds (Minecraft-Style Games) **
+	Blockchain technology’s decentralized nature and transparency make it ideal for creating open, player-driven worlds that can be modified, extended, and evolved autonomously. Similar to Minecraft, players in SKALE-powered worlds can develop, build, and create content in a persistent environment where the game’s code and assets are publicly accessible. This allows for community-driven mods, world extensions, and dynamic, player-controlled content. The blockchain ensures that these modifications are secure, transparent, and permanent, fostering a rich, collaborative environment that grows with the community over time.
+
+---
+
+### Development Mechanics
+
+In addition to the high level approaches above, there are some lower level mechanics that developers can mix and match when looking to enhance their games with blockchain. The following is designed based on the technology of the SKALE Network since it takes into account critical features such as zero gas fees, instant finality, native RNG, and high throughput.
+
+#### Digital Collectibles
+
+Arguably the place where Web3 gaming got its start is in the form of digital collectibles, commonly known as Non Fungible Tokens [or NFTs] within the blockchain space. These assets come in many different forms however the general goal is to allow assets to be represented on a chain and be owned directly by users.
+
+The great part about digital collectibles is from an operational perspective they can be created and used in many different ways including both valuable and in-game only collectibles. Collectibles can also be made non-transferable (i.e. soulbound). Lastly, collectibles can be made incredibly custom to where you can use multiple collectibles to create others or even make a single asset fungible through additional tokenization.
+
+For instance if you have collectible items in-game already, these can be converted into digital collectibles and stored on-chain (items, weapons, etc).
+
+#### In Game Currencies
+
+In game currencies are incredibly popular within most games. Blockchain can be used to create both soft and hard currencies with many different flexible mechanics. These can also be specifically modified to guarantee they stay off of exchanges and other “trading” platforms so that they are only usable within a game, on a specific chain, or within a certain subset of users.
+
+> One of the nice parts about using digital collectibles or in-game currencies on blockchain is the automation mechanics available. Ensuring that users are paid out rewards or achievements based on something else is very simple thanks to smart contracts.
+
+You can learn more about deploying collectibles and in-game currencies with [Sequence](https://sequence.skale.space/landing); one of the most popular gaming providers on SKALE.
+
+#### Efficient Analytics
+
+The Ethereum Virtual Machine (EVM) is uniquely designed to be highly efficient at processing and emitting events to many clients in parallel. This can be useful for building programs like leaderboards and lobby systems. The following explores the basics of using the blockchain for analytics and how you can connect that with your game and its players.
+
+There are three ways a blockchain can be used for analytics:
+
+1. The EVM has a specific type of action called an **Event**. Events can take many pieces of information and emit them so that they can be listened to by many different clients. Publishing information through events will allow many players or games to share data with each other
+2. Storage in the EVM can be set to public or private by the creator of the program. This means that developers who want to make statistics available to their community for easy access for building modifications, extensions, or DLCs can do so with blockchain. Exposing state through public read only functions will enable others to build smart contracts that can extend and access the information in a safe and secure way.
+3. Onchain analytics are also great for achievement systems. Examples include:
+
+- Every N number of kills per player in a FPS automatically mint them some special random assets
+- Every N number of some event i.e 1st, 10th, 25th, 50th, 100th, 500th, 1000th, …, Nth of every single event -> mint an achievement that is permanent on chain.
+
+Interested in adding onchain achievements to your game? Contact [Eidolon Labs](https://eidolon.gg/) to work with the experts who built one of the first onchain achievement systems in the form of Untitled Platform.
+
+#### Blockchain for Compute
+
+Blockchains that have many nodes are very unique in that they act as a unique combination of compute and data storage. However, when comparing them to traditional compute types it’s important to understand that it’s a bit of a hybrid design. For example, there are two common compute types seen in cloud computing today: traditional server based compute and serverless/edge compute.
+
+**Traditional Servers**
+
+Traditional servers, often referred to as Virtual Private Servers (VPS), are often considered inefficient for smaller applications that don’t have consistent load over time and ideal for high performance applications and businesses that need consistent compute. SKALE Chains can directly replace traditional server and database requirements thanks to both **read** and **write** capabilities.
+
+This is ideal for applications and games of all sizes, but especially beneficial for those just starting out. No need to worry about infrastructure, maintaining nodes, securing servers, etc; when the SKALE Chain does it for you. Additionally — scalability [no pun intended] is one of the most common things even veteran teams struggle with. Going from one (1) server to hundreds during short bursts of high capacity is incredibly complicated.
+
+Delegating server based actions to a blockchain can help guarantee that you are set up for success. For example, let’s say you want to probably generate a random map for a PVP match (in the multiplayer line of thought), you can utilize some basic data structures like multiple arrays (i.e a matrix) and SKALE RNG to create as many 10x10 grids as you want and return them. Additionally, thanks to computers and storage being in the same place you can optionally take those and link them to a game with the PVP state.
+
+**Serverless**
+
+There is a newer paradigm that has gained a lot of popularity in the last few years. Serverless is the act of not running an explicit server but having executable and lightweight functions that can run at a moment’s notice as close as possible to the user. The idea behind this is that you don’t pay for compute you don’t use and so it’s considered to be very cost effective for projects just starting out. It’s also highly scalable since the “scaling up” portion of the stack is delegated to the cloud provider instead of managed by you. While this might help with scalability, it's common to hear companies that start with serverless switch to traditional long running servers when they hit a certain amount of usage.
+
+**Blockchain**
+
+Enter blockchain. Technically, it acts as a hybrid compute option that retains the best parts of traditional servers and serverless. By default it is long running and with SKALE’s unique economic model it’s incredibly cost efficient. However, like serverless it runs across many computers by default (i.e. the SKALE Nodes) who can permisionlessley execute the functions deployed to a chain. This by default gives the blockchain capabilities that allow for both short term cost efficiency and long term scalability all in one.
+
+#### Multiplayer
+
+While already discussed throughout many of the above approaches and mechanics; blockchain thrives for real time multiplayer gaming when:
+
+- The blockchain can handle sufficient throughput [like SKALE]
+- The blockchain can handle real time requests
+- The blockchain can offer instant finality
+- The blockchain can process highly complex game functions
+- The blockchain can handle a high number of simultaneous connections
+- The blockchain has no fees so that more compute can be done onchain
+
+With SKALE hitting all of the needed boxes, multiplayer mechanics is a great way to utilize blockchain as a tool without having to be crypto or Web3.
+
+#### Blockchain as a Database
+
+In game development, handling large volumes of data efficiently and at scale is crucial. This typically involves using a combination of **databases** (SQL/NoSQL), **caches** (Redis, Memcached), and **file storage systems** (AWS S3, Google Cloud Storage) to manage game data such as player information, game states, asset storage, and user interactions. However, blockchain technology — especially a blockchain with zero gas fees, huge compute limits (268 million block gas limit), and larger contract sizes (64 KB) — can offer a more integrated, secure, and decentralized alternative to these conventional systems.
+
+Traditionally, databases are used to store game data such as player profiles, game progress, statistics, inventory, and in-game assets. However, blockchain can act as an immutable, decentralized database for these types of data, providing key benefits:
+
+- **Immutability and Security:**
+    Data stored on the blockchain can be made immutable, meaning it cannot be altered once recorded. This is ideal for critical game data such as player achievements, transaction records, or inventory items. By using blockchain for this purpose, developers can ensure data integrity and transparency without worrying about data tampering or corruption.
+- **Decentralized Data Ownership:**
+    In traditional database systems, data is stored on centralized servers owned by a third party, creating a potential vulnerability. Blockchain, on the other hand, distributes data across a network of nodes, ensuring that players themselves have control over their data. This is particularly important in asset-based games or games that involve unique digital items or currencies (e.g., NFTs), where players want real ownership.
+- **Scalability and High-Volume Data Handling:**
+    With a ~268 million block gas limit and zero gas fees, SKALE is capable of handling the massive data throughput required by modern games. This allows for the storage of millions of player profiles, inventory data, game stats, and other dynamic data without performance degradation.
+
+> **Example:** In an MMO, players’ inventory data, equipped items, and character stats can be stored on the blockchain. Each player would have a decentralized, immutable record of their assets and progress that could be accessed and verified without reliance on centralized servers.
+
+#### Blockchain as a Cache
+
+In traditional game architecture, caches are used to store frequently accessed data (e.g., player profiles, game state, leaderboard rankings) to speed up retrieval times. With blockchain, especially one with zero gas fees like SKALE, this need can be eliminated:
+
+- **Instant Access to Onchain Data:**
+    Data can be retrieved directly from the blockchain without needing an intermediary caching layer. Since SKALE operates with zero gas fees, developers don’t have to worry about the transaction costs typically associated with writing to the storage layer and reads are always free. Players can access data in real time without the latency or costs of traditional caching systems. _Additionally, the use of blockchain sync nodes placed strategically around the world can greatly reduce latency for gamers._
+- **No More Cache Invalidation Issues:**
+    Traditional caches have to handle cache invalidation (ensuring outdated data is refreshed), which can be complex and error-prone. SKALE data is **always up-to-date thanks to instant finality**, and since every transaction or update is public and verified on the chain, there is no need for additional systems to ensure data freshness.
+- **Reduced Need for Expensive Caching Services:**
+    As the need for complex caching systems is removed, developers can save on infrastructure costs. The blockchain itself serves as a dynamic, high-performance store for frequently accessed game data.
+
+> Example: In an FPS or real-time strategy game, player stats and leaderboard rankings can be stored on-chain and accessed in real time without the need for separate caching infrastructure. The blockchain’s low-cost, high-speed retrieval replaces the need for a dedicated caching system like Redis or Memcached.
+
+#### Blockchain for File Storage, Replication, and Availability
+
+Games often require file storage for assets such as textures, 3D models, animations, and other game data. SKALE offers two ways to store assets directly onchain.
+
+1. **Smart Contract Storage**: while this is technically doable on ALL blockchains; low block gas limits, small contract sizes, and variable gas fees can make this both difficult and costly. SKALE eliminates those barriers allowing text-based files like JSON to be stored directly onchain for free.
+2. **Native Filestorage**: a feature native only to SKALE is SKALE Filestorage. SKALE Chains upon creation can optionally allocate some portion of their nodes to filestorage. This allows files to be uploaded to the chain and replicated across all the nodes and served directly from the blockchain.
+
+The following explores in greater depth multiple ways that SKALE can be used to store and serve files.
+
+- **Smart Contracts as Asset Containers:**
+    Instead of relying on cloud storage solutions like AWS S3 to hold game assets, developers can store these assets directly within smart contracts. SKALE’s large contract size (64 KB) allows for storing more data on-chain, making it a viable option for smaller game assets. For example, textures or small game models can be encoded into the blockchain, ensuring transparency and verifiability. Additionally, many files can be dynamically manipulated on chain so that they can be used in conjunction with other smart contracts to manipulate their data.
+- **Cost-Effective File Storage:**
+    With zero gas fees, SKALE makes storing and accessing game assets on-chain more affordable compared to traditional cloud storage models, where developers are often charged based on the amount of data stored and the frequency of access.
+- **Decentralized CDN:**
+    Traditional CDNs are one of the most solutions developers use to speed up their applications. While boasting incredible speed; CDNs can be very costly. SKALE allows for decentralized file access and availability, reducing the risk of data loss, tampering, or centralization while also enabling CDN capabilities that are pre-paid [inclusive of egress charges]
+
+> **Example:** In a collectible card game (CCG), each card could be an asset stored on the blockchain. Instead of storing card images and metadata on external servers, they can be securely stored within the blockchain itself. The card’s metadata (e.g., stats, images, abilities) could be embedded in the blockchain, ensuring transparency, ownership, and ease of access.
+
+#### Summary
+
+If you read this entire article whether in one sitting or many, thank you for spending the time. I hope you learned something valuable and most importantly recognize that the right technology means you don’t have to be a “Web3” game or launch a token to be a blockchain game. There are many amazing ways to use blockchain and more specifically SKALE to level up your game.
+
+For game developers interested in adding blockchain mechanics to your game, head over to the SKALE Indie Game Accelerator at [https://skale.space/skale-indie-games-accelerator](https://skale.space/skale-indie-games-accelerator) to learn more.

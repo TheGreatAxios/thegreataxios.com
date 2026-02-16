@@ -1,0 +1,111 @@
+---
+layout: minimal
+authors:
+    - "thegreataxios"
+date: 2025-12-24
+title: "Docs are for Agents"
+---
+
+# Docs are for Agents
+
+Explore who documentation is actually built for in the agentic era, some critical items of AI-first documentation, and a real world exploration of updating the SKALE Network documentation to Mintlify -- the intelligence documentation platform.
+
+## Intro to SKALE v3 Docs
+
+The SKALE v2 documentation was built with https://astro.build and https://starlight.astro.build and represented a signifant structural shift from the SKALE v1 documentation which used Antora for multi-repo static site design. When I led the v2 update there was a lot of discussion around what to use for documentation. We almost went with https://vocs.dev from the wevm team, but chose to go with Astro instead due to the belief that it would be easier to maintain and more accessible to contributors.
+
+That turned out to be a mistake and over the course of the last year or so it become clear that with the rapid adoption of AI tools -- especially for coding -- the need for an AI-first documentation platform became more and more apparent.
+
+A documentation portal built for AI should in my opinion have two key things:
+
+1. llms.txt and llms-full.txt file that are generated from the documentation and provider clear guidance to LLMs on how to navigate and consume the documentation about the product or service for agents
+
+2. Open in XYZ buttons (i.e Open in ChatGPT) which is for humans
+
+From a design perspective, there are two key things the documentation portal take into account fror design:
+
+1. It should be designed in a way where pages are generally written for humans, but contain extra notes and context that agents will benefit from on edge cases
+
+2. Content should be separated into sections and pages clearly named, laid out, and as concise as possible to avoid overwhelming an LLM with too much information AND to reduce the amount of money spent on unused context
+
+:::note
+Before continuing, we must give credit where credit is due. An incredible effort from Manuel Barbas, Lead Implementation Engineer at SKALE, who led the effort on the cookbook section, made massive contributions to the v3 push with a series of amazing PRs, and helped from Day 0 on the organization of the v3 planning.
+:::
+
+## Why We Migrated to Mintlify
+
+The migration to Mintlify wasn't just about a prettier interface -- although Mintlify is 10x cleaner from a UI in my opinion compared to Starlight -- but it was really driven by two key items. The first was the need to lean into the agentic world that is becoming more and more important. The SKALE v2 Docs did have a small llms.txt file but it was minimal and missing significant coverage. Additionally, it lacked contributions for an open network due to it being built on open-source tools but highly bespoke.
+
+The switch to Mintlify allows SKALE to join thousands of other projects and companies from small to enterprise using Mintlify; making it even easier for contributors to get started and contribute. 
+
+Additionally, Mintlify not only helps the SKALE Documentation become AI ready, but it also provides an MCP server and AI-ready documentation for agentic coding tools making the above contributions even simpler.
+
+**Before:** The Astro/Starlight setup had basic AI readiness, but it was fragmented
+**After:** Mintlify provides industry-standard AI tooling with better llms.txt support
+
+The old docs had a basic llms.txt at https://docs-skale-space.vercel.app/llms.txt that linked to a smaller and larger one, but the new setup at https://docs.skale.space/llms.txt better matches the industry standards.
+
+## Section Reorganization: Separating Concepts from Cookbook
+
+One of the biggest feedback items from developers was that SKALE's documentation mixed conceptual information with practical implementation details. This made it hard for developers to quickly jump to the "about" a topic or the "how to" of a topic.
+
+The new structure explicitly separates:
+- **Concepts**: Understanding SKALE Network fundamentals
+- **Developers**: Developer-specific basics
+- **Cookbook**: Recipe-style examples for the EVM, the agentic economy, and SKALE specifics
+
+This reorganization came directly from developer feedback and AI tooling needs. When an agent is trying to understand SKALE Expand or implement gasless transactions into an application, it shouldn't have to wade through unnecessary context or information.
+
+## Introducing SKALE Expand
+
+The new docs prominently feature SKALE Expand, which I think represents a fundamental shift in how we think about blockchain deployments. As I explored in [The Gasless Design Behind x402](/blog/the-gasless-flow-behind-x402.mdx), SKALE Expand allows SKALE's infinitley horizontal scalability and newer privacy features to be deployed within any EVM ecosystem.
+
+This means developers can get SKALE's uniuqe value props like private transactions, zero gas fees, and instant finality direclty within Base or other EVM ecosystems. The docs now include dedicated sections explaining how to leverage this for cross-chain applications.
+
+## BITE Protocol: Integrated Privacy and Encryption for the EVM
+
+The documentation now includes comprehensive coverage of BITE Protocol, which I introduced in [Proof of Encryption in the Cloud](/blog/proof-of-encryption-in-the-cloud.mdx). BITE, which stands for Blockchain Integrated Threshold Encryption, is the basis for the private and encrypted exeuction capabilities being integrated into the SKALE Network.
+
+## Chain Types and Developer Experience Updates
+
+The new documentation introduces clear categorization of SKALE chain types:
+- **Appchains**: Dedicated blockchains for single applications
+- **Credit Chains**: Chains focused on DeFi and financial applications
+- **Gasless Chains**: Zero-fee environments for micropayments and agentic systems
+
+This clarity helps developers choose the right infrastructure for their use case. Combined with the streamlined "Go Live" page and updated SKALE Base guides, new developers can get started much faster.
+
+## Cookbook Additions for the Agentic Era
+
+The cookbook section now includes recipes specifically for AI agents and the broader machine economy:
+- **x402 Examples**: How to implement the HTTP 402 payment protocol on SKALE
+- **Privacy Recipes**: Using BITE Protocol for confidential transactions
+- **Native Features**: Leveraging SKALE's built-in RNG and gasless transactions
+
+These additions reflect the growing importance of agentic systems. As I wrote in [The Role of Pay-Per-Tool in an Agentic World](/blog/the-role-of-pay-per-tool-in-an-agentic-world.mdx), agents need practical, implementable patterns for economic interactions. With SKALE's recent positioning changes around the agentic economy and bringing more agents onchain, it's important to have a clear path for developers to get started.
+
+## List of changes
+
+- Migrated from Astro/Starlight to Mintlify, the industry standard for tech startups, to improve AI readiness and make contributions easier for developers
+- Enhanced AI readiness with better llms.txt support for machine consumption
+- Reorganized sections with a clear split between concepts and developers, plus an explicit cookbook section
+- Separated developer knowledge from cookbook recipes based on community feedback and AI tooling requirements
+- Brought back sections covering the SKL token, staking, and introduced new areas like SKALE Expand
+- Restored the SKL token page and SKL staking page for better token economics coverage
+- Updated the SKALE Base integration page with clearer information
+- Improved the SKALE Ethereum chains documentation with more clarity
+- Streamlined the developer onboarding flow with a cleaner "Go Live" page
+- Added a new concepts section covering SKALE Expand and BITE Protocol fundamentals
+- Created a dedicated "Integrate SKALE" section for developers looking to build on the network
+- Added comprehensive chain type documentation covering Appchains, Credit Chains, and gasless chains
+- Integrated full BITE Protocol documentation for privacy features
+- Expanded the cookbook with new deployment guides, privacy recipes, x402 payment examples, AI agent patterns, and native features like gasless transactions and random number generation
+- Updated all existing code examples to reflect current best practices
+
+## Conclusion
+
+I think this documentation update represents SKALE's commitment to both the machine economy and the agentic era. By migrating to Mintlify, restructuring for AI accessibility, and adding comprehensive coverage of emerging technologies and initiatives like BITE Protocol and SKALE Expand, the docs now serve both human developers, coding agents, autonomous agents, and LLM platforms.
+
+The focus on practical implementation, clear separation of concepts from recipes, and recognition that the ecosystem extends beyond official documentation shows a mature understanding of developer needs. As agentic systems become more prevalent, documentation like this will be crucial for enabling the next generation of blockchain applications.
+
+Have thoughts on the docs or want to contribute? Join the SKALE Discord or reach out. I'm always interested in feedback on how I can better serve the ecosystem.
