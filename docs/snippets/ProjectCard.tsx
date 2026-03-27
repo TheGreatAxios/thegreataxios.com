@@ -1,4 +1,5 @@
-import { Github, Globe } from "lucide-react";
+import { Globe } from "lucide-react";
+import { GithubIcon } from "./BrandIcons.tsx";
 
 interface ProjectCardProps {
   title: string
@@ -71,7 +72,7 @@ export default function ProjectCard({ title, description, tags, github, website 
               style={{ color: "#1d4ed8", display: "inline-flex", alignItems: "center" }}
               aria-label={`${title} GitHub`}
             >
-              <Github style={{ width: "14px", height: "14px" }} />
+              <GithubIcon size={14} />
             </a>
           )}
           {website && (
