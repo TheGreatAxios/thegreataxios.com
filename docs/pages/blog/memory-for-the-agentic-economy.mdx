@@ -4,6 +4,7 @@ authors:
 - "thegreataxios"
 date: 2025-12-17
 title: "Memory for the Agentic Economy"
+description: "How shared memory layers work for multi-agent systems and why variable memory is a critical challenge for the emerging machine economy."
 ---
 
 # Memory for the Agentic Economy

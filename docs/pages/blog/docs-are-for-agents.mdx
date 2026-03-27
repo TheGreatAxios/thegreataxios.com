@@ -4,6 +4,7 @@ authors:
     - "thegreataxios"
 date: 2025-12-24
 title: "Docs are for Agents"
+description: "Who documentation is actually built for in the agentic era — exploring AI-first documentation and migrating SKALE docs to Mintlify."
 ---
 
 # Docs are for Agents

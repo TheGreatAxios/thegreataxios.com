@@ -4,6 +4,7 @@ authors:
     - "thegreataxios"
 date: 2025-07-31
 title: "Proof-of-Encryption in the Cloud"
+description: "Exploring the BITE Protocol for Proof of Encryption using threshold cryptography — enabling MEV-resistant encrypted blockchain transactions via cloud API."
 ---
 
 # Proof-of-Encryption in the Cloud

@@ -7,6 +7,7 @@ export default defineConfig({
   title: 'thegreataxios blog',
   baseUrl: basePath,
   description: "The personal blog of TheGreatAxios",
+  logoUrl: `${basePath}/thegreataxios.jpg`,
   theme: {
     colorScheme: "light"
   },
@@ -34,7 +35,7 @@ export default defineConfig({
       link: "https://twitter.com/thegreataxios"
     }
   ],
-  ogImageUrl: `${basePath}/thegreataxios.jpg`,
+  ogImageUrl: `https://vocs.dev/api/og?logo=%logo&title=%title&description=%description`,
   topNav: [
     {
       link: "/",

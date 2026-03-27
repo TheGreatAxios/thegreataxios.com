@@ -4,6 +4,7 @@ authors:
     - "thegreataxios"
 date: 2024-09-05
 title: "The Power of Random"
+description: "SKALE's native random number generation using threshold signatures — free, synchronous, and built into the blockchain for provable gaming mechanics."
 ---
 
 # The Power of Random

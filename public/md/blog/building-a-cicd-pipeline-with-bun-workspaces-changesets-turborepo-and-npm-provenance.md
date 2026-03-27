@@ -4,6 +4,7 @@ authors:
     - "thegreataxios"
 date: 2026-02-16
 title: "Building CI/CD with Bun Workspaces, Changesets, Turborepo, and npm Provenance"
+description: "A practical guide to building a robust CI/CD pipeline for monorepos using Bun workspaces, Changesets, Turborepo, and npm provenance for secure publishing."
 ---
 
 # Building CI/CD with Bun Workspaces, Changesets, Turborepo, and npm Provenance

@@ -4,6 +4,7 @@ authors:
     - "thegreataxios"
 date: 2026-03-04
 title: "CTXs: What Conditional Transactions Mean for AI Agents"
+description: "Exploring SKALE's Conditional Transactions (CTXs) — encrypted onchain data that decrypts only when smart contract conditions are met, enabling private agent execution."
 ---
 
 #  What Conditional Transactions (CTXs) Mean for AI Agents

@@ -4,6 +4,7 @@ authors:
     - "thegreataxios"
 date: 2025-08-22
 title: "The Rise of the Machine Economy"
+description: "How SKALE Network's zero-gas infrastructure enables a machine-driven economy powered by autonomous AI agents using x402 payments and decentralized identity."
 ---
 
 # The Rise of the Machine Economy

@@ -4,6 +4,7 @@ authors:
     - "thegreataxios"
 date: 2024-11-04
 title: "AI for Dummies (who don't use AI)"
+description: "Three practical ways developers can leverage AI for productivity without changing their workflow — from terminal tools to smart contract documentation."
 ---
 
 # AI for Dummies (who don't use AI)

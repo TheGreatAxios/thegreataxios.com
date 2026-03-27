@@ -4,6 +4,7 @@ authors:
     - "thegreataxios"
 date: 2025-10-27
 title: "The Gasless Design Behind x402"
+description: "Exploring the gasless architecture of x402 protocol for internet-native payments using HTTP 402 and stablecoins for seamless web service transactions."
 ---
 
 # The Gasless Design Behind x402

@@ -4,6 +4,7 @@ authors:
     - "thegreataxios"
 date: 2024-11-13
 title: "Enhancing Unity Game Development"
+description: "Overview of Eidolon's modular Unity SDK ecosystem for accelerating game development with specialized packages for physics, Web3, networking, and more."
 ---
 
 # Enhancing Unity Game Development

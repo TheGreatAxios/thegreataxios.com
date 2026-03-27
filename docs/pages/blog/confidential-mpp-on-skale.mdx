@@ -1,3 +1,12 @@
+---
+layout: minimal
+authors:
+    - "thegreataxios"
+date: 2026-03-26
+title: "Confidential MPP on SKALE: Private Payments for AI Agents"
+description: "How Confidential MPP enables AI agents to pay and get paid without exposing amounts or balances — private machine-to-machine payments on SKALE."
+---
+
 # Confidential MPP on SKALE: Private Payments for AI Agents
 
 The machine economy needs privacy. With Confidential MPP on SKALE, agents pay and get paid without exposing amounts or balances. Financial details stay between the parties, not on the chain.

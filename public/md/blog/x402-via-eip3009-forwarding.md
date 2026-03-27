@@ -4,6 +4,7 @@ authors:
     - "thegreataxios"
 date: 2025-10-05
 title: "x402 via EIP-3009 Forwarding"
+description: "Extending x402 payments to any blockchain through EIP-3009 forwarding contracts, with focus on SKALE's zero-gas infrastructure for instant transactions."
 ---
 
 # x402 via EIP-3009 Forwarding

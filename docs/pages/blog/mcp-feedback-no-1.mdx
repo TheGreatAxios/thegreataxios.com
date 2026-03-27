@@ -4,6 +4,7 @@ authors:
     - "thegreataxios"
 date: 2025-10-21
 title: "MCP Feedback No. 1"
+description: "Personal perspectives on the Model Context Protocol (MCP) and how teams building AI developer tooling should approach documentation and examples."
 ---
 
 ## MCP Feedback No. 1

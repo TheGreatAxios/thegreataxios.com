@@ -4,6 +4,7 @@ authors:
     - "thegreataxios"
 date: 2024-09-08
 title: "Scaling Authority on the EVM"
+description: "Solving EVM nonce collision issues with a Signing Pool architecture using HD wallet-derived child signers for high-throughput authoritative servers."
 ---
 
 # Scaling Authority on the EVM
