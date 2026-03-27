@@ -35,7 +35,7 @@ export default defineConfig({
       link: "https://twitter.com/thegreataxios"
     }
   ],
-  ogImageUrl: `https://vocs.dev/api/og?logo=%logo&title=%title&description=%description`,
+  ogImageUrl: `${basePath}/api/og?logo=%logo&title=%title&description=%description`,
   topNav: [
     {
       link: "/",
