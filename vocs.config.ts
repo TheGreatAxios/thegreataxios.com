@@ -7,6 +7,11 @@ export default defineConfig({
   title: 'thegreataxios blog',
   baseUrl: basePath,
   description: "The personal blog of TheGreatAxios",
+  aiCta: {
+    query({ location }) {
+      return `Read and analyze this page: ${location} — I want to ask questions about it.`
+    }
+  },
   logoUrl: `${basePath}/thegreataxios.jpg`,
   theme: {
     colorScheme: "light"

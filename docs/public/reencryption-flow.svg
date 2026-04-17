@@ -1,0 +1,183 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 300" role="img" aria-label="Re-encryption transformation flow showing ciphertext being re-encrypted to a new recipient">
+  <title>Re-Encryption Transformation</title>
+  <desc>Encrypted data transforms from one recipient to another through committee validators without ever decrypting onchain</desc>
+  
+  <style>
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; }
+    }
+    .bg { fill: #fafafa; }
+    .text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    .title { font-size: 14px; font-weight: 600; fill: #1a1a1a; }
+    .label { font-size: 10px; fill: #495057; }
+    .small { font-size: 9px; fill: #6c757d; }
+    .ciphertext { fill: #6c757d; }
+    .ciphertext-new { fill: #28a745; }
+    .validator { fill: #e3f2fd; stroke: #457b9d; stroke-width: 2; }
+    .validator-active { fill: #f0fdf9; stroke: #2a9d8f; stroke-width: 2; }
+    .key { fill: #fff8e1; stroke: #e9c46a; stroke-width: 1.5; }
+    .connection { stroke: #dee2e6; stroke-width: 1.5; }
+    .connection-active { stroke: #2a9d8f; stroke-width: 2; }
+    .badge { font-size: 8px; font-weight: 600; }
+    .aura { fill: #2a9d8f; opacity: 0; }
+  </style>
+  
+  <rect width="700" height="300" class="bg"/>
+  
+  <!-- Title -->
+  <text x="350" y="25" class="title text" text-anchor="middle">Re-Encryption: Transforming Ciphertext</text>
+  <text x="350" y="42" class="small text" text-anchor="middle">Original (TE) → Committee Transform → New (ECIES)</text>
+  
+  <!-- Original Ciphertext (Left) -->
+  <g transform="translate(80, 150)">
+    <!-- Aura animation -->
+    <circle cx="0" cy="0" r="50" class="aura">
+      <animate attributeName="opacity" values="0;0.2;0" dur="2s" repeatCount="indefinite"/>
+      <animate attributeName="r" values="45;55;45" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- Ciphertext blob -->
+    <rect x="-35" y="-25" width="70" height="50" rx="8" class="ciphertext"/>
+    <text x="0" y="-8" fill="white" font-size="9" text-anchor="middle" font-family="monospace">0x7f3a9e...</text>
+    <text x="0" y="5" fill="white" font-size="9" text-anchor="middle" font-family="monospace">2b8c4d...</text>
+    <text x="0" y="18" fill="white" font-size="9" text-anchor="middle" font-family="monospace">e1f5a0</text>
+    
+    <!-- TE label -->
+    <rect x="-20" y="32" width="40" height="16" rx="8" fill="#6c757d"/>
+    <text x="0" y="43" fill="white" class="badge text" text-anchor="middle">TE</text>
+    
+    <!-- Label -->
+    <text x="0" y="70" class="label text" text-anchor="middle">Original</text>
+    <text x="0" y="82" class="small text" text-anchor="middle">Threshold Encrypted</text>
+  </g>
+  
+  <!-- Validator Committee (Center) -->
+  <g transform="translate(350, 150)">
+    <!-- Connection lines between validators -->
+    <g>
+      <line x1="-40" y1="-40" x2="0" y2="0" class="connection"/>
+      <line x1="40" y1="-40" x2="0" y2="0" class="connection"/>
+      <line x1="-40" y1="40" x2="0" y2="0" class="connection"/>
+      <line x1="40" y1="40" x2="0" y2="0" class="connection"/>
+      <line x1="-40" y1="-40" x2="40" y2="-40" class="connection" opacity="0.5"/>
+      <line x1="-40" y1="40" x2="40" y2="40" class="connection" opacity="0.5"/>
+      
+      <!-- Active connection pulses -->
+      <line x1="-40" y1="-40" x2="0" y2="0" stroke="#2a9d8f" stroke-width="2" opacity="0">
+        <animate attributeName="opacity" values="0;1;0" dur="1.5s" repeatCount="indefinite"/>
+      </line>
+      <line x1="40" y1="40" x2="0" y2="0" stroke="#2a9d8f" stroke-width="2" opacity="0">
+        <animate attributeName="opacity" values="0;1;0" dur="1.5s" begin="0.5s" repeatCount="indefinite"/>
+      </line>
+    </g>
+    
+    <!-- Central coordinator -->
+    <circle cx="0" cy="0" r="18" class="validator-active">
+      <animate attributeName="r" values="18;20;18" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <text x="0" y="5" font-size="12" text-anchor="middle">⚡</text>
+    
+    <!-- Surrounding validators -->
+    <g>
+      <circle cx="-45" cy="-45" r="14" class="validator">
+        <animate attributeName="stroke" values="#457b9d;#2a9d8f;#457b9d" dur="2s" repeatCount="indefinite"/>
+      </circle>
+      <text x="-45" y="-41" font-size="10" text-anchor="middle">V1</text>
+      
+      <circle cx="45" cy="-45" r="14" class="validator">
+        <animate attributeName="stroke" values="#457b9d;#2a9d8f;#457b9d" dur="2s" begin="0.4s" repeatCount="indefinite"/>
+      </circle>
+      <text x="45" y="-41" font-size="10" text-anchor="middle">V2</text>
+      
+      <circle cx="-45" cy="45" r="14" class="validator">
+        <animate attributeName="stroke" values="#457b9d;#2a9d8f;#457b9d" dur="2s" begin="0.8s" repeatCount="indefinite"/>
+      </circle>
+      <text x="-45" y="49" font-size="10" text-anchor="middle">V3</text>
+      
+      <circle cx="45" cy="45" r="14" class="validator">
+        <animate attributeName="stroke" values="#457b9d;#2a9d8f;#457b9d" dur="2s" begin="1.2s" repeatCount="indefinite"/>
+      </circle>
+      <text x="45" y="49" font-size="10" text-anchor="middle">V4</text>
+    </g>
+    
+    <!-- Label -->
+    <text x="0" y="85" class="label text" text-anchor="middle">Validator Committee</text>
+    <text x="0" y="97" class="small text" text-anchor="middle">Threshold Re-encryption</text>
+  </g>
+  
+  <!-- New Ciphertext (Right) -->
+  <g transform="translate(620, 150)">
+    <!-- Aura animation -->
+    <circle cx="0" cy="0" r="50" fill="#28a745" opacity="0">
+      <animate attributeName="opacity" values="0;0.2;0" dur="2s" begin="1s" repeatCount="indefinite"/>
+      <animate attributeName="r" values="45;55;45" dur="2s" begin="1s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- Ciphertext blob -->
+    <rect x="-35" y="-25" width="70" height="50" rx="8" class="ciphertext-new"/>
+    <text x="0" y="-8" fill="white" font-size="9" text-anchor="middle" font-family="monospace">0x9e2b...</text>
+    <text x="0" y="5" fill="white" font-size="9" text-anchor="middle" font-family="monospace">5f7a...</text>
+    <text x="0" y="18" fill="white" font-size="9" text-anchor="middle" font-family="monospace">c3d8</text>
+    
+    <!-- ECIES label -->
+    <rect x="-22" y="32" width="44" height="16" rx="8" fill="#28a745"/>
+    <text x="0" y="43" fill="white" class="badge text" text-anchor="middle">ECIES</text>
+    
+    <!-- New recipient key icon -->
+    <rect x="25" y="-35" width="24" height="24" rx="4" class="key"/>
+    <text x="37" y="-20" font-size="10" text-anchor="middle">🔑</text>
+    
+    <!-- Label -->
+    <text x="0" y="70" class="label text" text-anchor="middle">Transformed</text>
+    <text x="0" y="82" class="small text" text-anchor="middle">To New Viewer</text>
+  </g>
+  
+  <!-- Flow arrows -->
+  <g>
+    <!-- Left to center -->
+    <path d="M125 150 L270 150" stroke="#dee2e6" stroke-width="2" marker-end="url(#arrow-gray)" fill="none"/>
+    <circle cx="180" cy="150" r="4" fill="#6c757d" opacity="0">
+      <animate attributeName="cx" values="125;270" dur="2s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="1;0" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- Center to right -->
+    <path d="M430 150 L575 150" stroke="#dee2e6" stroke-width="2" marker-end="url(#arrow-green)" fill="none"/>
+    <circle cx="480" cy="150" r="4" fill="#28a745" opacity="0">
+      <animate attributeName="cx" values="430;575" dur="2s" begin="1s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="1;0" dur="2s" begin="1s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+  
+  <defs>
+    <marker id="arrow-gray" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#6c757d"/>
+    </marker>
+    <marker id="arrow-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#28a745"/>
+    </marker>
+  </defs>
+  
+  <!-- Bottom use case badges -->
+  <g transform="translate(0, 250)">
+    <rect x="60" y="0" width="100" height="24" rx="12" fill="#e3f2fd" stroke="#457b9d" stroke-width="1"/>
+    <text x="110" y="15" class="label text" text-anchor="middle" fill="#1565c0">Info Sharing</text>
+    
+    <rect x="190" y="0" width="100" height="24" rx="12" fill="#f0fdf9" stroke="#28a745" stroke-width="1"/>
+    <text x="240" y="15" class="label text" text-anchor="middle" fill="#28a745">Delegation</text>
+    
+    <rect x="320" y="0" width="120" height="24" rx="12" fill="#fff3e0" stroke="#fd7e14" stroke-width="1"/>
+    <text x="380" y="15" class="label text" text-anchor="middle" fill="#e65100">Confidential Tokens</text>
+    
+    <rect x="470" y="0" width="100" height="24" rx="12" fill="#f3e5f5" stroke="#9c27b0" stroke-width="1"/>
+    <text x="520" y="15" class="label text" text-anchor="middle" fill="#7b1fa2">Messaging</text>
+    
+    <rect x="600" y="0" width="80" height="24" rx="12" fill="#ffebee" stroke="#e63946" stroke-width="1"/>
+    <text x="640" y="15" class="label text" text-anchor="middle" fill="#c62828">Poker Cards</text>
+  </g>
+  
+  <!-- Key transformation visualization -->
+  <g transform="translate(350, 235)">
+    <text x="0" y="0" class="small text" text-anchor="middle" fill="#6c757d">Plaintext never exposed onchain — only ciphertext transforms</text>
+  </g>
+</svg>
