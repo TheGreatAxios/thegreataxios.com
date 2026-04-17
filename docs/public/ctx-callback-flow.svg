@@ -1,196 +1,182 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 350" role="img" aria-label="Two-block conditional transaction callback flow">
-  <title>CTX Two-Block Pattern</title>
-  <desc>Conditional Transactions execute across two blocks: encrypted data submits in block N, batch decryption and callbacks fire in block N+1</desc>
-  
-  <style>
-    @media (prefers-reduced-motion: reduce) {
-      * { animation: none !important; }
-    }
-    .bg { fill: #fafafa; }
-    .text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-    .title { font-size: 13px; font-weight: 600; fill: #1a1a1a; }
-    .label { font-size: 10px; fill: #495057; }
-    .small { font-size: 9px; fill: #6c757d; }
-    .block-bg { fill: #f8f9fa; stroke: #dee2e6; stroke-width: 2; }
-    .block-n { fill: #e3f2fd; stroke: #457b9d; stroke-width: 2; }
-    .block-n1 { fill: #f0fdf9; stroke: #28a745; stroke-width: 2; }
-    .packet { fill: #6c757d; }
-    .packet-encrypted { fill: #6c757d; }
-    .packet-decrypted { fill: #28a745; }
-    .arrow { stroke: #495057; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
-    .arrow-time { stroke: #fd7e14; stroke-width: 2; stroke-dasharray: 4,2; }
-    .callback { fill: #457b9d; }
-    .clock { fill: #fd7e14; }
-  </style>
-  
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 500" role="img" aria-label="Conditional Transaction two-block pattern with BTC price trigger example">
+  <title>CTX Two-Block Pattern — BTC Trigger Example</title>
+  <desc>Conditional Transactions: encrypted condition submitted in Block N, decrypted and executed in Block N+1. Example: sell ETH when BTC hits $50K</desc>
+
   <defs>
-    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-      <polygon points="0 0, 10 3.5, 0 7" fill="#495057"/>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="1" stdDeviation="2.5" flood-color="#000" flood-opacity="0.06"/>
+    </filter>
+    <marker id="arr-dark" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <path d="M0,0 L10,3.5 L0,7" fill="#495057"/>
     </marker>
-    <marker id="arrowhead-callback" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-      <polygon points="0 0, 10 3.5, 0 7" fill="#457b9d"/>
+    <marker id="arr-orange" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <path d="M0,0 L10,3.5 L0,7" fill="#fd7e14"/>
     </marker>
+    <marker id="arr-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <path d="M0,0 L10,3.5 L0,7" fill="#28a745"/>
+    </marker>
+    <marker id="arr-teal" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <path d="M0,0 L10,3.5 L0,7" fill="#2a9d8f"/>
+    </marker>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fafbfc"/>
+      <stop offset="100%" stop-color="#f1f3f5"/>
+    </linearGradient>
   </defs>
-  
-  <rect width="900" height="350" class="bg"/>
-  
-  <!-- Block N -->
-  <rect x="50" y="60" width="280" height="240" rx="8" class="block-bg"/>
-  <rect x="50" y="60" width="280" height="36" rx="8" class="block-n"/>
-  <rect x="50" y="88" width="280" height="12" fill="#e3f2fd"/>
-  <text x="190" y="84" class="title text" text-anchor="middle" fill="#1a1a1a">Block N</text>
-  
-  <!-- Block N Content -->
+
+  <style>
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+    .text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    .badge-text { font-size: 10px; font-weight: 700; fill: white; text-anchor: middle; }
+    .node-label { font-size: 13px; font-weight: 600; fill: #495057; text-anchor: middle; }
+    .sub { font-size: 10px; fill: #adb5bd; text-anchor: middle; }
+  </style>
+
+  <rect width="1100" height="500" fill="url(#bg)" rx="16"/>
+
+  <!-- Title -->
+  <text x="550" y="32" font-size="17" font-weight="700" fill="#495057" text-anchor="middle" class="text">Conditional Transactions: The Two-Block Pattern</text>
+  <text x="550" y="52" font-size="11" fill="#adb5bd" text-anchor="middle" class="text">Example: "When BTC hits $50K, sell my ETH" — nobody sees the trigger until execution</text>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- BLOCK N (Left Card)                                 -->
+  <!-- ═══════════════════════════════════════════════════ -->
   <g>
-    <!-- User submits -->
-    <circle cx="100" cy="130" r="20" fill="#fff" stroke="#6c757d" stroke-width="1.5"/>
-    <text x="100" y="136" font-size="14" text-anchor="middle">👤</text>
-    <text x="100" y="160" class="small text" text-anchor="middle">User/Agent</text>
-    
-    <!-- Arrow to contract -->
-    <path d="M125 130 L165 130" class="arrow" marker-end="url(#arrowhead)"/>
-    
-    <!-- Contract stores encrypted data -->
-    <rect x="175" y="115" width="60" height="30" rx="4" fill="#fff" stroke="#6c757d" stroke-width="1.5"/>
-    <text x="205" y="135" class="small text" text-anchor="middle">Contract</text>
-    
-    <!-- Encrypted data packets stacking -->
-    <g>
-      <rect x="180" y="165" width="50" height="12" rx="2" class="packet-encrypted" opacity="0.9">
-        <animate attributeName="y" values="155;165" dur="1.5s" repeatCount="indefinite"/>
-        <animate attributeName="opacity" values="0;0.9;0.9" dur="1.5s" repeatCount="indefinite"/>
-      </rect>
-      <text x="205" y="173" fill="white" font-size="7" text-anchor="middle" font-family="monospace">0x9f...</text>
-      
-      <rect x="182" y="180" width="50" height="12" rx="2" class="packet-encrypted" opacity="0.7">
-        <animate attributeName="y" values="170;180" dur="1.5s" begin="0.5s" repeatCount="indefinite"/>
-        <animate attributeName="opacity" values="0;0.7;0.7" dur="1.5s" begin="0.5s" repeatCount="indefinite"/>
-      </rect>
-      <text x="207" y="188" fill="white" font-size="7" text-anchor="middle" font-family="monospace">0xa2...</text>
-      
-      <rect x="184" y="195" width="50" height="12" rx="2" class="packet-encrypted" opacity="0.5">
-        <animate attributeName="y" values="185;195" dur="1.5s" begin="1s" repeatCount="indefinite"/>
-        <animate attributeName="opacity" values="0;0.5;0.5" dur="1.5s" begin="1s" repeatCount="indefinite"/>
-      </rect>
+    <rect x="25" y="70" width="490" height="360" rx="12" fill="white" stroke="#dee2e6" stroke-width="1.5" filter="url(#shadow)"/>
+
+    <!-- Header -->
+    <rect x="25" y="70" width="490" height="40" rx="12" fill="#f8f9fa"/>
+    <rect x="25" y="98" width="490" height="12" fill="#f8f9fa"/>
+    <text x="50" y="96" font-size="15" font-weight="700" fill="#495057" class="text">Block N</text>
+    <rect x="400" y="80" width="95" height="22" rx="11" fill="#fd7e14"/>
+    <text x="447" y="95" class="badge-text text">ENCRYPT</text>
+
+    <!-- User submits condition -->
+    <g transform="translate(50, 130)">
+      <rect width="430" height="65" rx="10" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" filter="url(#shadow)"/>
+      <!-- Wallet icon -->
+      <g transform="translate(14, 12) scale(0.55)" stroke="#495057" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/>
+        <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>
+      </g>
+      <text x="40" y="24" font-size="11" font-weight="600" fill="#495057" class="text">You submit an encrypted condition:</text>
+      <text x="40" y="44" font-size="12" font-weight="700" fill="#495057" class="text">"If BTC >= $50,000 → sell 1 ETH"</text>
+      <text x="40" y="58" font-size="9" fill="#adb5bd" class="text">Only you can see this</text>
     </g>
-    <text x="205" y="220" class="small text" text-anchor="middle" fill="#6c757d">Encrypted data</text>
-    <text x="205" y="230" class="small text" text-anchor="middle" fill="#6c757d">stored in contract</text>
-    
-    <!-- submitCTX arrow -->
-    <path d="M235 130 L280 130" class="arrow" marker-end="url(#arrowhead)"/>
-    
-    <!-- submitCTX call -->
-    <rect x="290" y="115" width="70" height="30" rx="4" fill="#fff3e0" stroke="#fd7e14" stroke-width="1.5"/>
-    <text x="325" y="128" class="small text" text-anchor="middle" fill="#e65100" font-weight="600">submitCTX()</text>
-    <text x="325" y="138" class="small text" text-anchor="middle" fill="#e65100">queued</text>
-    
+
+    <!-- Arrow down -->
+    <line x1="265" y1="200" x2="265" y2="222" stroke="#495057" stroke-width="2" marker-end="url(#arr-dark)"/>
+
+    <!-- submitCTX() call -->
+    <rect x="155" y="230" width="220" height="36" rx="8" fill="white" stroke="#fd7e14" stroke-width="2" filter="url(#shadow)">
+      <animate attributeName="stroke-width" values="2;3;2" dur="2.5s" repeatCount="indefinite"/>
+    </rect>
+    <text x="265" y="253" font-size="12" font-weight="700" fill="#e65100" text-anchor="middle" class="text">submitCTX()</text>
+
+    <!-- Arrow down -->
+    <line x1="265" y1="270" x2="265" y2="292" stroke="#495057" stroke-width="2" marker-end="url(#arr-dark)"/>
+
+    <!-- Encrypted output — grey, unreadable -->
+    <rect x="100" y="300" width="330" height="50" rx="10" fill="#f1f3f5" stroke="#dee2e6" stroke-width="1.5" filter="url(#shadow)"/>
+    <!-- Lock icon -->
+    <g transform="translate(115, 310) scale(0.6)" stroke="#adb5bd" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+    </g>
+    <text x="140" y="325" font-size="12" fill="#adb5bd" font-family="monospace" class="text">0xa3f7...9e2b</text>
+    <text x="140" y="342" font-size="9" fill="#adb5bd" class="text">Encrypted — nobody can read your trigger</text>
+
+    <!-- Pulsing aura on encrypted data -->
+    <circle cx="265" cy="325" r="30" fill="#adb5bd" opacity="0">
+      <animate attributeName="r" values="30;50;30" dur="3s" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.1;0;0.1" dur="3s" repeatCount="indefinite"/>
+    </circle>
+
     <!-- Time indicator -->
-    <circle cx="325" cy="175" r="18" fill="#fff3e0" stroke="#fd7e14" stroke-width="1.5">
-      <animate attributeName="r" values="18;20;18" dur="2s" repeatCount="indefinite"/>
-    </circle>
-    <text x="325" y="180" font-size="12" text-anchor="middle">⏱️</text>
-    <text x="325" y="205" class="small text" text-anchor="middle" fill="#fd7e14">~2 sec</text>
-    <text x="325" y="215" class="small text" text-anchor="middle" fill="#6c757d">wait</text>
+    <g transform="translate(420, 360)">
+      <g transform="scale(0.5)" stroke="#fd7e14" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <polyline points="12 6 12 12 16 14"/>
+      </g>
+      <text x="18" y="12" font-size="10" font-weight="600" fill="#fd7e14" class="text">~2 sec</text>
+    </g>
   </g>
-  
-  <!-- Block N+1 -->
-  <rect x="570" y="60" width="280" height="240" rx="8" class="block-bg"/>
-  <rect x="570" y="60" width="280" height="36" rx="8" class="block-n1"/>
-  <rect x="570" y="88" width="280" height="12" fill="#f0fdf9"/>
-  <text x="710" y="84" class="title text" text-anchor="middle" fill="#1a1a1a">Block N+1</text>
-  
-  <!-- Block N+1 Content -->
+
+  <!-- ═══ Connection between blocks ═══ -->
   <g>
-    <!-- Batch decryption flash -->
-    <g>
-      <rect x="590" y="115" width="80" height="30" rx="4" fill="#f0fdf9" stroke="#28a745" stroke-width="1.5"/>
-      <text x="630" y="128" class="small text" text-anchor="middle" fill="#28a745" font-weight="600">Batch</text>
-      <text x="630" y="138" class="small text" text-anchor="middle" fill="#28a745">Decryption</text>
-      
-      <!-- Flash effect -->
-      <circle cx="630" cy="130" r="25" fill="#28a745" opacity="0">
-        <animate attributeName="r" values="25;50;25" dur="2s" repeatCount="indefinite"/>
-        <animate attributeName="opacity" values="0;0.3;0" dur="2s" repeatCount="indefinite"/>
-      </circle>
-    </g>
-    
-    <!-- Decrypted packets flowing -->
-    <g>
-      <rect x="605" y="165" width="50" height="12" rx="2" class="packet-decrypted" opacity="0">
-        <animate attributeName="y" values="155;175" dur="1.5s" repeatCount="indefinite"/>
-        <animate attributeName="opacity" values="0;1;0" dur="1.5s" repeatCount="indefinite"/>
-      </rect>
-      <text x="630" y="183" fill="white" font-size="7" text-anchor="middle">decrypted</text>
-      
-      <rect x="607" y="180" width="50" height="12" rx="2" class="packet-decrypted" opacity="0">
-        <animate attributeName="y" values="170;190" dur="1.5s" begin="0.3s" repeatCount="indefinite"/>
-        <animate attributeName="opacity" values="0;1;0" dur="1.5s" begin="0.3s" repeatCount="indefinite"/>
-      </rect>
-    </g>
-    
-    <!-- Arrow to callbacks -->
-    <path d="M680 130 L720 130" class="arrow" marker-end="url(#arrowhead)"/>
-    
-    <!-- onDecrypt callbacks -->
-    <g>
-      <rect x="730" y="115" width="70" height="22" rx="3" fill="#e3f2fd" stroke="#457b9d" stroke-width="1.5">
-        <animate attributeName="opacity" values="0.5;1;0.5" dur="1s" repeatCount="indefinite"/>
-      </rect>
-      <text x="765" y="130" class="small text" text-anchor="middle" fill="#1565c0">onDecrypt()</text>
-      
-      <rect x="730" y="145" width="70" height="22" rx="3" fill="#e3f2fd" stroke="#457b9d" stroke-width="1.5">
-        <animate attributeName="opacity" values="0.5;1;0.5" dur="1s" begin="0.3s" repeatCount="indefinite"/>
-      </rect>
-      <text x="765" y="160" class="small text" text-anchor="middle" fill="#1565c0">onDecrypt()</text>
-      
-      <rect x="730" y="175" width="70" height="22" rx="3" fill="#e3f2fd" stroke="#457b9d" stroke-width="1.5">
-        <animate attributeName="opacity" values="0.5;1;0.5" dur="1s" begin="0.6s" repeatCount="indefinite"/>
-      </rect>
-      <text x="765" y="190" class="small text" text-anchor="middle" fill="#1565c0">onDecrypt()</text>
-      
-      <!-- Arrows from callbacks -->
-      <path d="M800 126 L840 100" stroke="#457b9d" stroke-width="1.5" marker-end="url(#arrowhead-callback)" opacity="0.7">
-        <animate attributeName="opacity" values="0.3;0.8;0.3" dur="1s" repeatCount="indefinite"/>
-      </path>
-      <path d="M800 156 L840 156" stroke="#457b9d" stroke-width="1.5" marker-end="url(#arrowhead-callback)" opacity="0.7">
-        <animate attributeName="opacity" values="0.3;0.8;0.3" dur="1s" begin="0.3s" repeatCount="indefinite"/>
-      </path>
-      <path d="M800 186 L840 210" stroke="#457b9d" stroke-width="1.5" marker-end="url(#arrowhead-callback)" opacity="0.7">
-        <animate attributeName="opacity" values="0.3;0.8;0.3" dur="1s" begin="0.6s" repeatCount="indefinite"/>
-      </path>
-    </g>
-    
-    <!-- Contract recipients -->
-    <rect x="845" y="85" width="55" height="22" rx="3" fill="#fff" stroke="#6c757d" stroke-width="1"/>
-    <text x="872" y="100" class="small text" text-anchor="middle">Supplicant 1</text>
-    
-    <rect x="845" y="145" width="55" height="22" rx="3" fill="#fff" stroke="#6c757d" stroke-width="1"/>
-    <text x="872" y="160" class="small text" text-anchor="middle">Supplicant 2</text>
-    
-    <rect x="845" y="205" width="55" height="22" rx="3" fill="#fff" stroke="#6c757d" stroke-width="1"/>
-    <text x="872" y="220" class="small text" text-anchor="middle">Supplicant 3</text>
-  </g>
-  
-  <!-- Connection between blocks -->
-  <g>
-    <path d="M330 180 L570 180" class="arrow-time"/>
-    
-    <!-- Time label -->
-    <rect x="430" y="165" width="40" height="22" rx="11" fill="#fff3e0" stroke="#fd7e14" stroke-width="1.5"/>
-    <text x="450" y="180" class="label text" text-anchor="middle" fill="#e65100">~2s</text>
-    
-    <!-- Animated time arrow -->
-    <circle cx="380" cy="180" r="4" fill="#fd7e14">
-      <animate attributeName="cx" values="330;570" dur="2s" repeatCount="indefinite"/>
-      <animate attributeName="opacity" values="1;0" dur="2s" repeatCount="indefinite"/>
+    <path d="M515,250 L585,250" stroke="#fd7e14" stroke-width="2.5" stroke-dasharray="8,4" fill="none"/>
+    <circle r="6" fill="#fd7e14">
+      <animate attributeName="cx" values="515;585" dur="1.8s" calcMode="spline" keySplines="0.4 0 0.6 1" repeatCount="indefinite"/>
+      <animate attributeName="cy" values="250;250" dur="1.8s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.9;0" dur="1.8s" repeatCount="indefinite"/>
     </circle>
+    <rect x="530" y="230" width="40" height="22" rx="11" fill="#fff3e0" stroke="#fd7e14" stroke-width="1" filter="url(#shadow)"/>
+    <text x="550" y="245" font-size="10" font-weight="700" fill="#e65100" text-anchor="middle" class="text">~2s</text>
   </g>
-  
-  <!-- Bottom comparison: Chainlink VRF vs CTX -->
-  <g transform="translate(0, 315)">
-    <text x="50" y="20" class="label text" fill="#6c757d" font-size="10">vs Chainlink VRF: Multi-block (3+ confirmations) → SKALE CTX: Two-block (N→N+1)</text>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- BLOCK N+1 (Right Card)                              -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <g>
+    <rect x="585" y="70" width="490" height="360" rx="12" fill="white" stroke="#dee2e6" stroke-width="1.5" filter="url(#shadow)"/>
+
+    <!-- Header -->
+    <rect x="585" y="70" width="490" height="40" rx="12" fill="#f8f9fa"/>
+    <rect x="585" y="98" width="490" height="12" fill="#f8f9fa"/>
+    <text x="610" y="96" font-size="15" font-weight="700" fill="#495057" class="text">Block N+1</text>
+    <rect x="960" y="80" width="95" height="22" rx="11" fill="#28a745"/>
+    <text x="1007" y="95" class="badge-text text">EXECUTE</text>
+
+    <!-- Threshold Decrypt node -->
+    <g transform="translate(660, 125)">
+      <rect width="200" height="44" rx="10" fill="white" stroke="#dee2e6" stroke-width="1.5" filter="url(#shadow)"/>
+      <!-- LockOpen icon -->
+      <g transform="translate(12, 10) scale(0.6)" stroke="#2a9d8f" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+        <path d="M7 11V7a5 5 0 0 1 9.9-1"/>
+      </g>
+      <text x="35" y="24" font-size="12" font-weight="600" fill="#495057" class="text">Threshold Decrypt</text>
+      <text x="35" y="38" font-size="9" fill="#adb5bd" class="text">Validators reveal condition</text>
+    </g>
+    <!-- Pulse aura -->
+    <circle cx="760" cy="147" r="28" fill="#2a9d8f" opacity="0">
+      <animate attributeName="r" values="28;48;28" dur="2.5s" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.15;0;0.15" dur="2.5s" repeatCount="indefinite"/>
+    </circle>
+
+    <!-- Arrow down -->
+    <line x1="760" y1="175" x2="760" y2="197" stroke="#495057" stroke-width="2" marker-end="url(#arr-dark)"/>
+
+    <!-- Revealed condition — GREEN accent -->
+    <rect x="640" y="205" width="310" height="55" rx="10" fill="#f0fdf9" stroke="#28a745" stroke-width="2" filter="url(#shadow)"/>
+    <text x="795" y="228" font-size="13" font-weight="700" fill="#28a745" text-anchor="middle" class="text">BTC = $50,127</text>
+    <text x="795" y="248" font-size="11" font-weight="600" fill="#28a745" text-anchor="middle" class="text">Condition met — sell 1 ETH</text>
+
+    <!-- Arrow down -->
+    <line x1="760" y1="265" x2="760" y2="287" stroke="#495057" stroke-width="2" marker-end="url(#arr-dark)"/>
+
+    <!-- Execution result -->
+    <g transform="translate(670, 295)">
+      <rect width="220" height="44" rx="10" fill="white" stroke="#dee2e6" stroke-width="1.5" filter="url(#shadow)"/>
+      <!-- Zap icon -->
+      <g transform="translate(12, 8) scale(0.55)" stroke="#28a745" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>
+      </g>
+      <text x="40" y="24" font-size="12" font-weight="700" fill="#495057" class="text">sell 1 ETH → Executed</text>
+      <text x="40" y="38" font-size="9" fill="#adb5bd" class="text">Atomic callback fires</text>
+    </g>
+
+    <!-- Protection note -->
+    <g transform="translate(700, 365)">
+      <!-- Shield icon -->
+      <g transform="scale(0.55)" stroke="#2a9d8f" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
+      </g>
+      <text x="18" y="10" font-size="10" fill="#2a9d8f" font-weight="600" class="text">Front-run impossible</text>
+      <text x="18" y="24" font-size="9" fill="#adb5bd" class="text">Nobody knew the trigger</text>
+    </g>
   </g>
-  
-  <!-- Pattern label -->
-  <text x="450" y="340" class="title text" text-anchor="middle" fill="#1a1a1a">Two-Block CTX Pattern</text>
+
+  <!-- Bottom comparison note -->
+  <text x="550" y="465" font-size="11" fill="#adb5bd" text-anchor="middle" class="text">Like Chainlink Automation's checkUpkeep → performUpkeep, but native and encrypted</text>
 </svg>

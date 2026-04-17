@@ -19,6 +19,10 @@ Standard EVM contracts store plaintext. Anyone with a block explorer can read st
 
 The pattern:
 
+<div align="center">
+  ![CTX Two-Block Pattern](/ctx-callback-flow.svg)
+</div>
+
 1. User or agent submits encrypted data to a contract. It stays encrypted in storage.
 2. When conditions are met, the contract calls `submitCTX()`
 3. Validators batch all decryption requests from block *N*
@@ -26,18 +30,19 @@ The pattern:
 
 This is a two-block operation. The callback executes with an ephemeral sender address — not the original submitter.
 
-## Comparison: Chainlink VRF
+## Comparison: Chainlink Automation
 
-If you've worked with Chainlink VRF, the mental model is similar. Both use multi-step patterns where data isn't immediately available.
+If you've worked with [Chainlink Automation](https://chain.link/automation), the mental model is similar. Both enable condition-triggered smart contract execution. The key difference: CTX adds encryption.
 
-| Aspect | Chainlink VRF | SKALE CTX |
-|--------|---------------|-----------|
-| Pattern | Request → Oracle Wait → Fulfill | submitCTX() → Batch Decrypt → onDecrypt() |
-| Block Model | Multi-block (3+ confirmations) | Two-block (N+1) |
-| Callback | External oracle service | Native chain conditional execution |
-| Oracle Dependency | Requires off-chain VRF service | On-chain threshold decryption |
-| Finality Wait | Configurable (typically 3+ blocks) | 2 blocks |
-| Failure Mode | Callback can fail/revert | Atomic execution guaranteed |
+| Aspect | Chainlink Automation | SKALE CTX |
+|--------|---------------------|-----------|
+| Pattern | checkUpkeep() → performUpkeep() | submitCTX() → onDecrypt() |
+| Condition Check | Off-chain DON simulation (OCR3) | On-chain threshold decryption |
+| Privacy | No — upkeep data is public | Yes — data encrypted until decryption |
+| Dependency | External oracle network | Native chain infrastructure |
+| Latency | Variable (depends on DON consensus) | 2 blocks |
+| Failure Mode | performUpkeep can fail/revert | Atomic execution guaranteed |
+| Cost | Requires LINK token payments | Free (zero gas on SKALE) |
 
 CTXs target N+1 blocks. Theoretically, if a block filled completely with other transactions, decryption could take longer — but SKALE's ~268M gas limit and horizontal scaling make this practically impossible. Multiple SKALE chains run in parallel; no single chain's capacity constrains execution.
 

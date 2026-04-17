@@ -1,192 +1,373 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" role="img" aria-label="Barista test comparison: standard tokens versus confidential tokens">
-  <title>The Barista Test: Standard vs Confidential Tokens</title>
-  <desc>A side-by-side comparison showing how standard tokens expose all transaction data while confidential tokens hide balances and amounts from observers</desc>
-  
-  <style>
-    @media (prefers-reduced-motion: reduce) {
-      * { animation: none !important; }
-    }
-    .bg { fill: #fafafa; }
-    .text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-    .title { font-size: 14px; font-weight: 600; fill: #1a1a1a; }
-    .label { font-size: 10px; fill: #495057; }
-    .small { font-size: 9px; fill: #6c757d; }
-    .panel-exposed { fill: #fff5f5; stroke: #e63946; stroke-width: 2; }
-    .panel-private { fill: #f0fdf9; stroke: #2a9d8f; stroke-width: 2; }
-    .wallet { fill: white; stroke-width: 2; }
-    .balance-exposed { font-size: 16px; font-weight: 700; fill: #e63946; }
-    .balance-private { font-size: 16px; font-weight: 700; fill: #2a9d8f; }
-    .amount-exposed { fill: #e63946; font-weight: 600; }
-    .amount-private { fill: #2a9d8f; font-weight: 600; }
-    .coffee { fill: #6f4e37; }
-    .barista-sees { fill: #fff; stroke: #dee2e6; stroke-width: 1; }
-    .primitive { fill: #e3f2fd; stroke: #457b9d; stroke-width: 1.5; }
-  </style>
-  
-  <rect width="800" height="400" class="bg"/>
-  
-  <!-- Title -->
-  <text x="400" y="30" class="title text" text-anchor="middle">The Barista Test: Buying Coffee with Crypto</text>
-  
-  <!-- Divider -->
-  <line x1="400" y1="45" x2="400" y2="380" stroke="#dee2e6" stroke-width="2"/>
-  
-  <!-- LEFT PANEL: Standard Token (Exposed) -->
-  <g>
-    <rect x="30" y="45" width="350" height="330" rx="8" class="panel-exposed" fill-opacity="0.3"/>
-    
-    <!-- Panel title -->
-    <rect x="30" y="45" width="350" height="32" rx="8" fill="#ffcdd2"/>
-    <text x="205" y="66" class="title text" text-anchor="middle" fill="#c62828">Standard Token</text>
-    
-    <!-- Customer Wallet -->
-    <g transform="translate(100, 110)">
-      <rect x="-45" y="-20" width="90" height="40" rx="6" class="wallet" stroke="#e63946"/>
-      <text x="0" y="-5" class="label text" text-anchor="middle">Your Wallet</text>
-      <text x="0" y="12" class="balance-exposed text" text-anchor="middle">
-        $10,000.00
-        <animate attributeName="opacity" values="1;0.7;1" dur="3s" repeatCount="indefinite"/>
-      </text>
-    </g>
-    
-    <!-- Transaction arrow -->
-    <g transform="translate(205, 150)">
-      <path d="M0 0 L80 0" stroke="#e63946" stroke-width="2" marker-end="url(#arrow-red)" fill="none"/>
-      <rect x="20" y="-12" width="40" height="20" rx="4" fill="#ffcdd2"/>
-      <text x="40" y="0" class="amount-exposed text" text-anchor="middle" font-size="11">$5.00</text>
-      
-      <!-- Moving dot -->
-      <circle cx="20" cy="0" r="3" fill="#e63946">
-        <animate attributeName="cx" values="0;80" dur="2s" repeatCount="indefinite"/>
-      </circle>
-    </g>
-    
-    <!-- Coffee cup -->
-    <g transform="translate(320, 110)">
-      <path d="M-15 -20 L15 -20 L12 25 L-12 25 Z" fill="white" stroke="#6f4e37" stroke-width="2"/>
-      <path d="M15 -10 Q22 -10 22 0 Q22 10 15 10" fill="none" stroke="#6f4e37" stroke-width="2"/>
-      <text x="0" y="5" font-size="12" text-anchor="middle">☕</text>
-      
-      <!-- Steam -->
-      <path d="M-5 -25 Q0 -30 5 -25" fill="none" stroke="#6f4e37" stroke-width="1.5" opacity="0.6">
-        <animate attributeName="d" values="M-5 -25 Q0 -30 5 -25;M-5 -30 Q0 -35 5 -30;M-5 -25 Q0 -30 5 -25" dur="2s" repeatCount="indefinite"/>
-        <animate attributeName="opacity" values="0.6;0;0.6" dur="2s" repeatCount="indefinite"/>
-      </path>
-    </g>
-    
-    <!-- Barista sees (exposed) -->
-    <g transform="translate(205, 200)">
-      <text x="0" y="0" class="label text" text-anchor="middle" fill="#e63946">Barista Sees:</text>
-      
-      <rect x="-110" y="15" width="220" height="90" rx="6" class="barista-sees"/>
-      
-      <text x="0" y="35" class="small text" text-anchor="middle" fill="#e63946">❌ Your full balance: $10,000</text>
-      <text x="0" y="55" class="small text" text-anchor="middle" fill="#e63946">❌ Transaction amount: $5.00</text>
-      <text x="0" y="75" class="small text" text-anchor="middle" fill="#e63946">❌ All your transaction history</text>
-      <text x="0" y="93" class="small text" text-anchor="middle" fill="#e63946">❌ Spending patterns &amp; frequency</text>
-    </g>
-    
-    <!-- Warning indicator -->
-    <g transform="translate(60, 320)">
-      <circle cx="0" cy="0" r="15" fill="#e63946" opacity="0.9">
-        <animate attributeName="opacity" values="0.9;0.5;0.9" dur="2s" repeatCount="indefinite"/>
-      </circle>
-      <text x="0" y="5" font-size="14" fill="white" text-anchor="middle">!</text>
-      <text x="25" y="4" class="label text" fill="#e63946">Public blockchain data</text>
-    </g>
-  </g>
-  
-  <!-- RIGHT PANEL: Confidential Token (Private) -->
-  <g>
-    <rect x="420" y="45" width="350" height="330" rx="8" class="panel-private" fill-opacity="0.3"/>
-    
-    <!-- Panel title -->
-    <rect x="420" y="45" width="350" height="32" rx="8" fill="#c8f6e8"/>
-    <text x="595" y="66" class="title text" text-anchor="middle" fill="#1b5e20">Confidential Token</text>
-    
-    <!-- Customer Wallet -->
-    <g transform="translate(490, 110)">
-      <rect x="-45" y="-20" width="90" height="40" rx="6" class="wallet" stroke="#2a9d8f"/>
-      <text x="0" y="-5" class="label text" text-anchor="middle">Your Wallet</text>
-      <text x="0" y="12" class="balance-private text" text-anchor="middle">*** ***</text>
-      
-      <!-- Lock icon -->
-      <text x="50" y="0" font-size="14">🔒</text>
-    </g>
-    
-    <!-- Transaction arrow -->
-    <g transform="translate(595, 150)">
-      <path d="M0 0 L80 0" stroke="#2a9d8f" stroke-width="2" marker-end="url(#arrow-teal)" fill="none"/>
-      <rect x="20" y="-12" width="40" height="20" rx="4" fill="#c8f6e8"/>
-      <text x="40" y="0" class="amount-private text" text-anchor="middle" font-size="11">***</text>
-      
-      <!-- Moving dot -->
-      <circle cx="20" cy="0" r="3" fill="#2a9d8f">
-        <animate attributeName="cx" values="0;80" dur="2s" begin="0.5s" repeatCount="indefinite"/>
-      </circle>
-    </g>
-    
-    <!-- Coffee cup -->
-    <g transform="translate(710, 110)">
-      <path d="M-15 -20 L15 -20 L12 25 L-12 25 Z" fill="white" stroke="#6f4e37" stroke-width="2"/>
-      <path d="M15 -10 Q22 -10 22 0 Q22 10 15 10" fill="none" stroke="#6f4e37" stroke-width="2"/>
-      <text x="0" y="5" font-size="12" text-anchor="middle">☕</text>
-      
-      <!-- Steam -->
-      <path d="M-5 -25 Q0 -30 5 -25" fill="none" stroke="#6f4e37" stroke-width="1.5" opacity="0.6">
-        <animate attributeName="d" values="M-5 -25 Q0 -30 5 -25;M-5 -30 Q0 -35 5 -30;M-5 -25 Q0 -30 5 -25" dur="2s" begin="0.5s" repeatCount="indefinite"/>
-        <animate attributeName="opacity" values="0.6;0;0.6" dur="2s" begin="0.5s" repeatCount="indefinite"/>
-      </path>
-    </g>
-    
-    <!-- Shield/Privacy barrier -->
-    <g transform="translate(570, 160)">
-      <path d="M0 -20 Q15 -25 30 -20 L30 20 Q15 35 0 20 L0 -20" fill="none" stroke="#2a9d8f" stroke-width="2" opacity="0.5">
-        <animate attributeName="opacity" values="0.3;0.6;0.3" dur="3s" repeatCount="indefinite"/>
-      </path>
-      <text x="15" y="5" font-size="16" text-anchor="middle" fill="#2a9d8f">🛡️</text>
-    </g>
-    
-    <!-- Barista sees (private) -->
-    <g transform="translate=" translate="translate(595, 200)">
-      <text x="0" y="0" class="label text" text-anchor="middle" fill="#2a9d8f">Barista Sees:</text>
-      
-      <rect x="-110" y="15" width="220" height="90" rx="6" class="barista-sees"/>
-      
-      <text x="0" y="35" class="small text" text-anchor="middle" fill="#2a9d8f">✅ Transaction confirmed</text>
-      <text x="0" y="55" class="small text" text-anchor="middle" fill="#2a9d8f">✅ Payment received</text>
-      <text x="0" y="75" class="small text" text-anchor="middle" fill="#6c757d">❌ Your balance: ***</text>
-      <text x="0" y="93" class="small text" text-anchor="middle" fill="#6c757d">❌ Amount paid: ***</text>
-    </g>
-    
-    <!-- Protected indicator -->
-    <g transform="translate(450, 320)">
-      <circle cx="0" cy="0" r="15" fill="#2a9d8f"/>
-      <text x="0" y="5" font-size="14" fill="white" text-anchor="middle">✓</text>
-      <text x="25" y="4" class="label text" fill="#2a9d8f">Threshold encrypted</text>
-    </g>
-  </g>
-  
-  <!-- Bottom: Three Primitives -->
-  <g transform="translate(0, 365)">
-    <text x="400" y="0" class="label text" text-anchor="middle" fill="#6c757d">Built on three primitives:</text>
-    
-    <rect x="170" y="10" width="130" height="22" rx="11" class="primitive"/>
-    <text x="235" y="25" class="small text" text-anchor="middle" fill="#1565c0">1. Encrypted Transactions</text>
-    
-    <rect x="320" y="10" width="110" height="22" rx="11" class="primitive"/>
-    <text x="375" y="25" class="small text" text-anchor="middle" fill="#1565c0">2. CTX Callbacks</text>
-    
-    <rect x="450" y="10" width="110" height="22" rx="11" class="primitive"/>
-    <text x="505" y="25" class="small text" text-anchor="middle" fill="#1565c0">3. Re-encryption</text>
-  </g>
-  
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 570" role="img" aria-label="Barista Test: Fiat vs Public Blockchain vs Confidential Token privacy comparison">
+  <title>The Barista Test</title>
+  <desc>Three-row comparison showing who sees what when you buy coffee with fiat, public blockchain, and confidential tokens</desc>
+
   <defs>
-    <marker id="arrow-red" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-      <polygon points="0 0, 10 3.5, 0 7" fill="#e63946"/>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="1" stdDeviation="2.5" flood-color="#000" flood-opacity="0.06"/>
+    </filter>
+    <marker id="arr-grey" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <path d="M0,0 L10,3.5 L0,7" fill="#adb5bd"/>
     </marker>
-    <marker id="arrow-teal" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-      <polygon points="0 0, 10 3.5, 0 7" fill="#2a9d8f"/>
+    <marker id="arr-red" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <path d="M0,0 L10,3.5 L0,7" fill="#e63946"/>
     </marker>
+    <marker id="arr-teal" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <path d="M0,0 L10,3.5 L0,7" fill="#2a9d8f"/>
+    </marker>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fafbfc"/>
+      <stop offset="100%" stop-color="#f1f3f5"/>
+    </linearGradient>
   </defs>
+
+  <style>
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+    .text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    .badge-text { font-size: 10px; font-weight: 700; fill: white; text-anchor: middle; }
+    .node-label { font-size: 10px; font-weight: 600; fill: #495057; text-anchor: middle; }
+    .sub { font-size: 10px; fill: #adb5bd; }
+    .section-head { font-size: 9px; font-weight: 700; fill: #6c757d; letter-spacing: 0.5px; }
+  </style>
+
+  <rect width="1100" height="570" fill="url(#bg)" rx="16"/>
+
+  <!-- Title -->
+  <text x="550" y="35" font-size="17" font-weight="700" fill="#495057" text-anchor="middle" class="text">The Barista Test: Who Sees Your Coffee Purchase?</text>
+  <text x="550" y="55" font-size="11" fill="#adb5bd" text-anchor="middle" class="text">Same $5 coffee, three different payment systems</text>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- ROW 1: Fiat (Credit Card)                              -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <g transform="translate(0, 70)">
+    <!-- Card -->
+    <rect x="20" width="1060" height="148" rx="12" fill="white" stroke="#dee2e6" stroke-width="1.5" filter="url(#shadow)"/>
+    <!-- Header strip -->
+    <rect x="20" width="1060" height="32" rx="12" fill="#f8f9fa"/>
+    <rect x="20" y="20" width="1060" height="12" fill="#f8f9fa"/>
+    <!-- Bank icon -->
+    <g transform="translate(38, 6) scale(0.5)" stroke="#6c757d" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect width="20" height="12" x="2" y="12" rx="2"/>
+      <path d="M2 12 12 2l10 10"/>
+      <path d="M6 12v6"/><path d="M10 12v6"/><path d="M14 12v6"/><path d="M18 12v6"/>
+      <path d="M2 18h20"/>
+    </g>
+    <text x="58" y="22" font-size="13" font-weight="700" fill="#495057" class="text">Fiat (Credit Card)</text>
+    <rect x="945" y="6" width="115" height="22" rx="11" fill="#6c757d"/>
+    <text x="1002" y="21" class="badge-text text">PRIVATE</text>
+
+    <!-- ── Flow: You → Bank → Barista ── -->
+    <!-- You node -->
+    <rect x="45" y="65" width="80" height="32" rx="8" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1.5"/>
+    <g transform="translate(53, 69) scale(0.42)" stroke="#495057" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+      <circle cx="12" cy="7" r="4"/>
+    </g>
+    <text x="85" y="86" class="node-label text">You</text>
+
+    <!-- Arrow: You → Bank -->
+    <line x1="130" y1="81" x2="200" y2="81" stroke="#adb5bd" stroke-width="2" stroke-dasharray="70" stroke-dashoffset="70" marker-end="url(#arr-grey)">
+      <animate attributeName="stroke-dashoffset" values="70;0" dur="1.5s" repeatCount="indefinite"/>
+    </line>
+    <rect x="149" y="68" width="36" height="16" rx="4" fill="#f8f9fa"/>
+    <text x="167" y="80" font-size="9" font-weight="600" fill="#495057" text-anchor="middle" class="text">$5.00</text>
+
+    <!-- Bank node -->
+    <rect x="205" y="65" width="80" height="32" rx="8" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1.5"/>
+    <g transform="translate(213, 69) scale(0.42)" stroke="#6c757d" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect width="20" height="12" x="2" y="12" rx="2"/>
+      <path d="M2 12 12 2l10 10"/>
+      <path d="M6 12v6"/><path d="M10 12v6"/><path d="M14 12v6"/><path d="M18 12v6"/>
+      <path d="M2 18h20"/>
+    </g>
+    <text x="245" y="86" class="node-label text">Bank</text>
+
+    <!-- Arrow: Bank → Barista -->
+    <line x1="290" y1="81" x2="360" y2="81" stroke="#adb5bd" stroke-width="2" stroke-dasharray="70" stroke-dashoffset="70" marker-end="url(#arr-grey)">
+      <animate attributeName="stroke-dashoffset" values="70;0" dur="1.5s" begin="0.3s" repeatCount="indefinite"/>
+    </line>
+    <rect x="308" y="68" width="36" height="16" rx="4" fill="#f8f9fa"/>
+    <text x="326" y="80" font-size="9" font-weight="600" fill="#495057" text-anchor="middle" class="text">$5.00</text>
+
+    <!-- Barista node -->
+    <rect x="365" y="65" width="80" height="32" rx="8" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1.5"/>
+    <g transform="translate(373, 69) scale(0.42)" stroke="#495057" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M17 8h1a4 4 0 1 1 0 8h-1"/>
+      <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/>
+      <line x1="6" x2="6" y1="2" y2="4"/><line x1="10" x2="10" y1="2" y2="4"/><line x1="14" x2="14" y1="2" y2="4"/>
+    </g>
+    <text x="405" y="86" class="node-label text">Barista</text>
+
+    <!-- ── Divider ── -->
+    <line x1="465" y1="50" x2="465" y2="140" stroke="#e9ecef" stroke-width="1.5"/>
+
+    <!-- ── Visibility ── -->
+    <text x="490" y="62" class="section-head text">BARISTA SEES</text>
+    <g transform="translate(490, 72)">
+      <g transform="scale(0.5)" stroke="#28a745" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/>
+      </g>
+      <text x="16" y="5" font-size="11" fill="#495057" class="text">Amount ($5.00)</text>
+    </g>
+    <g transform="translate(660, 72)">
+      <g transform="scale(0.5)" stroke="#28a745" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/>
+      </g>
+      <text x="16" y="5" font-size="11" fill="#495057" class="text">Your Name</text>
+    </g>
+
+    <text x="490" y="106" class="section-head text">EVERYONE ELSE</text>
+    <g transform="translate(490, 116)">
+      <g transform="scale(0.5)" stroke="#adb5bd" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/>
+      </g>
+      <text x="16" y="5" font-size="11" fill="#adb5bd" class="text">Nothing — bank mediates privacy</text>
+    </g>
+
+    <!-- Insight -->
+    <text x="490" y="142" font-size="9" fill="#adb5bd" font-style="italic" class="text">Privacy by default — but requires trusting the bank</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- ROW 2: Public Blockchain (EXPOSED)                     -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <g transform="translate(0, 232)">
+    <!-- Card -->
+    <rect x="20" width="1060" height="148" rx="12" fill="white" stroke="#dee2e6" stroke-width="1.5" filter="url(#shadow)"/>
+    <!-- Header strip -->
+    <rect x="20" width="1060" height="32" rx="12" fill="#f8f9fa"/>
+    <rect x="20" y="20" width="1060" height="12" fill="#f8f9fa"/>
+    <!-- Link icon -->
+    <g transform="translate(38, 6) scale(0.5)" stroke="#e63946" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+    </g>
+    <text x="58" y="22" font-size="13" font-weight="700" fill="#495057" class="text">Public Blockchain</text>
+    <rect x="945" y="6" width="115" height="22" rx="11" fill="#e63946"/>
+    <text x="1002" y="21" class="badge-text text">EXPOSED</text>
+
+    <!-- ── Flow: You → Chain → Barista (with data leak) ── -->
+    <!-- You node -->
+    <rect x="45" y="65" width="80" height="32" rx="8" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1.5"/>
+    <g transform="translate(53, 69) scale(0.42)" stroke="#495057" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+      <circle cx="12" cy="7" r="4"/>
+    </g>
+    <text x="85" y="86" class="node-label text">You</text>
+
+    <!-- Arrow: You → Chain (red — data leaking) -->
+    <line x1="130" y1="81" x2="200" y2="81" stroke="#e63946" stroke-width="2" stroke-dasharray="70" stroke-dashoffset="70" marker-end="url(#arr-red)">
+      <animate attributeName="stroke-dashoffset" values="70;0" dur="1.5s" repeatCount="indefinite"/>
+    </line>
+    <rect x="149" y="68" width="36" height="16" rx="4" fill="#f8f9fa"/>
+    <text x="167" y="80" font-size="9" font-weight="600" fill="#e63946" text-anchor="middle" class="text">$5.00</text>
+
+    <!-- Data leak dots — animated red particles escaping upward -->
+    <circle r="3" fill="#e63946" opacity="0">
+      <animate attributeName="cx" values="165;165" dur="2s" repeatCount="indefinite"/>
+      <animate attributeName="cy" values="68;50" dur="2s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.7;0" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <circle r="3" fill="#e63946" opacity="0">
+      <animate attributeName="cx" values="160;155" dur="2.5s" begin="0.5s" repeatCount="indefinite"/>
+      <animate attributeName="cy" values="68;45" dur="2.5s" begin="0.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.6;0" dur="2.5s" begin="0.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle r="3" fill="#e63946" opacity="0">
+      <animate attributeName="cx" values="170;180" dur="2.2s" begin="1s" repeatCount="indefinite"/>
+      <animate attributeName="cy" values="68;48" dur="2.2s" begin="1s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.5;0" dur="2.2s" begin="1s" repeatCount="indefinite"/>
+    </circle>
+
+    <!-- Chain node -->
+    <rect x="205" y="65" width="80" height="32" rx="8" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1.5"/>
+    <g transform="translate(213, 69) scale(0.42)" stroke="#e63946" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+    </g>
+    <text x="245" y="86" class="node-label text">Chain</text>
+    <!-- Pulsing red aura on chain -->
+    <circle cx="245" cy="81" r="22" fill="#e63946" opacity="0">
+      <animate attributeName="r" values="22;34;22" dur="3s" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.15;0;0.15" dur="3s" repeatCount="indefinite"/>
+    </circle>
+
+    <!-- Arrow: Chain → Barista -->
+    <line x1="290" y1="81" x2="360" y2="81" stroke="#e63946" stroke-width="2" stroke-dasharray="70" stroke-dashoffset="70" marker-end="url(#arr-red)">
+      <animate attributeName="stroke-dashoffset" values="70;0" dur="1.5s" begin="0.3s" repeatCount="indefinite"/>
+    </line>
+    <rect x="308" y="68" width="36" height="16" rx="4" fill="#f8f9fa"/>
+    <text x="326" y="80" font-size="9" font-weight="600" fill="#e63946" text-anchor="middle" class="text">$5.00</text>
+
+    <!-- More data leak dots -->
+    <circle r="3" fill="#e63946" opacity="0">
+      <animate attributeName="cx" values="325;320" dur="2.3s" begin="0.3s" repeatCount="indefinite"/>
+      <animate attributeName="cy" values="68;46" dur="2.3s" begin="0.3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.6;0" dur="2.3s" begin="0.3s" repeatCount="indefinite"/>
+    </circle>
+    <circle r="3" fill="#e63946" opacity="0">
+      <animate attributeName="cx" values="330;340" dur="2.6s" begin="0.8s" repeatCount="indefinite"/>
+      <animate attributeName="cy" values="68;42" dur="2.6s" begin="0.8s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.5;0" dur="2.6s" begin="0.8s" repeatCount="indefinite"/>
+    </circle>
+
+    <!-- Barista node -->
+    <rect x="365" y="65" width="80" height="32" rx="8" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1.5"/>
+    <g transform="translate(373, 69) scale(0.42)" stroke="#495057" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M17 8h1a4 4 0 1 1 0 8h-1"/>
+      <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/>
+      <line x1="6" x2="6" y1="2" y2="4"/><line x1="10" x2="10" y1="2" y2="4"/><line x1="14" x2="14" y1="2" y2="4"/>
+    </g>
+    <text x="405" y="86" class="node-label text">Barista</text>
+
+    <!-- ── Divider ── -->
+    <line x1="465" y1="50" x2="465" y2="140" stroke="#e9ecef" stroke-width="1.5"/>
+
+    <!-- ── Visibility ── -->
+    <text x="490" y="62" class="section-head text" fill="#e63946">BARISTA SEES</text>
+    <g transform="translate(490, 72)">
+      <g transform="scale(0.5)" stroke="#e63946" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/>
+      </g>
+      <text x="16" y="5" font-size="11" fill="#e63946" class="text">Balance ($10,000)</text>
+    </g>
+    <g transform="translate(680, 72)">
+      <g transform="scale(0.5)" stroke="#e63946" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/>
+      </g>
+      <text x="16" y="5" font-size="11" fill="#e63946" class="text">Amount ($5.00)</text>
+    </g>
+    <g transform="translate(860, 72)">
+      <g transform="scale(0.5)" stroke="#e63946" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/>
+      </g>
+      <text x="16" y="5" font-size="11" fill="#e63946" class="text">Full History</text>
+    </g>
+
+    <text x="490" y="106" class="section-head text" fill="#e63946">EVERYONE ELSE</text>
+    <g transform="translate(490, 116)">
+      <!-- Eye icon (open) — everyone can see -->
+      <g transform="scale(0.5)" stroke="#e63946" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+        <circle cx="12" cy="12" r="3"/>
+      </g>
+      <text x="16" y="5" font-size="11" fill="#e63946" class="text">All your financial data — visible on-chain forever</text>
+    </g>
+
+    <!-- Insight -->
+    <text x="490" y="142" font-size="9" fill="#e63946" font-style="italic" class="text">Like wearing your bank statement on your forehead</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- ROW 3: Confidential Token (PROTECTED)                  -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <g transform="translate(0, 394)">
+    <!-- Card -->
+    <rect x="20" width="1060" height="148" rx="12" fill="white" stroke="#dee2e6" stroke-width="1.5" filter="url(#shadow)"/>
+    <!-- Header strip -->
+    <rect x="20" width="1060" height="32" rx="12" fill="#f8f9fa"/>
+    <rect x="20" y="20" width="1060" height="12" fill="#f8f9fa"/>
+    <!-- Shield icon -->
+    <g transform="translate(38, 6) scale(0.5)" stroke="#2a9d8f" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
+    </g>
+    <text x="58" y="22" font-size="13" font-weight="700" fill="#495057" class="text">Confidential Token</text>
+    <rect x="935" y="6" width="125" height="22" rx="11" fill="#2a9d8f"/>
+    <text x="997" y="21" class="badge-text text">PROTECTED</text>
+
+    <!-- ── Flow: You → Encrypted → Barista (with shield) ── -->
+    <!-- You node -->
+    <rect x="45" y="65" width="80" height="32" rx="8" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1.5"/>
+    <g transform="translate(53, 69) scale(0.42)" stroke="#495057" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+      <circle cx="12" cy="7" r="4"/>
+    </g>
+    <text x="85" y="86" class="node-label text">You</text>
+
+    <!-- Arrow: You → Encryption (teal) -->
+    <line x1="130" y1="81" x2="200" y2="81" stroke="#2a9d8f" stroke-width="2" stroke-dasharray="70" stroke-dashoffset="70" marker-end="url(#arr-teal)">
+      <animate attributeName="stroke-dashoffset" values="70;0" dur="1.5s" repeatCount="indefinite"/>
+    </line>
+    <rect x="146" y="68" width="40" height="16" rx="4" fill="#f8f9fa"/>
+    <text x="166" y="80" font-size="9" font-weight="600" fill="#adb5bd" text-anchor="middle" class="text">***</text>
+
+    <!-- Encryption node (shield) -->
+    <rect x="205" y="65" width="80" height="32" rx="8" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1.5"/>
+    <g transform="translate(213, 69) scale(0.42)" stroke="#2a9d8f" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
+    </g>
+    <text x="245" y="86" class="node-label text">Encrypted</text>
+    <!-- Pulsing teal aura -->
+    <circle cx="245" cy="81" r="22" fill="#2a9d8f" opacity="0">
+      <animate attributeName="r" values="22;34;22" dur="3s" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.15;0;0.15" dur="3s" repeatCount="indefinite"/>
+    </circle>
+
+    <!-- Arrow: Encryption → Barista (teal, with shield overlay) -->
+    <line x1="290" y1="81" x2="360" y2="81" stroke="#2a9d8f" stroke-width="2" stroke-dasharray="70" stroke-dashoffset="70" marker-end="url(#arr-teal)">
+      <animate attributeName="stroke-dashoffset" values="70;0" dur="1.5s" begin="0.3s" repeatCount="indefinite"/>
+    </line>
+    <rect x="305" y="68" width="42" height="16" rx="4" fill="#f8f9fa"/>
+    <text x="326" y="80" font-size="9" font-weight="600" fill="#adb5bd" text-anchor="middle" class="text">***</text>
+
+    <!-- Animated shield on flow -->
+    <g transform="translate(322, 88)">
+      <g transform="scale(0.55)" stroke="#2a9d8f" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
+      </g>
+      <circle r="12" fill="none" stroke="#2a9d8f" stroke-width="1" opacity="0">
+        <animate attributeName="r" values="10;20;10" dur="2.5s" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.3;0;0.3" dur="2.5s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+
+    <!-- Barista node -->
+    <rect x="365" y="65" width="80" height="32" rx="8" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1.5"/>
+    <g transform="translate(373, 69) scale(0.42)" stroke="#495057" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M17 8h1a4 4 0 1 1 0 8h-1"/>
+      <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/>
+      <line x1="6" x2="6" y1="2" y2="4"/><line x1="10" x2="10" y1="2" y2="4"/><line x1="14" x2="14" y1="2" y2="4"/>
+    </g>
+    <text x="405" y="86" class="node-label text">Barista</text>
+
+    <!-- ── Divider ── -->
+    <line x1="465" y1="50" x2="465" y2="140" stroke="#e9ecef" stroke-width="1.5"/>
+
+    <!-- ── Visibility ── -->
+    <text x="490" y="62" class="section-head text" fill="#2a9d8f">BARISTA SEES</text>
+    <g transform="translate(490, 72)">
+      <g transform="scale(0.5)" stroke="#28a745" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/>
+      </g>
+      <text x="16" y="5" font-size="11" fill="#495057" class="text">Amount ($5.00)</text>
+    </g>
+    <g transform="translate(660, 72)">
+      <g transform="scale(0.5)" stroke="#28a745" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/>
+      </g>
+      <text x="16" y="5" font-size="11" fill="#495057" class="text">Payment Confirmed</text>
+    </g>
+    <g transform="translate(860, 72)">
+      <g transform="scale(0.5)" stroke="#adb5bd" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/>
+      </g>
+      <text x="16" y="5" font-size="11" fill="#adb5bd" class="text">Balance: ***</text>
+    </g>
+
+    <text x="490" y="106" class="section-head text" fill="#2a9d8f">EVERYONE ELSE</text>
+    <g transform="translate(490, 116)">
+      <!-- Lock icon — encrypted -->
+      <g transform="scale(0.5)" stroke="#2a9d8f" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </g>
+      <text x="16" y="5" font-size="11" fill="#2a9d8f" class="text">Nothing — encrypted (threshold)</text>
+    </g>
+
+    <!-- Insight -->
+    <text x="490" y="142" font-size="9" fill="#2a9d8f" font-style="italic" class="text">Barista sees payment — nothing else</text>
+  </g>
+
+  <!-- Bottom insight -->
+  <text x="550" y="563" font-size="11" fill="#adb5bd" text-anchor="middle" class="text">Confidential tokens give you fiat-level privacy without trusting a bank</text>
 </svg>

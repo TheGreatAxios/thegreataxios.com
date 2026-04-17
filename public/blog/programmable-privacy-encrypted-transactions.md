@@ -40,24 +40,18 @@ Threshold encryption uses:
 
 - **AES encryption** for transaction data
 - **BLS threshold signatures** for committee-based decryption
-- **Supermajority consensus** — 11/16 validators required
+- **Supermajority consensus** — >2/3 of validators required
 - **Automatic decryption** post-finalization
 
 The result: 100% mempool privacy. No front-running. No sandwich attacks. No back-running.
 
 ## How It Works
 
-A standard transaction flows like this:
+<div align="center">
+  ![Transaction Flow Comparison](/encrypted-transactions-flow.svg)
+</div>
 
-```
-Wallet → Mempool (visible) → Validator (visible) → Block (visible)
-```
-
-With encrypted transactions:
-
-```
-Wallet → Encrypt (AES + BLS) → Mempool (ciphertext) → Consensus (ciphertext) → Decrypt at Finalization → Execute
-```
+The left side shows the vulnerability: transactions broadcast in plaintext to the mempool, visible to MEV bots that can sandwich attack. The right side shows encrypted transactions: amounts and destinations remain hidden until finalization.
 
 The committee public key encrypts. The committee private key — split across validators via threshold cryptography — decrypts. No single validator can decrypt alone. No external infrastructure required.
 

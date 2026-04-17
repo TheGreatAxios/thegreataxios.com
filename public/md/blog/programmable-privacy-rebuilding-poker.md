@@ -4,14 +4,14 @@ authors:
     - "thegreataxios"
 date: 2026-04-15
 title: "I Built Poker That Actually Works Onchain"
-description: "Poker failed onchain because cards were visible. I rebuilt it with dual encryption, CTX callbacks, and 6 AI agents — live demo at confidential-poker.vercel.app."
+description: "Poker failed onchain because cards were visible. I rebuilt it with dual encryption, CTX callbacks, and autonomous agents — live demo at confidential-poker.vercel.app."
 ---
 
 # I Built Poker That Actually Works Onchain
 
 Poker failed onchain because cards were visible. Every attempt — state channels, commit-reveal schemes, TEEs — compromised on speed, trust, or decentralization. Threshold encryption fixes this.
 
-The live demo is running now: [confidential-poker.vercel.app](https://confidential-poker.vercel.app). Six AI agents play Texas Hold'em with encrypted hole cards, threshold-encrypted community cards, and onchain settlement. This is what programmable privacy enables — fair gaming with no trusted intermediaries.
+The live demo is running now: [confidential-poker.vercel.app](https://confidential-poker.vercel.app). AI agents play Texas Hold'em with encrypted hole cards, threshold-encrypted community cards, and onchain settlement. This is what programmable privacy enables — fair gaming with no trusted intermediaries.
 
 ## Why Poker Needs Privacy
 
@@ -85,62 +85,15 @@ function onDecrypt(uint256[] memory decryptedCards, bytes memory args) external 
 
 Same pattern for turn (1 card) and river (1 card). Each phase queues in one block, decrypts and executes in the next.
 
-### The 6 AI Agents
-
-Six personalities play against each other and human opponents:
-
-| Agent | Style | Aggression | Bluff Frequency | Key Trait |
-|-------|-------|------------|-----------------|-----------|
-| 🦈 Sharky | Tight-Aggressive (TAG) | 0.75 | 10% | Waits for premium hands, punishes weakness |
-| 🦊 Sly | Loose-Aggressive (LAG) | 0.85 | 45% | Exploits table dynamics, aggressive bluffer |
-| 🦉 Professor | Tight-Passive | 0.30 | 5% | Mathematical, only plays statistically sound hands |
-| 🐂 Thunder | Maniac | 0.90 | 40% | Calling station, unpredictable, hard to bluff |
-| 🐱 Whiskers | Balanced/GTO | 0.60 | 35% | Game theory optimal, maximally unpredictable |
-| 🐺 Alpha | Adaptive | 0.70 | 25% | Tracks opponent patterns, adjusts in real-time |
-
-Each agent runs through a decision engine that evaluates:
-
-- Hand strength (via HandEvaluator)
-- Pot odds and expected value
-- Opponent modeling (betting patterns, aggression stats)
-- Bluff frequency (weighted by personality)
-
-The result is a table that feels like playing against distinct human opponents — tight players fold to pressure, loose players chase draws, adaptive players exploit patterns.
-
 ## Architecture Overview
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                     Frontend (Vite/React 19)                │
-│  - 16 React components                                        │
-│  - Real-time game state via WebSocket                         │
-│  - Player actions (fold, check, call, raise)                │
-└─────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────┐
-│                    Server (Hono/TypeScript)                   │
-│  - REST API for game actions                                  │
-│  - Game orchestrator (hand flow, betting rounds)              │
-│  - AI decision engine integration                             │
-│  - Blockchain interaction (contract calls)                    │
-└─────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────┐
-│                  Smart Contracts (Foundry)                    │
-│  - PokerGame: Game state and hand management                 │
-│  - HandEvaluator: Hand ranking and winner logic             │
-│  - MockSKL: Test token for betting                           │
-└─────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────┐
-│                    Programmable Privacy                        │
-│  - Dual encryption (TE + ECIES) at deal time                  │
-│  - CTX callbacks for community cards (N+1 blocks)           │
-│  - Threshold decryption at showdown                         │
-└─────────────────────────────────────────────────────────────┘
-```
+<div align="center">
+  ![Poker Architecture](/poker-architecture.svg)
+</div>
 
 The server handles game orchestration because card dealing requires sequential operations that don't fit single transactions. The contracts hold truth — game state, encrypted cards, betting balances. The server translates between player actions and onchain state.
+
+Six AI agent personalities run in the server layer — each with distinct aggression levels, bluff frequencies, and playing styles. They evaluate hand strength, pot odds, and opponent patterns through a unified decision engine.
 
 ## Dual Encryption in Practice
 

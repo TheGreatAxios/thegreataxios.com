@@ -31,6 +31,10 @@ The technology isn't new — it's the combination of three existing primitives a
 
 ## The Three Primitives
 
+<div align="center">
+  ![Barista Test Comparison](/confidential-tokens-comparison.svg)
+</div>
+
 **1. Encrypting Intent: The Agent Infrastructure Gap**
 
 Transfer calls encrypt the amount. The mempool sees only ciphertext. Validators reach consensus without knowing transfer values.

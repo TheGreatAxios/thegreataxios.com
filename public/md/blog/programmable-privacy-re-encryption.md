@@ -44,6 +44,10 @@ Re-encryption bridges these. Data encrypted via TE can be re-encrypted to any EC
 
 The cryptographic foundation is ECIES (Elliptic Curve Integrated Encryption Scheme) combined with BLS threshold signatures.
 
+<div align="center">
+  ![Re-encryption Flow](/reencryption-flow.svg)
+</div>
+
 ```
 Original Ciphertext (TE) → Committee Re-encryption → New Ciphertext (ECIES to viewer key)
 ```
