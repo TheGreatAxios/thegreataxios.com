@@ -63,23 +63,24 @@ The flop, turn, and river deal via CTX callbacks:
 function dealFlop() external {
     // Three cards, encrypted to committee
     bytes[3] memory encryptedCards = encryptCards(3);
-    
+
     // Submit CTX for batch decryption
     BITE.submitCTX(
         BITE.SUBMIT_CTX_ADDRESS,
-        gasleft(),
+        gasLimit,
         abi.encode(encryptedCards),
-        abi.encode(communityCardsRound: 1)
+        abi.encode(uint8(3)) // card count
     );
 }
 
-function onDecrypt(uint256[] memory decryptedCards, bytes memory args) external {
+function onDecrypt(bytes[] calldata decryptedArguments, bytes[] calldata plaintextArguments) external {
     // Executed in next block with decrypted cards
-    communityCards[0] = decryptedCards[0];
-    communityCards[1] = decryptedCards[1];
-    communityCards[2] = decryptedCards[2];
-    
-    emit FlopDealt(decryptedCards);
+    uint8[52] memory liveDeck = abi.decode(decryptedArguments[0], (uint8[52]));
+    communityCards[0] = liveDeck[deckPosition];
+    communityCards[1] = liveDeck[deckPosition + 1];
+    communityCards[2] = liveDeck[deckPosition + 2];
+
+    emit FlopDealt(communityCards[0], communityCards[1], communityCards[2]);
 }
 ```
 
@@ -135,6 +136,14 @@ This is the foundation for fair onchain gaming — not just poker, but any game 
 The repository is open source. If you're building confidential games, agent systems, or encrypted data flows, the patterns here are ready to adapt.
 
 I'm actively building on SKALE daily. DM me if you want to walk through the implementation, integrate threshold encryption into your game, or explore confidential agent patterns.
+
+---
+
+<h2 id="sources">Sources</h2>
+
+1. SKALE BITE Documentation, [https://docs.skale.space](https://docs.skale.space)
+2. SKALE BITE Solidity Library, [github.com/skalenetwork/bite-solidity](https://github.com/skalenetwork/bite-solidity)
+3. Confidential Poker Source Code, [github.com/TheGreatAxios/confidential-poker](https://github.com/TheGreatAxios/confidential-poker)
 
 ---
 

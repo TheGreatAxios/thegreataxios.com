@@ -65,8 +65,8 @@ Contracts that receive CTX callbacks implement a standard interface:
 ```solidity
 interface IBiteSupplicant {
     function onDecrypt(
-        uint256 decryptedValue,
-        bytes memory plaintextArgs
+        bytes[] calldata decryptedArguments,
+        bytes[] calldata plaintextArguments
     ) external;
 }
 ```

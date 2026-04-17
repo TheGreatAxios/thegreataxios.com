@@ -11,9 +11,9 @@ description: "Your AI agent broadcasts every move to competitors. Encrypted tran
 
 ::authors
 
-$540.54M extracted from [Ethereum](https://ethereum.org) users over 32 months. [[1]](#sources) That's the documented cost of [mempool](https://ethereum.org/en/developers/docs/transactions/#the-transaction-pool) visibility — your transactions broadcast in plaintext to every validator, every searcher, every [MEV](https://ethereum.org/en/developers/docs/mev/) bot. Encrypted transactions change this entirely.
+MEV bots consume over **50% of gas** on leading L2s while paying less than 10% of fees. [[1]](#sources) That's the documented cost of [mempool](https://ethereum.org/en/developers/docs/transactions/#the-transaction-pool) visibility — your transactions broadcast in plaintext to every validator, every searcher, every [MEV](https://ethereum.org/en/developers/docs/mev/) bot. Encrypted transactions change this entirely.
 
-[SKALE](https://skale.space) embeds [threshold encryption](https://docs.skale.space/learn/advanced-features/encrypted-transactions) into [consensus](https://ethereum.org/en/developers/docs/consensus-mechanisms/). Validators see ciphertext, not [calldata](https://ethereum.org/en/developers/docs/data-availability/). Amounts, destinations, and intents remain encrypted until a supermajority collaborates to decrypt. This is not a [Layer 2](https://ethereum.org/en/developers/docs/scaling/) add-on or an external oracle — it's protocol-level privacy with zero [Solidity](https://docs.soliditylang.org/) changes required.
+[SKALE](https://skale.space) embeds [threshold encryption](https://docs.skale.space/learn/advanced-features/encrypted-transactions) into [consensus](https://ethereum.org/en/developers/docs/consensus-mechanisms/). Validators see ciphertext, not [calldata](https://ethereum.org/en/developers/docs/data-availability/). Amounts, destinations, and intents remain encrypted until a supermajority collaborates to decrypt. This is not a [Layer 2](https://ethereum.org/en/developers/docs/scaling/) add-on or an external oracle — it's protocol-level privacy with zero [Solidity](https://docs.soliditylang.org/) changes required. No TEEs, no external infrastructure.
 
 ## The MEV Problem
 
@@ -21,16 +21,16 @@ MEV (Maximal Extractable Value) is profit extracted from transaction ordering. T
 
 | Attack Type | Documented Impact | Source |
 |-------------|-------------------|--------|
-| Uniswap Sandwich Attacks | $540.54M over 32 months [[1]](#sources) | Qin et al., [arXiv:2101.05511](https://arxiv.org/abs/2101.05511) |
-| Generalized Frontrunning | $35.37M extracted [[1]](#sources) | Qin et al. |
-| Single Largest BEV | $4.1M in one transaction [[1]](#sources) | Qin et al. |
-| Lien Finance Rescue | $9.6M at risk [[2]](#sources) | [samczsun](https://x.com/samczsun), [Paradigm](https://paradigm.xyz) |
-| Dark Forest Incident | $12K lost [[3]](#sources) | [Paradigm](https://paradigm.xyz) |
-| Expected BEV (Clockwork) | $56M/month [[4]](#sources) | Babel et al., IEEE S&P 2023 |
+| L2 Spam (gas consumption) | **over 50% of all gas** on top rollups, paying **under 10% of fees** [[1]](#sources) | Flashbots, Jun 2025 |
+| Solana MEV bots | **40% of blockspace** consumed by MEV bots [[1]](#sources) | Flashbots, Jun 2025 |
+| Base scaling waste | **11M gas/s** added Nov 2024–Feb 2025, almost all captured by spam [[1]](#sources) | Flashbots, Jun 2025 |
+| Arbitrage efficiency gap | **650x** — same outcome costs 200K gas vs 130M gas on Base [[1]](#sources) | Flashbots, Jun 2025 |
+| Builder concentration | **80–90%** of Ethereum blocks from top 2 builders [[2]](#sources) | Oblivious Labs + Flashbots, Jun 2025 |
+| Spam market concentration | **2 searchers** responsible for **over 80%** of spam on Base [[1]](#sources) | Flashbots, Jun 2025 |
 
 The mechanics are straightforward. A bot sees your swap transaction in the mempool. It front-runs with the same trade, driving up the price. Your transaction executes at the worse rate. The bot back-runs to capture the spread. This is a sandwich attack — profitable, legal, and entirely extractive.
 
-[Flash Boys 2.0](https://arxiv.org/abs/1904.05234) [[5]](#sources) established the academic foundation. Daian et al. quantified the first systematic MEV extraction in 2019. The research has only accelerated since.
+[Flashbots' "MEV and the Limits of Scaling"](https://writings.flashbots.net/mev-and-the-limits-of-scaling) [[1]](#sources) quantified the shift from mainnet sandwich attacks to L2 spam: onchain searching now consumes most capacity on high-throughput chains. The research has only accelerated since.
 
 ## What Encrypted Transactions Solve
 
@@ -43,7 +43,7 @@ Threshold encryption uses:
 - **Supermajority consensus** — >2/3 of validators required
 - **Automatic decryption** post-finalization
 
-The result: 100% mempool privacy. No front-running. No sandwich attacks. No back-running.
+The result: full mempool privacy during consensus. No front-running. No sandwich attacks. No back-running.
 
 ## How It Works
 
@@ -85,12 +85,8 @@ That's it. No contract rewrites. No circuit languages. No proving systems.
 
 <h2 id="sources">Sources</h2>
 
-1. Qin et al., "Quantifying Blockchain Extractable Value: How dark is the forest?" [arXiv:2101.05511](https://arxiv.org/abs/2101.05511), 2021.
+1. Flashbots, "MEV and the Limits of Scaling," June 16, 2025. [https://writings.flashbots.net/mev-and-the-limits-of-scaling](https://writings.flashbots.net/mev-and-the-limits-of-scaling)
 
-2. samczsun, "Escaping the Dark Forest," September 2020. [https://samczsun.com/escaping-the-dark-forest/](https://samczsun.com/escaping-the-dark-forest/)
+2. Oblivious Labs + Flashbots, "Scalable Oblivious Accesses to Blockchain Data," June 2, 2025. [https://writings.flashbots.net/scalable-oblivious-accesses-to-blockchain-data](https://writings.flashbots.net/scalable-oblivious-accesses-to-blockchain-data)
 
-3. Paradigm, "Ethereum is a Dark Forest," August 2020. [https://www.paradigm.xyz/2020/08/ethereum-is-a-dark-forest](https://www.paradigm.xyz/2020/08/ethereum-is-a-dark-forest)
-
-4. Babel et al., "Clockwork Finance: Automated Analysis of Economic Security in Smart Contracts," IEEE S&P 2023, [arXiv:2109.04347](https://arxiv.org/abs/2109.04347).
-
-5. Daian et al., "Flash Boys 2.0: Frontrunning in Decentralized Exchanges, Miner Extractable Value, and Consensus Instability," IEEE S&P 2020, [arXiv:1904.05234](https://arxiv.org/abs/1904.05234).
+3. Flashbots, "Decentralized Building: Wat Do?," February 14, 2026. [https://writings.flashbots.net/decentralized-building-wat-do](https://writings.flashbots.net/decentralized-building-wat-do)
