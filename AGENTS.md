@@ -77,6 +77,43 @@ Vocs-based static documentation site/blog for thegreataxios.com. Built with Reac
 - Minimal adjectives, action-oriented
 - Declarative sentences preferred
 
+## Voice & Writing Style
+
+### Tone
+- Direct and declarative — state the thesis immediately
+- Technical and developer-focused — assume EVM/blockchain knowledge
+- Concise: no fluff, no filler phrases
+- First-person perspective when sharing beliefs or experiences
+- Action-oriented, minimal adjectives
+
+### Structural Patterns
+- **Opening:** 1-2 sentence hook stating the core problem/insight
+- **Problem Definition:** Concrete, specific language
+- **Technical Explanation:** Mechanics first, theory second
+- **Examples:** Real code, real use cases
+- **Comparison Tables:** For contrasting approaches
+- **Closing:** Direct CTA ("reach out", "DM me", "build this")
+
+### Language Guidelines
+- Short paragraphs (2-4 sentences maximum)
+- Use em dashes for emphasis — like this
+- Industry terminology used naturally without explanation
+- No hedging language ("maybe", "perhaps", "I think")
+- Bullet points for lists
+- Tables for multi-dimensional comparisons
+
+### Forbidden Patterns
+- ❌ "In this blog post, we will explore..."
+- ❌ "It's important to note that..."
+- ❌ Long theoretical introductions
+- ❌ Passive voice constructions
+- ❌ Generic conclusions
+
+### CTAs to Use
+- "If you're building X, reach out"
+- "DM me and I'll help you integrate"
+- "I'm working on this daily — happy to walk through patterns"
+
 ## File Organization
 
 ```

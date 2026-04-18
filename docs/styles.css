@@ -7,3 +7,10 @@
 :root.dark {
     color-scheme: light !important;
 }
+
+/* Ensure SVG animations display at proper size */
+.vocs_Content img[src$=".svg"] {
+    width: 100%;
+    max-width: 900px;
+    height: auto;
+}

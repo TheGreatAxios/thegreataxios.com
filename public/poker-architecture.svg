@@ -1,0 +1,333 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" role="img" aria-label="Confidential Poker architecture diagram">
+  <title>Confidential Poker: System Architecture</title>
+  <desc>Four-layer architecture: Frontend, Server with AI Agents, Smart Contracts, and Programmable Privacy with dual encryption</desc>
+
+  <defs>
+    <!-- Soft shadow -->
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.08"/>
+    </filter>
+    
+    <!-- Arrow marker -->
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0,0 L10,5 L0,10 L2,5 Z" fill="#6c757d"/>
+    </marker>
+    
+    <!-- Green arrow for encryption flow -->
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0,0 L10,5 L0,10 L2,5 Z" fill="#2a9d8f"/>
+    </marker>
+    
+    <!-- Blue arrow for data flow -->
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0,0 L10,5 L0,10 L2,5 Z" fill="#457b9d"/>
+    </marker>
+
+    <!-- Gradients -->
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fafbfc"/>
+      <stop offset="100%" stop-color="#f1f3f5"/>
+    </linearGradient>
+    
+    <linearGradient id="panel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f8f9fa"/>
+    </linearGradient>
+
+    <linearGradient id="encrypt-gradient" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#2a9d8f" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#2a9d8f" stop-opacity="0.05"/>
+    </linearGradient>
+  </defs>
+
+  <style>
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; }
+    }
+    .text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    .label { font-size: 12px; font-weight: 600; fill: #495057; }
+    .sublabel { font-size: 10px; fill: #6c757d; }
+    .node-text { font-size: 9px; fill: #495057; text-anchor: middle; font-weight: 500; }
+  </style>
+
+  <!-- Background -->
+  <rect width="900" height="600" fill="url(#bg)" rx="12"/>
+
+  <!-- Title -->
+  <text x="450" y="30" font-size="16" font-weight="700" fill="#1a1a1a" text-anchor="middle" class="text">
+    Confidential Poker Architecture
+  </text>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- LAYER 1: Frontend -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <g transform="translate(50, 55)">
+    <rect x="0" y="0" width="800" height="75" rx="10" fill="url(#panel)" stroke="#dee2e6" stroke-width="1.5" filter="url(#shadow)"/>
+    
+    <!-- Monitor icon -->
+    <g transform="translate(15, 15)" stroke="#495057" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2" y="3" width="20" height="14" rx="2"/>
+      <line x1="8" y1="21" x2="16" y2="21"/>
+      <line x1="12" y1="17" x2="12" y2="21"/>
+    </g>
+
+    <text x="45" y="28" class="label text">1. Frontend</text>
+    <text x="45" y="44" class="sublabel text">Vite + React 19 · WebSocket · Real-time State</text>
+    
+    <!-- Component boxes -->
+    <g transform="translate(450, 15)">
+      <rect x="0" y="0" width="100" height="45" rx="6" fill="#fff" stroke="#dee2e6" stroke-width="1"/>
+      <text x="50" y="20" class="node-text text">16 Components</text>
+      <text x="50" y="35" font-size="8" fill="#adb5bd" text-anchor="middle" class="text">UI Layer</text>
+    </g>
+    <g transform="translate(560, 15)">
+      <rect x="0" y="0" width="100" height="45" rx="6" fill="#fff" stroke="#dee2e6" stroke-width="1"/>
+      <text x="50" y="20" class="node-text text">WebSocket</text>
+      <text x="50" y="35" font-size="8" fill="#adb5bd" text-anchor="middle" class="text">Real-time</text>
+    </g>
+    <g transform="translate(670, 15)">
+      <rect x="0" y="0" width="110" height="45" rx="6" fill="#fff" stroke="#dee2e6" stroke-width="1"/>
+      <text x="55" y="20" class="node-text text">ECIES Decrypt</text>
+      <text x="55" y="35" font-size="8" fill="#adb5bd" text-anchor="middle" class="text">Client-side</text>
+    </g>
+  </g>
+
+  <!-- Flow arrow 1 → 2 -->
+  <g transform="translate(450, 130)">
+    <line x1="0" y1="0" x2="0" y2="25" stroke="#6c757d" stroke-width="2" marker-end="url(#arrow)"/>
+    <!-- Animated packet -->
+    <circle r="4" fill="#457b9d" opacity="0">
+      <animate attributeName="cy" values="0;25" dur="1.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1"/>
+      <animate attributeName="opacity" values="0;1;0" dur="1.5s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- LAYER 2: Server + AI Agents -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <g transform="translate(50, 160)">
+    <rect x="0" y="0" width="800" height="100" rx="10" fill="url(#panel)" stroke="#dee2e6" stroke-width="1.5" filter="url(#shadow)"/>
+    
+    <!-- Server icon -->
+    <g transform="translate(15, 12)" stroke="#495057" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2" y="2" width="20" height="8" rx="2"/>
+      <rect x="2" y="14" width="20" height="8" rx="2"/>
+      <line x1="6" y1="6" x2="6.01" y2="6"/>
+      <line x1="6" y1="18" x2="6.01" y2="18"/>
+    </g>
+
+    <text x="45" y="25" class="label text">2. Server + AI Agents</text>
+    <text x="45" y="42" class="sublabel text">Hono + TypeScript · Game Orchestrator · AI Decision Engine</text>
+
+    <!-- AI Agents cluster -->
+    <g transform="translate(450, 15)">
+      <!-- Connection lines between agents -->
+      <line x1="35" y1="35" x2="95" y2="35" stroke="#dee2e6" stroke-width="1" stroke-dasharray="3,2">
+        <animate attributeName="stroke-dashoffset" values="0;10" dur="2s" repeatCount="indefinite"/>
+      </line>
+      <line x1="95" y1="35" x2="155" y2="35" stroke="#dee2e6" stroke-width="1" stroke-dasharray="3,2">
+        <animate attributeName="stroke-dashoffset" values="0;10" dur="2s" repeatCount="indefinite"/>
+      </line>
+      <line x1="65" y1="55" x2="125" y2="55" stroke="#dee2e6" stroke-width="1" stroke-dasharray="3,2">
+        <animate attributeName="stroke-dashoffset" values="0;10" dur="2s" begin="0.5s" repeatCount="indefinite"/>
+      </line>
+
+      <!-- Agent 1 -->
+      <g transform="translate(5, 15)">
+        <circle cx="20" cy="20" r="16" fill="#fff" stroke="#2a9d8f" stroke-width="2">
+          <animate attributeName="stroke-width" values="2;3;2" dur="2s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/>
+        </circle>
+        <g transform="translate(11, 8) scale(0.45)" stroke="#495057" fill="none" stroke-width="2">
+          <circle cx="12" cy="8" r="5"/>
+          <path d="M3 21v-2a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v2"/>
+        </g>
+      </g>
+      <!-- Agent 2 -->
+      <g transform="translate(65, 15)">
+        <circle cx="20" cy="20" r="16" fill="#fff" stroke="#457b9d" stroke-width="2">
+          <animate attributeName="stroke-width" values="2;3;2" dur="2s" begin="0.3s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/>
+        </circle>
+        <g transform="translate(11, 8) scale(0.45)" stroke="#495057" fill="none" stroke-width="2">
+          <circle cx="12" cy="8" r="5"/>
+          <path d="M3 21v-2a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v2"/>
+        </g>
+      </g>
+      <!-- Agent 3 -->
+      <g transform="translate(125, 15)">
+        <circle cx="20" cy="20" r="16" fill="#fff" stroke="#e63946" stroke-width="2">
+          <animate attributeName="stroke-width" values="2;3;2" dur="2s" begin="0.6s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/>
+        </circle>
+        <g transform="translate(11, 8) scale(0.45)" stroke="#495057" fill="none" stroke-width="2">
+          <circle cx="12" cy="8" r="5"/>
+          <path d="M3 21v-2a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v2"/>
+        </g>
+      </g>
+      <!-- Agent 4 -->
+      <g transform="translate(35, 50)">
+        <circle cx="20" cy="20" r="16" fill="#fff" stroke="#fd7e14" stroke-width="2">
+          <animate attributeName="stroke-width" values="2;3;2" dur="2s" begin="0.9s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/>
+        </circle>
+        <g transform="translate(11, 8) scale(0.45)" stroke="#495057" fill="none" stroke-width="2">
+          <circle cx="12" cy="8" r="5"/>
+          <path d="M3 21v-2a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v2"/>
+        </g>
+      </g>
+      <!-- Agent 5 -->
+      <g transform="translate(95, 50)">
+        <circle cx="20" cy="20" r="16" fill="#fff" stroke="#6f42c1" stroke-width="2">
+          <animate attributeName="stroke-width" values="2;3;2" dur="2s" begin="1.2s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/>
+        </circle>
+        <g transform="translate(11, 8) scale(0.45)" stroke="#495057" fill="none" stroke-width="2">
+          <circle cx="12" cy="8" r="5"/>
+          <path d="M3 21v-2a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v2"/>
+        </g>
+      </g>
+      
+      <!-- Label -->
+      <text x="75" y="95" font-size="9" fill="#6c757d" text-anchor="middle" class="text">Autonomous Agents</text>
+    </g>
+
+    <!-- REST API badge -->
+    <g transform="translate(680, 35)">
+      <rect x="0" y="0" width="100" height="30" rx="15" fill="#e3f2fd" stroke="#457b9d" stroke-width="1"/>
+      <text x="50" y="20" class="node-text text" fill="#457b9d">REST API</text>
+    </g>
+  </g>
+
+  <!-- Flow arrow 2 → 3 -->
+  <g transform="translate(450, 260)">
+    <line x1="0" y1="0" x2="0" y2="25" stroke="#6c757d" stroke-width="2" marker-end="url(#arrow)"/>
+    <circle r="4" fill="#457b9d" opacity="0">
+      <animate attributeName="cy" values="0;25" dur="1.5s" begin="0.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1"/>
+      <animate attributeName="opacity" values="0;1;0" dur="1.5s" begin="0.5s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- LAYER 3: Smart Contracts -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <g transform="translate(50, 290)">
+    <rect x="0" y="0" width="800" height="75" rx="10" fill="url(#panel)" stroke="#dee2e6" stroke-width="1.5" filter="url(#shadow)"/>
+    
+    <!-- Code file icon -->
+    <g transform="translate(15, 15)" stroke="#495057" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>
+      <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
+      <path d="m10 13-2 2 2 2"/>
+      <path d="m14 17 2-2-2-2"/>
+    </g>
+
+    <text x="45" y="28" class="label text">3. Smart Contracts</text>
+    <text x="45" y="44" class="sublabel text">Foundry · SKALE Base Sepolia</text>
+
+    <!-- Contract boxes -->
+    <g transform="translate(450, 15)">
+      <rect x="0" y="0" width="105" height="45" rx="6" fill="#fff" stroke="#dee2e6" stroke-width="1"/>
+      <text x="52" y="20" class="node-text text">PokerGame.sol</text>
+      <text x="52" y="35" font-size="8" fill="#adb5bd" text-anchor="middle" class="text">Game State</text>
+    </g>
+    <g transform="translate(565, 15)">
+      <rect x="0" y="0" width="105" height="45" rx="6" fill="#fff" stroke="#dee2e6" stroke-width="1"/>
+      <text x="52" y="20" class="node-text text">HandEvaluator</text>
+      <text x="52" y="35" font-size="8" fill="#adb5bd" text-anchor="middle" class="text">Winner Logic</text>
+    </g>
+    <g transform="translate(680, 15)">
+      <rect x="0" y="0" width="105" height="45" rx="6" fill="#fff" stroke="#dee2e6" stroke-width="1"/>
+      <text x="52" y="20" class="node-text text">MockSKL.sol</text>
+      <text x="52" y="35" font-size="8" fill="#adb5bd" text-anchor="middle" class="text">Betting Token</text>
+    </g>
+  </g>
+
+  <!-- Flow arrow 3 → 4 -->
+  <g transform="translate(450, 365)">
+    <line x1="0" y1="0" x2="0" y2="25" stroke="#6c757d" stroke-width="2" marker-end="url(#arrow)"/>
+    <circle r="4" fill="#2a9d8f" opacity="0">
+      <animate attributeName="cy" values="0;25" dur="1.5s" begin="1s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1"/>
+      <animate attributeName="opacity" values="0;1;0" dur="1.5s" begin="1s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- LAYER 4: Programmable Privacy -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <g transform="translate(50, 395)">
+    <rect x="0" y="0" width="800" height="105" rx="10" fill="url(#panel)" stroke="#dee2e6" stroke-width="1.5" filter="url(#shadow)"/>
+    
+    <!-- Shield icon -->
+    <g transform="translate(15, 12)" stroke="#2a9d8f" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
+    </g>
+
+    <text x="45" y="28" class="label text" fill="#2a9d8f">4. Programmable Privacy</text>
+    <text x="45" y="44" class="sublabel text">Dual Encryption · CTX Callbacks · Threshold Decryption</text>
+
+    <!-- Encryption visualization -->
+    <g transform="translate(180, 55)">
+      <!-- Input card -->
+      <rect x="0" y="0" width="32" height="44" rx="4" fill="#fff" stroke="#e63946" stroke-width="1.5"/>
+      <text x="6" y="14" font-size="10" fill="#e63946" font-weight="700" class="text">A</text>
+      <text x="16" y="32" font-size="16" text-anchor="middle" fill="#e63946">♥</text>
+
+      <!-- Arrow with animation -->
+      <line x1="40" y1="22" x2="70" y2="22" stroke="#6c757d" stroke-width="2" marker-end="url(#arrow)" stroke-dasharray="30" stroke-dashoffset="30">
+        <animate attributeName="stroke-dashoffset" values="30;0" dur="1.5s" repeatCount="indefinite"/>
+      </line>
+
+      <!-- Lock/Encryption node -->
+      <circle cx="95" cy="22" r="22" fill="url(#encrypt-gradient)" stroke="#2a9d8f" stroke-width="2">
+        <animate attributeName="r" values="22;25;22" dur="2s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/>
+      </circle>
+      <g transform="translate(84, 10) scale(0.75)" stroke="#2a9d8f" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="11" width="18" height="11" rx="2"/>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </g>
+      <!-- Pulse ring -->
+      <circle cx="95" cy="22" r="26" fill="none" stroke="#2a9d8f" stroke-width="1" opacity="0">
+        <animate attributeName="r" values="22;35" dur="2s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.5;0" dur="2s" repeatCount="indefinite"/>
+      </circle>
+
+      <!-- Output arrows -->
+      <line x1="120" y1="12" x2="155" y2="5" stroke="#457b9d" stroke-width="1.5" marker-end="url(#arrow-blue)"/>
+      <line x1="120" y1="32" x2="155" y2="39" stroke="#2a9d8f" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+
+      <!-- TE output -->
+      <rect x="160" y="-8" width="55" height="28" rx="5" fill="#6c757d"/>
+      <text x="187" y="10" font-size="11" text-anchor="middle" fill="#fff" font-weight="700" class="text">TE</text>
+      <text x="187" y="-14" font-size="8" fill="#6c757d" text-anchor="middle" class="text">Committee</text>
+
+      <!-- ECIES output -->
+      <rect x="160" y="28" width="55" height="28" rx="5" fill="#2a9d8f"/>
+      <text x="187" y="47" font-size="11" text-anchor="middle" fill="#fff" font-weight="700" class="text">ECIES</text>
+      <text x="187" y="70" font-size="8" fill="#6c757d" text-anchor="middle" class="text">Player</text>
+    </g>
+
+    <!-- CTX Flow -->
+    <g transform="translate(520, 55)">
+      <text x="120" y="-15" font-size="10" font-weight="700" fill="#495057" text-anchor="middle" class="text">CTX Callback Flow</text>
+      
+      <!-- Block N -->
+      <rect x="0" y="0" width="110" height="32" rx="5" fill="#e3f2fd" stroke="#457b9d" stroke-width="1"/>
+      <text x="55" y="21" font-size="10" text-anchor="middle" fill="#457b9d" class="text">Block N: submitCTX()</text>
+      
+      <!-- Animated arrow down -->
+      <line x1="55" y1="36" x2="55" y2="48" stroke="#457b9d" stroke-width="2" marker-end="url(#arrow-blue)"/>
+      <circle r="3" fill="#457b9d" opacity="0">
+        <animate attributeName="cy" values="36;48" dur="1s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1"/>
+        <animate attributeName="opacity" values="0.8;0" dur="1s" repeatCount="indefinite"/>
+      </circle>
+      
+      <!-- Block N+1 -->
+      <rect x="0" y="52" width="110" height="32" rx="5" fill="#f0fdf9" stroke="#2a9d8f" stroke-width="1"/>
+      <text x="55" y="73" font-size="10" text-anchor="middle" fill="#2a9d8f" class="text">Block N+1: onDecrypt()</text>
+    </g>
+  </g>
+
+  <!-- Footer -->
+  <text x="450" y="535" font-size="11" fill="#adb5bd" text-anchor="middle" class="text">
+    Fair onchain gaming with threshold encryption — no trusted intermediaries
+  </text>
+  <text x="450" y="555" font-size="10" fill="#adb5bd" text-anchor="middle" class="text">
+    confidential-poker.vercel.app
+  </text>
+</svg>

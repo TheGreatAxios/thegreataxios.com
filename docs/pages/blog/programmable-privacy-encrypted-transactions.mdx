@@ -1,0 +1,103 @@
+---
+layout: minimal
+authors:
+    - "[thegreataxios](https://x.com/thegreataxios)"
+date: 2026-04-18
+title: "Encrypting Intent: The Agent Infrastructure Gap"
+description: "Your AI agent broadcasts every move to competitors. Encrypted transactions fix this — hiding intents from mempool surveillance with threshold cryptography."
+---
+
+# Encrypting Intent: The Agent Infrastructure Gap
+
+::authors
+
+MEV bots consume over **50% of gas** on leading L2s while paying less than 10% of fees. [[1]](#sources) But the infrastructure cost is only half the story — the real damage is to users. Every transaction you submit broadcasts your intent in plaintext to the [mempool](https://ethereum.org/en/developers/docs/transactions/#the-transaction-pool): amounts, destinations, and strategies visible to every searcher, every validator, every [MEV](https://ethereum.org/en/developers/docs/mev/) bot. Encrypted transactions change this entirely.
+
+[SKALE](https://skale.space) embeds [threshold encryption](https://docs.skale.space/learn/advanced-features/encrypted-transactions) into [consensus](https://ethereum.org/en/developers/docs/consensus-mechanisms/). Validators see ciphertext, not [calldata](https://ethereum.org/en/developers/docs/data-availability/). Amounts, destinations, and intents remain encrypted until a supermajority collaborates to decrypt. This is not a [Layer 2](https://ethereum.org/en/developers/docs/scaling/) add-on or an external oracle — it's protocol-level privacy with zero [Solidity](https://docs.soliditylang.org/) changes required. No TEEs, no external infrastructure.
+
+## The MEV Problem
+
+MEV (Maximal Extractable Value) is profit extracted from transaction ordering. The mempool is a dark forest — every pending transaction is visible and exploitable. But the risk isn't just abstract market inefficiency. It's your wallet.
+
+### How Users Get Hurt
+
+| Attack Type | What Happens to You | Source |
+|-------------|-------------------|--------|
+| Sandwich attacks | You swap 1 ETH for USDC. A bot front-runs your trade, buys the same token, and back-runs — you get a worse price. The bot pockets the spread. [[1]](#sources) | Flashbots, Jun 2025 |
+| Front-running | Your limit order is visible before execution. Bots place identical orders ahead of yours, filling at better prices and leaving you with slippage. [[2]](#sources) | Oblivious Labs + Flashbots |
+| Back-running | After your large trade moves the market, bots immediately trade against the price impact — extracting value you created. [[2]](#sources) | Oblivious Labs + Flashbots |
+| Intent exposure | Your trading strategy, position size, and timing are public before execution. Competitors and arbitrageurs react in real time. | — |
+| Censorship risk | Transactions can be filtered based on destination or calldata content before inclusion. Validators see everything. | — |
+
+The mechanics are straightforward. A bot sees your swap transaction in the mempool. It front-runs with the same trade, driving up the price. Your transaction executes at the worse rate. The bot back-runs to capture the spread. This is a sandwich attack — profitable, legal, and entirely extractive. You pay the cost every time.
+
+### The Problem Is Getting Worse
+
+Private mempools were supposed to solve this. Instead, they created a new arms race. Flashbots' 2025 research shows that MEV bots now consume **over 50% of gas** on top rollups [[1]](#sources) — they probe the chain with hundreds of failed transactions for every successful extraction, pushing fees up for everyone. A single arbitrage on Base requires ~350 failed transactions (~132M gas). The same outcome that costs 200K gas on Ethereum costs 130M gas on Base — a **650x efficiency gap**. The infrastructure cost of MEV is passed directly to users through higher fees and worse execution.
+
+[Flashbots' "MEV and the Limits of Scaling"](https://writings.flashbots.net/mev-and-the-limits-of-scaling) [[1]](#sources) concluded that MEV has become "the dominant limit to scaling blockchains" — and the primary victim is the end user.
+
+## What Encrypted Transactions Solve
+
+Encrypted transactions make the mempool opaque. Validators reach consensus on encrypted payloads. No one sees amounts, destinations, or function calls until after finalization.
+
+Threshold encryption uses:
+
+- **AES encryption** for transaction data
+- **BLS threshold encryption** for committee-based decryption
+- **Supermajority consensus** — >2/3 of validators required
+- **Automatic decryption** post-finalization
+
+The result: full mempool privacy during consensus. No front-running. No sandwich attacks. No back-running.
+
+## How It Works
+
+<div align="center">
+  ![Transaction Flow Comparison](/encrypted-transactions-flow.svg)
+</div>
+
+The top shows the vulnerability: transactions broadcast in plaintext to the mempool, visible to MEV bots that can sandwich attack. The bottom shows encrypted transactions: amounts and destinations remain hidden until finalization.
+
+The committee public key encrypts. The committee private key — split across validators via threshold cryptography — decrypts. No single validator can decrypt alone. No external infrastructure required.
+
+From a developer perspective, the change is minimal:
+
+```typescript
+import { bite } from '@skalenetwork/bite'
+
+const encryptedTx = await bite.encryptTransaction({
+  to: contractAddress,
+  data: calldata,
+  value: amount
+})
+
+await wallet.sendTransaction(encryptedTx)
+```
+
+That's it. No contract rewrites. No circuit languages. No proving systems.
+
+*[source](https://github.com/skalenetwork/bite-ts) — [docs](https://docs.skale.space/developers/sdks/skalenetwork-bite)*
+
+## Use Cases
+
+**Private DeFi.** Traders execute without broadcasting their positions. Strategies remain hidden until execution. No MEV extraction possible.
+
+**Confidential Intents.** Users express desired outcomes — "swap ETH for USDC at market rate" — without revealing amounts or slippage tolerances. Solvers compete without seeing each other's bids.
+
+**MEV-Resistant Settlement.** DCA (Dollar-Cost Averaging), TWAP (Time-Weighted Average Price), and other automated strategies execute without broadcasting timing or quantities.
+
+**Censorship Resistance.** Encrypted transactions cannot be selectively filtered based on content. Validators see only ciphertext until consensus is reached.
+
+---
+
+<h2 id="sources">Sources</h2>
+
+1. Flashbots, "MEV and the Limits of Scaling," June 16, 2025. [https://writings.flashbots.net/mev-and-the-limits-of-scaling](https://writings.flashbots.net/mev-and-the-limits-of-scaling)
+
+2. Oblivious Labs + Flashbots, "Scalable Oblivious Accesses to Blockchain Data," June 2, 2025. [https://writings.flashbots.net/scalable-oblivious-accesses-to-blockchain-data](https://writings.flashbots.net/scalable-oblivious-accesses-to-blockchain-data)
+
+3. Flashbots, "Decentralized Building: Wat Do?," February 14, 2026. [https://writings.flashbots.net/decentralized-building-wat-do](https://writings.flashbots.net/decentralized-building-wat-do)
+
+import Footer from '../../snippets/_footer.mdx'
+
+<Footer />

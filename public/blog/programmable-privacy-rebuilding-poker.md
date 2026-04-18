@@ -1,0 +1,152 @@
+---
+layout: minimal
+authors:
+    - "thegreataxios"
+date: 2026-04-15
+title: "I Built Poker That Actually Works Onchain"
+description: "Poker failed onchain because cards were visible. I rebuilt it with dual encryption, CTX callbacks, and autonomous agents — live demo at confidential-poker.vercel.app."
+---
+
+# I Built Poker That Actually Works Onchain
+
+Poker failed onchain because cards were visible. Every attempt — state channels, commit-reveal schemes, TEEs — compromised on speed, trust, or decentralization. Threshold encryption fixes this.
+
+The live demo is running now: [confidential-poker.vercel.app](https://confidential-poker.vercel.app). AI agents play Texas Hold'em with encrypted hole cards, threshold-encrypted community cards, and onchain settlement. This is what programmable privacy enables — fair gaming with no trusted intermediaries.
+
+## Why Poker Needs Privacy
+
+Texas Hold'em has two information layers:
+
+1. **Hole cards** — private to each player until showdown
+2. **Community cards** — public after each dealing phase
+3. **Actions** — public (bets, folds, raises)
+
+On a standard blockchain, storing hole cards onchain means publishing them. Commit-reveal schemes add friction — players must come back online to reveal. State channels require liveness guarantees and dispute periods.
+
+Dual encryption solves this:
+
+- **Threshold encryption (TE)** — Cards encrypt to the committee for later decryption
+- **ECIES encryption** — Cards encrypt to each player's viewer key for immediate viewing
+
+Hole cards are dealt once, encrypted both ways. Players see their cards immediately via ECIES decryption. The contract holds TE-encrypted versions for showdown. Community cards deal via CTX callbacks — encrypted until the protocol reveals them.
+
+## Technical Implementation
+
+### Smart Contracts
+
+Three contracts run on SKALE Base Sepolia:
+
+- **PokerGame.sol** — Game state, betting rounds, hand orchestration
+- **HandEvaluator.sol** — Onchain hand ranking and winner determination
+- **MockSKL.sol** — Test token for betting
+
+The core dealing function:
+
+```solidity
+function dealHoleCards(address player, bytes32 cardHash) external {
+    // Threshold encrypt for showdown reveal
+    bytes memory teEncrypted = BITE.encryptTE(cardHash, committeePublicKey);
+    
+    // ECIES encrypt to player's viewer key
+    bytes memory eciesEncrypted = BITE.encryptECIES(cardHash, playerViewerKeys[player]);
+    
+    // Store both versions
+    playerCards[player] = PlayerCards(teEncrypted, eciesEncrypted);
+}
+```
+
+### Community Card Dealing
+
+The flop, turn, and river deal via CTX callbacks:
+
+```solidity
+function dealFlop() external {
+    // Three cards, encrypted to committee
+    bytes[3] memory encryptedCards = encryptCards(3);
+
+    // Submit CTX for batch decryption
+    BITE.submitCTX(
+        BITE.SUBMIT_CTX_ADDRESS,
+        gasLimit,
+        abi.encode(encryptedCards),
+        abi.encode(uint8(3)) // card count
+    );
+}
+
+function onDecrypt(bytes[] calldata decryptedArguments, bytes[] calldata plaintextArguments) external {
+    // Executed in next block with decrypted cards
+    uint8[52] memory liveDeck = abi.decode(decryptedArguments[0], (uint8[52]));
+    communityCards[0] = liveDeck[deckPosition];
+    communityCards[1] = liveDeck[deckPosition + 1];
+    communityCards[2] = liveDeck[deckPosition + 2];
+
+    emit FlopDealt(communityCards[0], communityCards[1], communityCards[2]);
+}
+```
+
+Same pattern for turn (1 card) and river (1 card). Each phase queues in one block, decrypts and executes in the next.
+
+## Architecture Overview
+
+<div align="center">
+  ![Poker Architecture](/poker-architecture.svg)
+</div>
+
+The server handles game orchestration because card dealing requires sequential operations that don't fit single transactions. The contracts hold truth — game state, encrypted cards, betting balances. The server translates between player actions and onchain state.
+
+Six AI agent personalities run in the server layer — each with distinct aggression levels, bluff frequencies, and playing styles. They evaluate hand strength, pot odds, and opponent patterns through a unified decision engine.
+
+## Dual Encryption in Practice
+
+When hole cards deal:
+
+1. Server generates random cards (52-card deck, shuffled via SKALE RNG)
+2. Cards encrypt via `BITE.encryptTE()` — committee decrypts at showdown
+3. Cards encrypt via `BITE.encryptECIES()` — player decrypts client-side
+4. Both versions stored onchain in `playerCards` mapping
+
+Players see their cards immediately via client-side ECIES decryption. The contract can't see hole cards — only the TE-encrypted blobs. At showdown, a CTX triggers committee decryption, `onDecrypt()` evaluates hands, and winners receive payouts.
+
+This pattern — dual encryption with different reveal conditions — applies beyond gaming:
+
+- **Sealed-bid auctions** — Bidders see their own bids via ECIES; contract reveals all via TE at close
+- **Private voting** — Voters confirm their vote via ECIES; results reveal via TE after deadline
+- **Time-locked data** — Immediate access via ECIES; public reveal via TE at trigger time
+
+## What This Proves
+
+Confidential poker demonstrates that programmable privacy works at scale:
+
+- **Real-time gameplay** — No commit-reveal delays, no dispute periods
+- **Fair dealing** — Cards encrypted onchain, decrypted by protocol rules
+- **AI agents** — Six distinct personalities making encrypted decisions
+- **Live demo** — Playable now, not theoretical
+
+The cryptography is production-ready. The UX matches Web2 expectations. The agents operate autonomously with private state.
+
+This is the foundation for fair onchain gaming — not just poker, but any game with hidden information. Bridge, Hearts, Mahjong, strategy games with fog of war. All become possible when encrypted state is a native primitive.
+
+## Repository and Demo
+
+- **Live Demo:** [confidential-poker.vercel.app](https://confidential-poker.vercel.app)
+- **Built for:** SKALE Hackathon April 2026
+- **Stack:** Vite, React 19, Hono, Foundry, Programmable Privacy
+- **Status:** Complete and deployed
+
+The repository is open source. If you're building confidential games, agent systems, or encrypted data flows, the patterns here are ready to adapt.
+
+I'm actively building on SKALE daily. DM me if you want to walk through the implementation, integrate threshold encryption into your game, or explore confidential agent patterns.
+
+---
+
+<h2 id="sources">Sources</h2>
+
+1. SKALE BITE Documentation, [https://docs.skale.space](https://docs.skale.space)
+2. SKALE BITE Solidity Library, [github.com/skalenetwork/bite-solidity](https://github.com/skalenetwork/bite-solidity)
+3. Confidential Poker Source Code, [github.com/TheGreatAxios/confidential-poker](https://github.com/TheGreatAxios/confidential-poker)
+
+---
+
+**This concludes the Programmable Privacy series.** Parts 1-4 covered the primitives: encrypted transactions, conditional transactions, re-encryption, and confidential tokens. This final part showed them working together in a live application.
+
+If you're building on SKALE — reach out. I help teams integrate these patterns every day.

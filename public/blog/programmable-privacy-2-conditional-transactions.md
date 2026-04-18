@@ -1,0 +1,98 @@
+---
+layout: minimal
+authors:
+    - "thegreataxios"
+date: 2026-04-17T09:00:00
+title: "Programmable Privacy (Part 2/5): Conditional Transactions"
+description: "Conditional Transactions (CTXs) enable encrypted smart contract state that decrypts only when conditions are met — native two-block execution without external oracles."
+---
+
+# Programmable Privacy (Part 2/5): Conditional Transactions
+
+Encrypted transactions protect data in transit. Conditional Transactions (CTXs) protect data at rest — encrypted state inside smart contracts that only decrypts when the contract decides.
+
+This is a new EVM primitive. CTXs enable workflows impossible on standard chains: sealed-bid auctions, encrypted strategy parameters, and private agent negotiations where terms stay hidden until reveal time.
+
+## What CTXs Enable
+
+Standard EVM contracts store plaintext. Anyone with a block explorer can read state. CTXs change this — contracts store encrypted data and trigger decryption via callbacks.
+
+The pattern:
+
+1. User or agent submits encrypted data to a contract. It stays encrypted in storage.
+2. When conditions are met, the contract calls `submitCTX()`
+3. Validators batch all decryption requests from block *N*
+4. Block *N+1* executes all `onDecrypt()` callbacks with decrypted data
+
+This is a two-block operation. The callback executes with an ephemeral sender address — not the original submitter.
+
+## Comparison: Chainlink Automation
+
+If you've worked with [Chainlink Automation](https://chain.link/automation), the mental model is similar. Both enable condition-triggered smart contract execution. The key difference: CTX adds encryption.
+
+| Aspect | Chainlink Automation | SKALE CTX |
+|--------|---------------------|-----------|
+| Pattern | checkUpkeep() → performUpkeep() | submitCTX() → onDecrypt() |
+| Condition Check | Off-chain DON simulation (OCR3) | On-chain threshold decryption |
+| Privacy | No — upkeep data is public | Yes — data encrypted until decryption |
+| Dependency | External oracle network | Native chain infrastructure |
+| Latency | Variable (depends on DON consensus) | 2 blocks |
+| Failure Mode | performUpkeep can fail/revert | Atomic execution guaranteed |
+| Cost | Requires LINK token payments | Free (zero gas on SKALE) |
+
+CTXs target N+1 blocks. Theoretically, if a block filled completely with other transactions, decryption could take longer — but SKALE's ~268M gas limit and horizontal scaling make this practically impossible. Multiple SKALE chains run in parallel; no single chain's capacity constrains execution.
+
+## Breaking EVM Assumptions
+
+EVM developers assume atomicity. You call a function, state changes, the transaction succeeds or reverts — all in one block. CTXs break this assumption intentionally.
+
+When `submitCTX()` executes, the decryption does not happen immediately. It queues for the next block's batch decryption. This means:
+
+- You cannot read decrypted results in the same transaction
+- Logic must be structured as callbacks, not synchronous reads
+- Multiple decryption requests from the same block batch together
+
+The batching is the feature. All requests from block *N* decrypt simultaneously in block *N+1*. This eliminates timing advantages — a sealed-bid auction where all bids decrypt together is fundamentally fairer than sequential reveals.
+
+## The Supplicant Interface
+
+Contracts that receive CTX callbacks implement a standard interface:
+
+```solidity
+interface IBiteSupplicant {
+    function onDecrypt(
+        uint256 decryptedValue,
+        bytes memory plaintextArgs
+    ) external;
+}
+```
+
+When the committee decrypts, every registered supplicant's `onDecrypt()` fires. This enables complex multi-party workflows where multiple contracts react to the same decryption event.
+
+## Use Cases for AI Agents
+
+**Encrypted Strategy Parameters.** A trading agent stores rebalancing thresholds, price triggers, and position limits encrypted onchain. The contract only decrypts and executes when market conditions match. Competitors see that something triggered — not what the thresholds were.
+
+**Sealed Agent-to-Agent Negotiations.** Two agents submit encrypted terms for a task. The contract decrypts both simultaneously when both sides have submitted, executing on the overlap. Neither agent sees the other's terms until reveal — eliminating first-mover disadvantage.
+
+**Conditional Autonomous Payments.** Payment triggers fire only after decryption confirms a condition — delivery of data, completion of compute, verification of a result. This is "if/then" financial logic enforced by the chain.
+
+**Time-Locked Reveals.** Encrypted data that automatically decrypts at a specific block number. Research swarms publish findings simultaneously. Prediction markets seal predictions until events resolve.
+
+## CTXs and Encrypted Transactions
+
+| | Encrypted Transactions | CTXs |
+| --- | --- | --- |
+| What's encrypted | Transaction data (calldata, destination) | Smart contract storage (state, parameters) |
+| When it's decrypted | After block finalization | When contract triggers CTX |
+| Protection model | Transit encryption | At-rest encryption with conditional reveal |
+| Developer interface | Transparent (automatic) | Callback pattern (`onDecrypt()`) |
+| Execution model | Same-block | Two-block (request in *N*, execute in *N+1*) |
+
+Together they form complete privacy: encrypted in transit, encrypted at rest, decrypted only when conditions are met.
+
+## Building with CTXs
+
+If you're building agents that need private onchain state, CTXs are available now on SKALE chains. Standard Solidity. Standard tooling. No circuit languages required.
+
+I'm working on CTX integrations daily — DM me if you want to walk through callback patterns or agent-specific implementations.
