@@ -7,7 +7,7 @@
     "dev": "vocs dev",
     "build:md": "node scripts/export-md.mjs",
     "build:site": "vocs build",
-    "build": "bun run build:md && bun run build:site",
+    "build": "bun run build:site",
     "preview": "vocs preview"
   },
   "dependencies": {

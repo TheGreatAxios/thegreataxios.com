@@ -52,7 +52,7 @@
 
     <!-- ── Wallet ── -->
     <rect x="45" y="140" width="120" height="52" rx="10" fill="white" stroke="#dee2e6" stroke-width="1.5" filter="url(#shadow)"/>
-    <g transform="translate(63, 148) scale(0.65)" stroke="#495057" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <g transform="translate(63, 155) scale(0.65)" stroke="#495057" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/>
       <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>
     </g>
@@ -166,7 +166,7 @@
 
     <!-- ── Validator ── -->
     <rect x="780" y="140" width="130" height="52" rx="10" fill="white" stroke="#dee2e6" stroke-width="1.5" filter="url(#shadow)"/>
-    <g transform="translate(800, 147) scale(0.58)" stroke="#495057" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <g transform="translate(800, 154) scale(0.58)" stroke="#495057" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <rect x="4" y="4" width="16" height="16" rx="2"/>
       <rect x="8" y="8" width="8" height="8" rx="1"/>
       <path d="M12 2v2"/><path d="M12 20v2"/><path d="M2 12h2"/><path d="M20 12h2"/>
@@ -179,7 +179,7 @@
 
     <!-- ── Block ── -->
     <rect x="955" y="140" width="110" height="52" rx="10" fill="white" stroke="#dee2e6" stroke-width="1.5" filter="url(#shadow)"/>
-    <g transform="translate(970, 147) scale(0.58)" stroke="#495057" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <g transform="translate(970, 154) scale(0.58)" stroke="#495057" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
       <path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>
     </g>
@@ -187,7 +187,7 @@
     <text x="1010" y="183" class="sub text" font-size="9">Reordered txs</text>
 
     <!-- Bottom damage stat -->
-    <text x="550" y="318" font-size="12" fill="#e63946" text-anchor="middle" font-weight="600">$540M+ extracted via MEV attacks</text>
+    <text x="550" y="318" font-size="12" fill="#e63946" text-anchor="middle" font-weight="600">MEV bots consume over 50% of gas on leading L2s</text>
   </g>
 
   <!-- ═══ Divider ═══ -->
@@ -206,7 +206,7 @@
 
     <!-- ── Wallet ── -->
     <rect x="40" y="490" width="110" height="50" rx="10" fill="white" stroke="#dee2e6" stroke-width="1.5" filter="url(#shadow)"/>
-    <g transform="translate(55, 497) scale(0.58)" stroke="#495057" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <g transform="translate(55, 503) scale(0.58)" stroke="#495057" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/>
       <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>
     </g>
@@ -264,7 +264,7 @@
     </g>
 
     <!-- Blocked MEV bot (Lucide bot icon) -->
-    <g opacity="0.4" transform="translate(316, 566) scale(0.65)">
+    <g opacity="0.4" transform="translate(490, 510) scale(0.65)">
       <rect width="16" height="12" x="4" y="8" rx="2" stroke="#6c757d" fill="#e9ecef" stroke-width="2"/>
       <path d="M12 8V4H8" stroke="#6c757d" fill="none" stroke-width="2" stroke-linecap="round"/>
       <path d="M15 13v2" stroke="#6c757d" fill="none" stroke-width="2" stroke-linecap="round"/>
@@ -272,8 +272,8 @@
       <line x1="0" y1="4" x2="24" y2="20" stroke="#e63946" stroke-width="3" stroke-linecap="round"/>
       <line x1="24" y1="4" x2="0" y2="20" stroke="#e63946" stroke-width="3" stroke-linecap="round"/>
     </g>
-    <text x="330" y="604" font-size="9" fill="#adb5bd" text-anchor="middle">Can't read</text>
-    <text x="330" y="616" font-size="9" fill="#adb5bd" text-anchor="middle">encrypted data</text>
+    <text x="510" y="545" font-size="9" fill="#adb5bd" text-anchor="middle">Can't read</text>
+    <text x="510" y="557" font-size="9" fill="#adb5bd" text-anchor="middle">encrypted data</text>
 
     <!-- Arrow: Mempool → Validator -->
     <line x1="610" y1="515" x2="680" y2="515" stroke="#2a9d8f" class="flow-line" marker-end="url(#arr-teal)"/>
@@ -285,7 +285,7 @@
 
     <!-- ── Validator ── -->
     <rect x="690" y="490" width="120" height="50" rx="10" fill="white" stroke="#dee2e6" stroke-width="1.5" filter="url(#shadow)"/>
-    <g transform="translate(705, 496) scale(0.55)" stroke="#495057" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <g transform="translate(705, 503) scale(0.55)" stroke="#495057" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <rect x="4" y="4" width="16" height="16" rx="2"/>
       <rect x="8" y="8" width="8" height="8" rx="1"/>
       <path d="M12 2v2"/><path d="M12 20v2"/><path d="M2 12h2"/><path d="M20 12h2"/>
@@ -309,7 +309,7 @@
 
     <!-- ── Block ── -->
     <rect x="940" y="490" width="120" height="50" rx="10" fill="white" stroke="#dee2e6" stroke-width="1.5" filter="url(#shadow)"/>
-    <g transform="translate(956, 496) scale(0.55)" stroke="#495057" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <g transform="translate(956, 503) scale(0.55)" stroke="#495057" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
       <path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>
     </g>

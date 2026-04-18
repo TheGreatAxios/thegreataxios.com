@@ -1,8 +1,8 @@
 ---
 layout: minimal
 authors:
-    - "thegreataxios"
-date: 2026-04-15
+    - "[thegreataxios](https://x.com/thegreataxios)"
+date: 2026-04-18
 title: "I Built Poker That Actually Works Onchain"
 description: "Poker failed onchain because cards were visible. I rebuilt it with dual encryption, CTX callbacks, and autonomous agents — live demo at confidential-poker.vercel.app."
 ---
@@ -38,7 +38,6 @@ Three contracts run on SKALE Base Sepolia:
 
 - **PokerGame.sol** — Game state, betting rounds, hand orchestration
 - **HandEvaluator.sol** — Onchain hand ranking and winner determination
-- **MockSKL.sol** — Test token for betting
 
 The core dealing function:
 
@@ -46,10 +45,10 @@ The core dealing function:
 function dealHoleCards(address player, bytes32 cardHash) external {
     // Threshold encrypt for showdown reveal
     bytes memory teEncrypted = BITE.encryptTE(cardHash, committeePublicKey);
-    
+
     // ECIES encrypt to player's viewer key
     bytes memory eciesEncrypted = BITE.encryptECIES(cardHash, playerViewerKeys[player]);
-    
+
     // Store both versions
     playerCards[player] = PlayerCards(teEncrypted, eciesEncrypted);
 }
@@ -85,6 +84,8 @@ function onDecrypt(bytes[] calldata decryptedArguments, bytes[] calldata plainte
 ```
 
 Same pattern for turn (1 card) and river (1 card). Each phase queues in one block, decrypts and executes in the next.
+
+*[source](https://github.com/TheGreatAxios/confidential-poker/blob/main/packages/contracts/src/PokerGame.sol)*
 
 ## Architecture Overview
 
@@ -129,9 +130,9 @@ This is the foundation for fair onchain gaming — not just poker, but any game 
 ## Repository and Demo
 
 - **Live Demo:** [confidential-poker.vercel.app](https://confidential-poker.vercel.app)
-- **Built for:** SKALE Hackathon April 2026
 - **Stack:** Vite, React 19, Hono, Foundry, Programmable Privacy
 - **Status:** Complete and deployed
+- **Want to play?** DM me on X [@thegreataxios](https://x.com/thegreataxios) for tokens to try it out
 
 The repository is open source. If you're building confidential games, agent systems, or encrypted data flows, the patterns here are ready to adapt.
 
@@ -142,14 +143,11 @@ I'm actively building on SKALE daily. DM me if you want to walk through the impl
 <h2 id="sources">Sources</h2>
 
 1. SKALE BITE Documentation, [https://docs.skale.space](https://docs.skale.space)
-2. SKALE BITE Solidity Library, [github.com/skalenetwork/bite-solidity](https://github.com/skalenetwork/bite-solidity)
-3. Confidential Poker Source Code, [github.com/TheGreatAxios/confidential-poker](https://github.com/TheGreatAxios/confidential-poker)
+2. SKALE BITE Solidity Library, [https://github.com/skalenetwork/bite-solidity](https://github.com/skalenetwork/bite-solidity)
+3. Confidential Poker Source Code, [https://github.com/TheGreatAxios/confidential-poker](https://github.com/TheGreatAxios/confidential-poker)
 
 ---
 
-**This concludes the Programmable Privacy series.** Parts 1-4 covered the primitives: encrypted transactions, conditional transactions, re-encryption, and confidential tokens. This final part showed them working together in a live application.
-
-If you're building on SKALE — reach out. I help teams integrate these patterns every day.
 
 import Footer from '../../snippets/_footer.mdx'
 

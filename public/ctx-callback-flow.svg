@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 500" role="img" aria-label="Conditional Transaction two-block pattern with BTC price trigger example">
   <title>CTX Two-Block Pattern — BTC Trigger Example</title>
-  <desc>Conditional Transactions: encrypted condition submitted in Block N, decrypted and executed in Block N+1. Example: sell ETH when BTC hits $50K</desc>
+  <desc>Conditional Transactions: public condition checked in Block N, encrypted action submitted, then decrypted and executed in Block N+1. Example: sell ETH when BTC hits $50K</desc>
 
   <defs>
     <filter id="shadow">
@@ -36,7 +36,7 @@
 
   <!-- Title -->
   <text x="550" y="32" font-size="17" font-weight="700" fill="#495057" text-anchor="middle" class="text">Conditional Transactions: The Two-Block Pattern</text>
-  <text x="550" y="52" font-size="11" fill="#adb5bd" text-anchor="middle" class="text">Example: "When BTC hits $50K, sell my ETH" — nobody sees the trigger until execution</text>
+  <text x="550" y="52" font-size="11" fill="#adb5bd" text-anchor="middle" class="text">Example: "When BTC hits $50K, sell my ETH" — condition is public, action is private</text>
 
   <!-- ═══════════════════════════════════════════════════ -->
   <!-- BLOCK N (Left Card)                                 -->
@@ -49,19 +49,19 @@
     <rect x="25" y="98" width="490" height="12" fill="#f8f9fa"/>
     <text x="50" y="96" font-size="15" font-weight="700" fill="#495057" class="text">Block N</text>
     <rect x="400" y="80" width="95" height="22" rx="11" fill="#fd7e14"/>
-    <text x="447" y="95" class="badge-text text">ENCRYPT</text>
+    <text x="447" y="95" class="badge-text text">CHECK</text>
 
-    <!-- User submits condition -->
+    <!-- Public condition check -->
     <g transform="translate(50, 130)">
       <rect width="430" height="65" rx="10" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1" filter="url(#shadow)"/>
-      <!-- Wallet icon -->
+      <!-- Eye icon -->
       <g transform="translate(14, 12) scale(0.55)" stroke="#495057" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/>
-        <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>
+        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+        <circle cx="12" cy="12" r="3"/>
       </g>
-      <text x="40" y="24" font-size="11" font-weight="600" fill="#495057" class="text">You submit an encrypted condition:</text>
-      <text x="40" y="44" font-size="12" font-weight="700" fill="#495057" class="text">"If BTC >= $50,000 → sell 1 ETH"</text>
-      <text x="40" y="58" font-size="9" fill="#adb5bd" class="text">Only you can see this</text>
+      <text x="40" y="24" font-size="11" font-weight="600" fill="#495057" class="text">Condition met (public check):</text>
+      <text x="40" y="44" font-size="12" font-weight="700" fill="#495057" class="text">BTC >= $50,000 ✓ → sell 1 ETH (encrypted)</text>
+      <text x="40" y="58" font-size="9" fill="#adb5bd" class="text">Everyone sees the condition — nobody sees the action</text>
     </g>
 
     <!-- Arrow down -->
@@ -84,7 +84,7 @@
       <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
     </g>
     <text x="140" y="325" font-size="12" fill="#adb5bd" font-family="monospace" class="text">0xa3f7...9e2b</text>
-    <text x="140" y="342" font-size="9" fill="#adb5bd" class="text">Encrypted — nobody can read your trigger</text>
+    <text x="140" y="342" font-size="9" fill="#adb5bd" class="text">Encrypted action — nobody knows what you'll do</text>
 
     <!-- Pulsing aura on encrypted data -->
     <circle cx="265" cy="325" r="30" fill="#adb5bd" opacity="0">
@@ -136,7 +136,7 @@
         <path d="M7 11V7a5 5 0 0 1 9.9-1"/>
       </g>
       <text x="35" y="24" font-size="12" font-weight="600" fill="#495057" class="text">Threshold Decrypt</text>
-      <text x="35" y="38" font-size="9" fill="#adb5bd" class="text">Validators reveal condition</text>
+      <text x="35" y="38" font-size="9" fill="#adb5bd" class="text">Validators reveal action</text>
     </g>
     <!-- Pulse aura -->
     <circle cx="760" cy="147" r="28" fill="#2a9d8f" opacity="0">
@@ -149,8 +149,8 @@
 
     <!-- Revealed condition — GREEN accent -->
     <rect x="640" y="205" width="310" height="55" rx="10" fill="#f0fdf9" stroke="#28a745" stroke-width="2" filter="url(#shadow)"/>
-    <text x="795" y="228" font-size="13" font-weight="700" fill="#28a745" text-anchor="middle" class="text">BTC = $50,127</text>
-    <text x="795" y="248" font-size="11" font-weight="600" fill="#28a745" text-anchor="middle" class="text">Condition met — sell 1 ETH</text>
+    <text x="795" y="228" font-size="13" font-weight="700" fill="#28a745" text-anchor="middle" class="text">Action revealed</text>
+    <text x="795" y="248" font-size="11" font-weight="600" fill="#28a745" text-anchor="middle" class="text">sell 1 ETH — execute now</text>
 
     <!-- Arrow down -->
     <line x1="760" y1="265" x2="760" y2="287" stroke="#495057" stroke-width="2" marker-end="url(#arr-dark)"/>
@@ -173,7 +173,7 @@
         <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
       </g>
       <text x="18" y="10" font-size="10" fill="#2a9d8f" font-weight="600" class="text">Front-run impossible</text>
-      <text x="18" y="24" font-size="9" fill="#adb5bd" class="text">Nobody knew the trigger</text>
+      <text x="18" y="24" font-size="9" fill="#adb5bd" class="text">Nobody knew the intent</text>
     </g>
   </g>
 

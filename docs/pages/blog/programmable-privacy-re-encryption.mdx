@@ -1,34 +1,32 @@
 ---
 layout: minimal
 authors:
-    - "thegreataxios"
-date: 2026-04-13
+    - "[thegreataxios](https://x.com/thegreataxios)"
+date: 2026-04-18
 title: "Storing Private Data Onchain"
 description: "Re-encryption lets you share encrypted data with new recipients without exposing it publicly onchain — private information sharing, delegation, and confidential tokens."
 ---
 
 # Storing Private Data Onchain
 
-You encrypted data for one party. Now you need to share it with another — without revealing it to the chain. Re-encryption makes this possible.
+You encrypted data for one party. Now you need to share it with another — without revealing it to the world. Re-encryption makes this possible onchain.
 
-SKALE's re-encryption primitive allows encrypted data to be forwarded to new recipients onchain. The data never decrypts in contract storage. Validators re-encrypt using threshold cryptography, enabling private information sharing, secure data delegation, and confidential token patterns.
+SKALE's re-encryption primitive allows encrypted data to be forwarded across blocks and selectivley shared in two ways:
+
+1. With a viewer key (i.e so each player's poker hand is encrypted for that specific player)
+2. With the public bls key (i.e so the validators can decrypt and re-encrypt information across blocks)
+
+The former is great for selective information that needs to be shared but not acted within the smart contracts on. The latter is perfect for when information needs to be stored privatley onchain and used within Solidity without leaking the information to the world.
 
 ## The Problem
 
 Once data is encrypted to a specific key, standard encryption traps it. Either the holder decrypts and re-encrypts manually (exposing plaintext) or the data stays locked to the original recipient.
 
-Onchain, this is worse. Smart contracts can't hold secrets — any decrypted state is visible to all validators. Traditional solutions require TEEs (Trusted Execution Environments) or complex multi-party computation offchain.
+Onchain, this is worse. Smart contracts [normally] can't hold secrets — any decrypted state is visible to all validators.
 
 ## What Re-Encryption Enables
 
 Re-encryption uses threshold cryptography to transform ciphertext encrypted to one key into ciphertext decryptable by another — the committee decrypts via CTX, then re-encrypts to the new recipient.
-
-The protocol provides two encryption modes:
-
-- `BITE.encryptTE()` — Threshold encrypt for committee decryption via CTX
-- `BITE.encryptECIES()` — Encrypt to a specific viewer key (secp256k1)
-
-Re-encryption bridges these. Data encrypted via TE can be decrypted through a CTX callback, then re-encrypted to any ECIES viewer key within the same callback.
 
 ## Use Cases
 
@@ -42,19 +40,18 @@ Re-encryption bridges these. Data encrypted via TE can be decrypted through a CT
 
 ## How It Works
 
-The cryptographic foundation is ECIES (Elliptic Curve Integrated Encryption Scheme) combined with BLS threshold encryption.
+The protocol provides two encryption modes:
+
+- **Threshold Encryption (TE)** — `BITE.encryptTE()` encrypts data to the validator committee. Only a supermajority of validators can decrypt, triggered via a CTX callback. Think of it as a sealed envelope that only the network can open.
+- **Viewer Key Encryption (ECIES)** — `BITE.encryptECIES()` encrypts data to a specific public key (secp256k1). Only the holder of the corresponding private key can decrypt — client-side, no committee required. Think of it as a sealed envelope addressed to one person.
+
+Re-encryption bridges these. Data encrypted via TE can be decrypted through a CTX callback, then re-encrypted to any viewer key within the same callback.
 
 <div align="center">
   ![Re-encryption Flow](/reencryption-flow.svg)
 </div>
 
-```
-Original Ciphertext (TE) → Committee CTX Decryption → onDecrypt callback → New Ciphertext (ECIES to viewer key)
-```
-
 The committee holds threshold shares of the private key. No single validator can decrypt alone. A supermajority must collaborate to decrypt via CTX, and the contract's `onDecrypt` callback handles re-encryption to the recipient's viewer key.
-
-For developers, the interface is standard Solidity:
 
 ```solidity
 // Store threshold-encrypted data
@@ -65,11 +62,11 @@ BITE.submitCTX(BITE.SUBMIT_CTX_ADDRESS, gasLimit, encryptedArgs, plaintextArgs);
 // The onDecrypt callback then calls BITE.encryptECIES() with the viewer key
 ```
 
-The viewer key is a standard secp256k1 public key. The viewer decrypts client-side using their private key — no threshold operation required for the recipient.
+*[source](https://github.com/skalenetwork/bite-solidity) — [docs](https://docs.skale.space/developers/bite-protocol/conditional-transactions)*
 
 ## Real Example: Confidential Poker
 
-The [live poker demo](https://confidential-poker.vercel.app) demonstrates re-encryption in practice. Here's how it works:
+The [live poker demo](https://confidential-poker.vercel.app) demonstrates re-encryption in practice — [read the full walkthrough here](/blog/programmable-privacy-rebuilding-poker). Here's how it works:
 
 When cards are dealt, each hole card is:
 1. Threshold encrypted (`encryptTE`) for the showdown reveal
@@ -97,15 +94,15 @@ This is "encrypted info block over block" — data flows through the chain, tran
 
 If you're building applications that need private data sharing — onchain info sharing, data delegation, confidential tokens — re-encryption is live on SKALE chains. No external infrastructure. No TEEs. Standard Solidity patterns.
 
-I'm working on confidential data flows daily. Reach out if you want to walk through encryption patterns for your use case.
+Reach out if you want to better understand how re-encryption and programmable privacy could help your business.
 
 ---
 
 <h2 id="sources">Sources</h2>
 
 1. SKALE BITE Documentation, [https://docs.skale.space](https://docs.skale.space)
-2. SKALE BITE Solidity Library, [github.com/skalenetwork/bite-solidity](https://github.com/skalenetwork/bite-solidity)
-3. Confidential Poker Implementation, [github.com/TheGreatAxios/confidential-poker](https://github.com/TheGreatAxios/confidential-poker)
+2. SKALE BITE Solidity Library, [https://github.com/skalenetwork/bite-solidity](https://github.com/skalenetwork/bite-solidity)
+3. Confidential Poker Implementation, [https://github.com/TheGreatAxios/confidential-poker](https://github.com/TheGreatAxios/confidential-poker)
 
 import Footer from '../../snippets/_footer.mdx'
 

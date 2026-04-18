@@ -1,17 +1,17 @@
 ---
 layout: minimal
 authors:
-    - "thegreataxios"
-date: 2026-04-12
-title: "Wake Me Up When the Price Hits $5,000"
+    - "[thegreataxios](https://x.com/thegreataxios)"
+date: 2026-04-18
+title: "Wake Me Up When the Price Hits $50,000"
 description: "Conditional Transactions let smart contracts store encrypted strategies and execute only when conditions trigger — the two-block callback pattern explained."
 ---
 
 # Wake Me Up When the Price Hits $5,000
 
-Encrypted transactions protect data in transit. Conditional Transactions (CTXs) protect data at rest — encrypted state inside smart contracts that only decrypts when the contract decides.
+Encrypted transactions protect data in transit. Conditional Transactions (CTXs) allow encrypted data to be executed when a condition is met.
 
-This is a new EVM primitive. CTXs enable workflows impossible on standard chains: sealed-bid auctions, encrypted strategy parameters, and private agent negotiations where terms stay hidden until reveal time.
+This is a new EVM primitive. CTXs enable top-tier automations and workflows: onchain poker, automated liquidations for lending & perps, limit orders on AMMs, sealed-bid auctions, and private agent negotiations where terms stay hidden until reveal time.
 
 ## What CTXs Enable
 
@@ -28,6 +28,10 @@ The pattern:
 3. Validators batch all decryption requests from block *N*
 4. Block *N+1* executes all `onDecrypt()` callbacks with decrypted data
 
+:::info
+The target is N+1 execution, but if block gas is exhausted on a given SKALE chain, decryption can slip to a later block. SKALE's horizontal scaling mitigates this — dedicated chains avoid the congestion that causes delays. A financial application could run its own SKALE chain to build a unique limit order book with dynamic AMM usage, all powered by CTXs.
+:::
+
 This is a two-block operation. The callback executes with an ephemeral sender address — not the original submitter.
 
 ## Comparison: Chainlink Automation
@@ -37,14 +41,12 @@ If you've worked with [Chainlink Automation](https://chain.link/automation), the
 | Aspect | Chainlink Automation | SKALE CTX |
 |--------|---------------------|-----------|
 | Pattern | checkUpkeep() → performUpkeep() | submitCTX() → onDecrypt() |
-| Condition Check | Off-chain DON simulation (OCR3) | On-chain threshold decryption |
+| Condition Check | Off-chain DON simulation (OCR3) | Onchain threshold decryption |
 | Privacy | No — upkeep data is public | Yes — data encrypted until decryption |
 | Dependency | External oracle network | Native chain infrastructure |
-| Latency | Variable (depends on DON consensus) | 2 blocks |
-| Failure Mode | performUpkeep can fail/revert | Atomic execution guaranteed |
+| Latency | Variable (depends on DON consensus) | N+1 blocks (target) |
+| Failure Mode | performUpkeep can fail/revert | Atomic execution (subject to block gas) |
 | Cost | Requires LINK token payments | Free (zero gas on SKALE) |
-
-CTXs target N+1 blocks. Theoretically, if a block filled completely with other transactions, decryption could take longer — but SKALE's ~268M gas limit and horizontal scaling make this practically impossible. Multiple SKALE chains run in parallel; no single chain's capacity constrains execution.
 
 ## Breaking EVM Assumptions
 
@@ -56,7 +58,7 @@ When `submitCTX()` executes, the decryption does not happen immediately. It queu
 - Logic must be structured as callbacks, not synchronous reads
 - Multiple decryption requests from the same block batch together
 
-The batching is the feature. All requests from block *N* decrypt simultaneously in block *N+1*. This eliminates timing advantages — a sealed-bid auction where all bids decrypt together is fundamentally fairer than sequential reveals.
+The batching is the feature. All requests from block *N* decrypt simultaneously in block *N+1*, processed in order of creation. If block gas is exhausted, remaining decryptions roll over to the next block. This eliminates timing advantages — a sealed-bid auction where all bids decrypt together is fundamentally fairer than sequential reveals.
 
 ## The Supplicant Interface
 
@@ -72,6 +74,8 @@ interface IBiteSupplicant {
 ```
 
 When the committee decrypts, every registered supplicant's `onDecrypt()` fires. This enables complex multi-party workflows where multiple contracts react to the same decryption event.
+
+*[source](https://github.com/skalenetwork/bite-solidity) — [docs](https://docs.skale.space/developers/bite-protocol/conditional-transactions)*
 
 ## Use Cases for AI Agents
 
@@ -89,17 +93,15 @@ When the committee decrypts, every registered supplicant's `onDecrypt()` fires. 
 | --- | --- | --- |
 | What's encrypted | Transaction data (calldata, destination) | Smart contract storage (state, parameters) |
 | When it's decrypted | After block finalization | When contract triggers CTX |
-| Protection model | Transit encryption | At-rest encryption with conditional reveal |
+| Protection model | Transit encryption | Conditional execution on encrypted state |
 | Developer interface | Transparent (automatic) | Callback pattern (`onDecrypt()`) |
 | Execution model | Same-block | Two-block (request in *N*, execute in *N+1*) |
 
-Together they form complete privacy: encrypted in transit, encrypted at rest, decrypted only when conditions are met.
+Together they form complete privacy: encrypted in transit, encrypted state executed only when conditions are met.
 
-## Building with CTXs
+## Want to Build with CTXs?
 
-If you're building agents that need private onchain state, CTXs are available now on SKALE chains. Standard Solidity. Standard tooling. No circuit languages required.
-
-I'm working on CTX integrations daily — DM me if you want to walk through callback patterns or agent-specific implementations.
+If you're building something that needs conditional execution on encrypted state, reach out.
 
 import Footer from '../../snippets/_footer.mdx'
 
