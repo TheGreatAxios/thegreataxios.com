@@ -1,0 +1,305 @@
+---
+layout: minimal
+authors:
+    - "[thegreataxios](https://x.com/thegreataxios)"
+date: 2026-04-24
+title: "PII Redaction at the Edge: An Open-Source Server for AI Agents"
+description: "A standalone PII redaction API for multi-agent AI systems, wrapping OpenAI's privacy-filter model to strip personal information before it spreads through logs, context windows, and agent handoffs."
+---
+
+# PII Redaction at the Edge: An Open-Source Server for AI Agents
+
+::authors
+
+## The Problem: Agents Can't Keep Secrets
+
+Your AI agent just received a user message:
+
+> "My name is Alice Smith, email alice@smith.com, phone 555-0123. Please book me a flight to NYC."
+
+It needs to:
+1. Extract the intent (book a flight)
+2. Call an airline API
+3. Log the interaction for debugging
+4. Maybe hand off to another agent
+
+Here's the problem: **every step of that pipeline now contains PII.**
+
+Your logs have it. Your agent-to-agent communication has it. Your downstream APIs have it. One misconfigured log statement, one debug endpoint left open, one prompt injection that exposes context -- and you've got a data breach.
+
+In multi-agent systems, **PII isn't a compliance checkbox -- it's a systemic vulnerability.**
+
+## The Solution: Redact at the Edge
+
+[privacy-python-server](https://github.com/thegreataxios/privacy-python-server) is a standalone PII redaction API wrapping OpenAI's [privacy-filter](https://huggingface.co/openai/privacy-filter) model. [[1]](#sources) It does one thing: **sit between your agents and the rest of your infrastructure, stripping out personal information before it spreads.**
+
+### How It Works
+
+POST text, get back redacted text with typed numbered placeholders:
+
+```bash
+curl -X POST http://localhost:8000/redact \
+  -H "Authorization: Bearer my-secret-key" \
+  -H "Content-Type: application/json" \
+  -d '{"text": "My name is Alice Smith"}'
+```
+
+Response:
+
+```json
+{
+  "redacted_text": "My name is<PRIVATE_PERSON_1><PRIVATE_PERSON_2>",
+  "spans": [
+    {
+      "label": "PRIVATE_PERSON",
+      "id": 1,
+      "text": " Alice",
+      "start": 10,
+      "end": 16,
+      "score": 0.9999989867210388
+    },
+    {
+      "label": "PRIVATE_PERSON",
+      "id": 2,
+      "text": " Smith",
+      "start": 16,
+      "end": 22,
+      "score": 0.9999899864196777
+    }
+  ],
+  "summary": {
+    "total_spans": 2,
+    "by_label": {
+      "PRIVATE_PERSON": 2
+    }
+  }
+}
+```
+
+Notice what happened:
+- **"Alice Smith"** becomes **`<PRIVATE_PERSON_1><PRIVATE_PERSON_2>`**
+- You get back the redacted text *and* metadata about what was detected
+- Each span has position, confidence score, and type label
+- The placeholders are typed and numbered, so you can track entities across documents
+
+### What It Detects
+
+The model catches 8 categories of PII:
+
+| Type | Example |
+|------|---------|
+| `private_person` | Names |
+| `private_email` | Email addresses |
+| `private_phone` | Phone numbers |
+| `private_address` | Street addresses |
+| `private_url` | URLs with PII |
+| `private_date` | Birth dates, sensitive dates |
+| `account_number` | SSN, account numbers |
+| `secret` | Passwords, API keys |
+
+## Why This Matters for Multi-Agent Systems
+
+### Defense in Depth
+
+You're already doing encryption at rest and TLS in transit. But what about **in-memory**? What about **logs**? What about **agent context windows**?
+
+Redaction adds a layer that works regardless of where the data flows next. It's like sanitizing inputs at the edge -- except now the "web" is your entire agent infrastructure.
+
+### Compliance Without Friction
+
+GDPR, CCPA, HIPAA -- they all say the same thing: **don't store PII unless you need to.**
+
+Most agent systems store *everything* by default. Conversation history, tool call logs, error traces -- it's all there, unredacted, waiting for an audit.
+
+With `privacy-python-server`, you redact before you log. Before you cache. Before you pass to the next agent. Compliance becomes architectural, not procedural.
+
+### Agent-to-Agent Hygiene
+
+In multi-agent setups, Agent A passes context to Agent B, which calls Tool C, which logs to Service D. That's four hop points where PII can leak.
+
+Put the redactor at the **inter-agent communication layer**, and every hop gets clean data. Agent B never saw Alice's email. Tool C never received her phone number. Service D only logged placeholders.
+
+## Why Use a Server Instead of Importing the Model Directly?
+
+You could just `pip install privacy-filter` and call it from your agent code. That works fine for simple cases. But there are real reasons to run it as a separate service:
+
+### Sharing Across Many Services
+
+When you have multiple agents, multiple microservices, or multiple teams building on the same infrastructure, you want consistent PII handling. If each service imports the model directly, you get:
+
+- Multiple copies of the same ~1.5GB model in memory
+- Inconsistent configuration (different thresholds, different versions)
+- Each service responsible for updating the model independently
+- No centralized logging or monitoring of what's being detected
+
+With a shared server, one service handles redaction for everything. Update the model version once, change confidence thresholds in one place, monitor detection rates from a single dashboard.
+
+### Resource Constraints: Edge, Serverless, Small Devices
+
+This is the bigger reason.
+
+Not every service that needs PII redaction can afford to download and run a 1.5GB machine learning model. Consider:
+
+- **Serverless functions** (AWS Lambda, Cloudflare Workers) -- you hit package size limits and cold start times balloon
+- **Edge computing** (Cloudflare Workers, Fastly Compute) -- limited memory, no persistent storage for model caching
+- **Small containers** -- maybe your agent service runs in a resource-constrained environment where adding 1.5GB isn't feasible
+- **Client-side applications** -- browser or mobile apps that can't bundle ML models at all
+
+In these cases, offloading redaction to a dedicated server makes sense. Your lightweight service sends text over HTTP, gets back redacted text, and moves on. The heavy lifting happens somewhere with enough resources.
+
+### Operational Benefits
+
+Beyond sharing and resource constraints, running it as a server gives you:
+
+- **Auth and rate limiting** built-in -- control who can call it and how often
+- **Health checks** -- know when the service is down before your agents start leaking data
+- **Centralized logging** -- see what PII is being detected across your entire system
+- **Independent scaling** -- if redaction becomes a bottleneck, scale this service without touching your agents
+- **Language agnostic** -- your agents can be Python, TypeScript, Go, Rust, whatever. They all speak HTTP.
+
+## Architecture
+
+```
+User -> Your Agent Infrastructure -> Airline API
+                |
+         privacy-python-server
+              /redact
+                |
+        Clean Logs
+        Clean Context
+        Clean Handoffs
+```
+
+The server is intentionally minimal:
+
+- **FastAPI** backend (~200 lines of Python)
+- **OpenAI privacy-filter** model (runs locally, ~1.5GB) [[1]](#sources)
+- **Optional auth** via Bearer tokens
+- **Rate limiting** built-in
+- **CORS support** for browser-based agents
+- **Docker-ready** for deployment
+
+Run it locally for development:
+
+```bash
+uv sync
+cp .env.example .env
+DEV_MODE=true uv run python server.py
+```
+
+Or with Docker:
+
+```bash
+docker build -t privacy-filter .
+docker run -p 8000:8000 --env-file .env privacy-filter
+```
+
+First request downloads the model from HuggingFace (~1.5GB), then caches locally. Subsequent requests are fast -- typically under 500ms for short texts.
+
+## Integration Patterns
+
+### Logging Middleware
+
+```python
+import httpx
+
+async def log_interaction(text: str):
+    response = httpx.post(
+        "http://localhost:8000/redact",
+        json={"text": text},
+        headers={"Authorization": f"Bearer {AUTH_KEY}"}
+    )
+    redacted = response.json()["redacted_text"]
+
+    logger.info(f"User message: {redacted}")
+
+    return text
+```
+
+### Inter-Agent Communication
+
+```python
+async def send_to_agent(agent_url: str, context: dict):
+    redacted_context = {}
+    for key, value in context.items():
+        if isinstance(value, str):
+            resp = httpx.post(
+                "http://localhost:8000/redact",
+                json={"text": value}
+            )
+            redacted_context[key] = resp.json()["redacted_text"]
+        else:
+            redacted_context[key] = value
+
+    return await httpx.post(agent_url, json=redacted_context)
+```
+
+### Pre-Storage Sanitization
+
+```python
+def store_conversation(conversation_history: list):
+    sanitized = []
+    for msg in conversation_history:
+        resp = httpx.post(
+            "http://localhost:8000/redact",
+            json={"text": msg["content"]}
+        )
+        sanitized.append({
+            "role": msg["role"],
+            "content": resp.json()["redacted_text"],
+            "pii_summary": resp.json()["summary"]
+        })
+
+    db.insert(sanitized)
+```
+
+## When to Use This (And When Not To)
+
+**Use `privacy-python-server` when:**
+- You have multiple services that need PII redaction
+- Some of your services run in constrained environments (serverless, edge, small containers)
+- You want centralized control over redaction behavior
+- Your stack is polyglot and you don't want every language binding its own ML model
+- You need operational features like auth, rate limiting, health checks
+
+**Just import the model directly when:**
+- You have a single monolithic service
+- Resources aren't a concern
+- You don't need cross-service consistency
+- You want the simplest possible setup with no network hop
+
+Neither approach is wrong. They're different trade-offs for different situations.
+
+## Get Started
+
+**Repository:** [github.com/thegreataxios/privacy-python-server](https://github.com/thegreataxios/privacy-python-server)
+
+**Quick start:**
+
+```bash
+git clone https://github.com/thegreataxios/privacy-python-server.git
+cd privacy-python-server
+uv sync
+cp .env.example .env
+DEV_MODE=true uv run python server.py
+```
+
+**Test it:**
+
+```bash
+curl -X POST http://localhost:8000/redact \
+  -H "Content-Type: application/json" \
+  -d '{"text": "My name is Alice Smith, email alice@smith.com"}'
+```
+
+MIT licensed.
+
+---
+
+<h2 id="sources">Sources</h2>
+
+1. OpenAI, "privacy-filter" model, HuggingFace. [https://huggingface.co/openai/privacy-filter](https://huggingface.co/openai/privacy-filter)
+
+import Footer from '../../snippets/_footer.mdx'
+
+<Footer />
