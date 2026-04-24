@@ -1,11 +1,9 @@
 import { defineConfig } from 'vocs'
 import { createElement } from 'react'
 
-const basePath = process.env.PUBLIC_BASE_URL || (process.env.NODE_ENV === "production" ? "https://sawyercutler.com" : "http://localhost:5173");
-
 export default defineConfig({
   title: 'Sawyer Cutler',
-  baseUrl: basePath,
+  baseUrl: "/",
   description: "Sawyer Cutler — VP Developer Success at SKALE. Writing about AI agents, blockchain infrastructure, and the machine economy.",
   aiCta: {
     query({ location }) {
@@ -39,7 +37,7 @@ export default defineConfig({
       link: "https://twitter.com/thegreataxios"
     }
   ],
-  ogImageUrl: `${basePath}/api/og?logo=%logo&title=%title&description=%description`,
+  ogImageUrl: `/api/og?logo=%logo&title=%title&description=%description`,
   topNav: [
     {
       link: "/",
