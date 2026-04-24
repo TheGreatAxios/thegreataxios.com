@@ -43,7 +43,7 @@ export default function Hero({
         }}
       >
         <img
-          src="/sawyercutler.jpg"
+          src="/headshot.jpg"
           alt={name}
           style={{
             width: "100%",
