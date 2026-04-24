@@ -1,18 +1,18 @@
 import { defineConfig } from 'vocs'
 import { createElement } from 'react'
 
-const basePath = process.env.PUBLIC_BASE_URL || (process.env.NODE_ENV === "production" ? "https://thegreataxios.com" : "http://localhost:5173");
+const basePath = process.env.PUBLIC_BASE_URL || (process.env.NODE_ENV === "production" ? "https://sawyercutler.com" : "http://localhost:5173");
 
 export default defineConfig({
-  title: 'thegreataxios blog',
+  title: 'Sawyer Cutler',
   baseUrl: basePath,
-  description: "The personal blog of TheGreatAxios",
+  description: "Sawyer Cutler — VP Developer Success at SKALE. Writing about AI agents, blockchain infrastructure, and the machine economy.",
   aiCta: {
     query({ location }) {
       return `Read and analyze this page: ${location} — I want to ask questions about it.`
     }
   },
-  logoUrl: `${basePath}/thegreataxios.jpg`,
+  logoUrl: `${basePath}/sawyercutler.jpg`,
   theme: {
     colorScheme: "light"
   },
@@ -29,7 +29,7 @@ export default defineConfig({
       `,
     },
   }),
-  iconUrl: `/thegreataxios.jpg`,
+  iconUrl: `/sawyercutler.jpg`,
   socials: [
     {
       icon: "github",
@@ -44,17 +44,13 @@ export default defineConfig({
   topNav: [
     {
       link: "/",
-      text: "Blog",
+      text: "Home",
       match: ""
     },
     {
       link: "/my-projects",
-      text: "My Projects",
+      text: "Projects",
       match: "/my-projects"
-    },
-    {
-      link: "https://x.com/thegreataxios",
-      text: "Follow me on X"
     }
   ]
 })

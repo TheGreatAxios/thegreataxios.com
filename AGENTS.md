@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Vocs-based static documentation site/blog for thegreataxios.com. Built with React 19, TypeScript, and Bun.
+Vocs-based static documentation site/blog for sawyercutler.com. Built with React 19, TypeScript, and Bun.
 
 ## Commands
 
@@ -133,7 +133,7 @@ public/             # Static assets + generated markdown
 - **Framework**: Vocs (documentation site generator)
 - **UI**: React 19, React DOM 19
 - **Icons**: lucide-react
-- **Analytics**: @vercel/speed-insights
+- **Analytics**: None (previously @vercel/speed-insights, removed)
 - **Types**: @types/react, TypeScript 6.x
 
 ## Notes

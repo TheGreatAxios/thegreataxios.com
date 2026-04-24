@@ -9,7 +9,7 @@ export default async function handler(request: Request) {
     const { searchParams } = new URL(request.url)
     
     const logo = searchParams.get('logo') || ''
-    const title = searchParams.get('title') || 'thegreataxios'
+    const title = searchParams.get('title') || 'sawyercutler'
     const description = searchParams.get('description') || 'The personal blog of TheGreatAxios'
     
     return new ImageResponse(
