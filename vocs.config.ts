@@ -12,7 +12,6 @@ export default defineConfig({
       return `Read and analyze this page: ${location} — I want to ask questions about it.`
     }
   },
-  logoUrl: `${basePath}/sawyercutler.jpg`,
   theme: {
     colorScheme: "light"
   },
@@ -29,7 +28,7 @@ export default defineConfig({
       `,
     },
   }),
-  iconUrl: `/sawyercutler.jpg`,
+  iconUrl: `/thegreataxios.jpg`,
   socials: [
     {
       icon: "github",
