@@ -11,9 +11,7 @@ Vocs-based static documentation site/blog for thegreataxios.com. Built with Reac
 - `bun run preview` - Preview production build locally
 
 ### Build
-- `bun run build` - Full build (markdown export + site build)
-- `bun run build:md` - Export MDX files to public markdown
-- `bun run build:site` - Build Vocs static site
+- `bun run build` - Build Vocs static site
 
 ### Environment
 - Node.js v24.4.1 required (see `.nvmrc`)
@@ -90,8 +88,11 @@ Vocs-based static documentation site/blog for thegreataxios.com. Built with Reac
 - **Opening:** 1-2 sentence hook stating the core problem/insight
 - **Problem Definition:** Concrete, specific language
 - **Technical Explanation:** Mechanics first, theory second
-- **Examples:** Real code, real use cases
-- **Comparison Tables:** For contrasting approaches
+- **Examples:** Real code, real use cases — include imports, make them copy-paste ready
+- **Architecture Diagrams:** ASCII flow diagrams for data/middleware patterns
+- **Comparison Tables:** For contrasting approaches (environment A vs B, tool X vs Y)
+- **Callouts:** Use `> **Warning:**` or `> **Note:**` blockquotes for critical caveats
+- **Sources:** Numbered citations at end for external references (models, specs, docs)
 - **Closing:** Direct CTA ("reach out", "DM me", "build this")
 
 ### Language Guidelines
@@ -123,7 +124,7 @@ docs/
     blog/           # Blog posts
   snippets/         # Reusable MDX components
   styles.css        # Global styles
-scripts/            # Node.js build utilities
+
 public/             # Static assets + generated markdown
 ```
 
@@ -141,4 +142,4 @@ public/             # Static assets + generated markdown
 - No ESLint/Prettier/Biome configured - rely on TypeScript strict mode
 - Light theme enforced globally (see `docs/styles.css`)
 - Deployment via Vercel (see `vercel.json` for redirects)
-- MDX files auto-exported to `/public/md/` and route-mirrored
+- When showing install commands, default to `npm` for broader compatibility (readers may not use Bun)

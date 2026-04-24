@@ -5,9 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vocs dev",
-    "build:md": "node scripts/export-md.mjs",
-    "build:site": "vocs build",
-    "build": "bun run build:site",
+    "build": "vocs build",
     "preview": "vocs preview"
   },
   "dependencies": {

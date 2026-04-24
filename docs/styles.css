@@ -14,3 +14,40 @@
     max-width: 900px;
     height: auto;
 }
+
+/* ============================================================
+   GLOBAL WIDTH OVERRIDE - Apply to all pages
+   ============================================================ */
+
+/* Override the CSS variable at root level */
+:root {
+    --vocs-content_width: 1200px !important;
+}
+
+/* Override the main content container */
+.vocs_DocsLayout_content {
+    max-width: 1200px !important;
+    width: 100% !important;
+}
+
+/* Override the inner content area */
+.vocs_Content {
+    max-width: 1200px !important;
+    width: 100% !important;
+}
+
+/* Tables */
+table {
+    width: 100% !important;
+    table-layout: auto;
+}
+
+td:first-child {
+    white-space: nowrap;
+    font-weight: 600;
+}
+
+td:nth-child(3) {
+    white-space: nowrap;
+    font-size: 0.8rem;
+}

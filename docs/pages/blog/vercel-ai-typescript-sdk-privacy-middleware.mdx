@@ -1,0 +1,366 @@
+---
+layout: minimal
+authors:
+    - "[thegreataxios](https://x.com/thegreataxios)"
+date: 2026-04-25
+title: "Vercel AI TypeScript SDK: Privacy Middleware"
+description: "A TypeScript middleware for the Vercel AI SDK that automatically redacts PII from messages using OpenAI's privacy-filter model — running entirely locally via Transformers.js."
+---
+
+# Vercel AI TypeScript SDK: Privacy Middleware
+
+::authors
+
+## The Problem: PII Leaks Through Abstractions
+
+Your AI application uses the Vercel AI SDK. It's clean — `generateText`, `streamText`, a few lines of code, done. But every user message flows through your system intact:
+
+> "I'm Alice Smith from Acme Corp. My email is `alice@example.com` and my phone is `555-0123`."
+
+That string hits your:
+- **Logs** — Sentry, Datadog, whatever you're using
+- **Context windows** — passed to the LLM, stored in conversation history
+- **Tool calls** — maybe forwarded to a CRM or booking API
+- **Error traces** — when something breaks, the full message is in the stack
+
+One misconfigured logger, one debug endpoint left open, one analytics pipeline you forgot about — and you've got a data breach waiting to happen.
+
+In production AI systems, **PII isn't a compliance checkbox — it's a systemic vulnerability that travels through every abstraction layer.**
+
+## The Solution: Middleware That Redacts
+
+[ai-sdk-privacy-filter-middleware](https://github.com/TheGreatAxios/ai-sdk-privacy-filter-middleware) is a Vercel AI SDK [[1]](#sources) middleware that wraps any language model and automatically redacts PII from messages. It uses OpenAI's [privacy-filter](https://huggingface.co/openai/privacy-filter) model [[2]](#sources) running locally via [Transformers.js](https://huggingface.co/docs/transformers.js). [[3]](#sources)
+
+No API calls. No cloud dependency. The 1.5B parameter model runs in your process — browser or Node.js.
+
+### How It Works
+
+> **Model Architecture Note:** The privacy-filter model uses a sparse Mixture-of-Experts (MoE) architecture with 128 experts and top-4 routing per token. [[3]](#sources) While the full model is ~1.5GB, only ~50M parameters are active per forward pass — inference is fast once loaded.
+
+Wrap your model with the middleware:
+
+```typescript
+import { wrapLanguageModel } from 'ai';
+import { createOpenRouter } from '@openrouter/ai-sdk-provider';
+import { privacyFilterMiddleware } from 'ai-sdk-privacy-filter-middleware';
+
+const openrouter = createOpenRouter({ apiKey: process.env.OPENROUTER_API_KEY });
+
+const model = wrapLanguageModel({
+  model: openrouter('openrouter/free'),
+  middleware: privacyFilterMiddleware(),
+});
+```
+
+Now every `generateText` or `streamText` call automatically:
+
+1. **Detects** PII in user/system messages
+2. **Replaces** it with typed placeholders (`[PERSON_1]`, `[EMAIL_1]`)
+3. **Restores** original values in the LLM's response
+
+```
+User sends:  "I'm Alice, my email is alice@corp.com"
+LLM sees:    "I'm [PERSON_1], my email is [EMAIL_1]"
+LLM replies: "Hello [PERSON_1], I'll contact [EMAIL_1]"
+User sees:   "Hello Alice, I'll contact alice@corp.com"
+```
+
+The LLM never sees the real PII. Your logs only contain placeholders. Compliance becomes architectural.
+
+## What It Detects
+
+The model catches 8 categories of PII:
+
+| Type | Placeholder | Example |
+|------|-------------|---------|
+| `private_person` | `[PERSON_N]` | Alice Smith |
+| `private_email` | `[EMAIL_N]` | `` `alice@example.com` `` |
+| `private_phone` | `[PHONE_N]` | `+1-555-0123` |
+| `private_address` | `[ADDRESS_N]` | 123 Main St |
+| `private_date` | `[DATE_N]` | 1990-01-15 |
+| `private_url` | `[URL_N]` | `https://example.com` |
+| `account_number` | `[ACCOUNT_N]` | 1234-5678-9012 |
+| `secret` | `[SECRET_N]` | API keys, passwords |
+
+## The Middleware Pattern
+
+The Vercel AI SDK's middleware system is the right abstraction for this. It sits between your code and the LLM — exactly where redaction belongs.
+
+```
+Your Code ──► transformParams (detect + redact PII)
+                        │
+                        ▼
+               LLM sees redacted text
+                        │
+                        ▼
+               LLM response (with placeholders)
+                        │
+                        ▼
+          wrapGenerate/wrapStream (unredact placeholders)
+                        │
+                        ▼
+               User sees original PII restored
+```
+
+The middleware implements three hooks:
+
+- **`transformParams`** — redacts user and system messages before they reach the LLM
+- **`wrapGenerate`** — unredacts placeholders in non-streaming responses
+- **`wrapStream`** — unredacts placeholders in streaming responses via a transform stream
+
+Only user and system messages are redacted. Assistant and tool messages pass through untouched — the LLM never outputs real PII, only placeholders that get restored.
+
+## Why Local Inference Matters
+
+You could send messages to a cloud PII detection API. Many services offer this. But now you have:
+
+- **Network latency** — every request adds 100-500ms
+- **Data residency issues** — user data leaves your infrastructure
+- **Rate limits and costs** — per-request pricing adds up fast
+- **Availability dependency** — their downtime is your downtime
+
+Running the model locally via Transformers.js eliminates all of this. The model loads once (~1.5GB), then inference runs in milliseconds on CPU (WASM) or GPU (WebGPU).
+
+### Runtime Support
+
+| Runtime | Device | Status |
+|---------|--------|--------|
+| Node.js | WASM | Supported |
+| Browser | WebGPU | Supported |
+| Browser | WASM | Supported (fallback) |
+
+Auto-detects the best available device. WebGPU when available, WASM fallback otherwise.
+
+> **Warning:** WebGPU does not work in Safari. Use WASM fallback or deploy server-side for Safari users.
+
+## Configuration
+
+```typescript
+import { createOpenRouter } from '@openrouter/ai-sdk-provider';
+
+const openrouter = createOpenRouter({ apiKey: process.env.OPENROUTER_API_KEY });
+
+const model = wrapLanguageModel({
+  model: openrouter('openrouter/free'),
+  middleware: privacyFilterMiddleware({
+    // Only redact specific entity types (default: all)
+    entityTypes: ['private_person', 'private_email', 'private_phone'],
+
+    // Minimum confidence score (default: 0.8)
+    minScore: 0.9,
+
+    // Whether to unredact LLM responses (default: true)
+    redactResponses: true,
+
+    // Custom placeholder format
+    placeholderFormat: (type, n) => `<<${type}_${n}>>`,
+
+    // Device override ('wasm' | 'webgpu')
+    device: 'webgpu',
+
+    // Model loading progress callback
+    onProgress: ({ status, progress }) => {
+      console.log(status, progress);
+    },
+  }),
+});
+```
+
+## Eager Initialization
+
+The model loads lazily on first use. First request will be slower (~5-15s depending on hardware) while the model downloads and initializes. To pre-load:
+
+```typescript
+import { createPrivacyFilter } from 'ai-sdk-privacy-filter-middleware';
+import { createOpenRouter } from '@openrouter/ai-sdk-provider';
+
+const openrouter = createOpenRouter({ apiKey: process.env.OPENROUTER_API_KEY });
+const middleware = await createPrivacyFilter({ device: 'webgpu' });
+
+const model = wrapLanguageModel({
+  model: openrouter('openrouter/free'),
+  middleware,
+});
+```
+
+## Multi-Provider Support
+
+Works with any AI SDK provider:
+
+```typescript
+// OpenRouter (default example)
+import { createOpenRouter } from '@openrouter/ai-sdk-provider';
+const openrouter = createOpenRouter({ apiKey: process.env.OPENROUTER_API_KEY });
+
+// OpenAI
+import { openai } from '@ai-sdk/openai';
+
+// Anthropic, Gemini, Cohere, etc.
+// Any provider that returns the standard AI SDK interface
+```
+
+The middleware is provider-agnostic — it operates on messages, not model implementations.
+
+## Browser vs Server: Where to Run It
+
+The middleware works in both environments, but the trade-offs differ.
+
+> **Architecture Note:** The privacy-filter model is a sparse Mixture-of-Experts (MoE) with 128 experts. [[2]](#sources) Only ~50M parameters activate per token, making inference lightweight despite the ~1.5GB download size.
+
+| Environment | Device | Model Size | Best For |
+|-------------|--------|------------|----------|
+| **Browser** | WebGPU (or WASM fallback) | Downloaded per user | Client-side apps, data never leaves the device |
+| **Server** | WASM | Loaded once, shared across requests | API routes, guaranteed availability, no per-user download |
+
+> **Warning:** WebGPU is not supported in Safari. Use WASM fallback or server-side deployment for Safari users.
+
+### Browser (WebGPU)
+
+Running in the browser means:
+- **Zero server cost** — model inference happens on the user's GPU
+- **Maximum privacy** — PII never leaves the device, not even to your server
+- **Per-user download** — every user downloads ~1.5GB on first use
+- **Hardware variance** — WebGPU support varies; WASM fallback is slower
+
+Ideal for: Chat UIs, client-only apps, compliance requirements that demand on-device processing.
+
+### Server (Node.js + WASM)
+
+Running on the server means:
+- **Predictable performance** — consistent hardware, no WebGPU variability
+- **No per-user overhead** — model loads once, serves all requests
+- **Standard deployment** — works on any Node.js host (Vercel, Railway, etc.)
+- **Slightly slower inference** — WASM vs WebGPU, but still milliseconds
+
+Ideal for: API routes, serverless functions, applications where you control the infrastructure.
+
+Both work. Browser for privacy guarantees; server for operational consistency.
+
+## Get Started
+
+**Repository:** [github.com/TheGreatAxios/ai-sdk-privacy-filter-middleware](https://github.com/TheGreatAxios/ai-sdk-privacy-filter-middleware)
+
+**Install:**
+
+```bash
+npm install ai-sdk-privacy-filter-middleware
+```
+
+**Quick start:**
+
+```typescript
+import { generateText, wrapLanguageModel } from 'ai';
+import { createOpenRouter } from '@openrouter/ai-sdk-provider';
+import { privacyFilterMiddleware } from 'ai-sdk-privacy-filter-middleware';
+
+const openrouter = createOpenRouter({ apiKey: process.env.OPENROUTER_API_KEY });
+
+const model = wrapLanguageModel({
+  model: openrouter('openrouter/free'),
+  middleware: privacyFilterMiddleware(),
+});
+
+const result = await generateText({
+  model,
+  prompt: "My name is Alice Smith and my email is alice@example.com",
+});
+
+// PII is redacted before reaching the LLM
+// Response placeholders are restored before you see them
+console.log(result.text);
+```
+
+## Validating Redaction with Debug Logging
+
+To verify the middleware is working correctly, use the debug callbacks to inspect what's happening at each stage:
+
+```typescript
+import { generateText, wrapLanguageModel } from 'ai';
+import { createOpenRouter } from '@openrouter/ai-sdk-provider';
+import { privacyFilterMiddleware } from 'ai-sdk-privacy-filter-middleware';
+
+const openrouter = createOpenRouter({ apiKey: process.env.OPENROUTER_API_KEY });
+
+const model = wrapLanguageModel({
+  model: openrouter('openrouter/free'),
+  middleware: privacyFilterMiddleware({
+    entityTypes: ['private_person', 'private_email'],
+    minScore: 0.8,
+    redactResponses: true,
+    placeholderFormat: (type, n) => `<<${type}_${n}>>`,
+    onRedact: ({ original, redacted, entities }) => {
+      console.log('[onRedact] original:', original);
+      console.log('[onRedact] redacted:', redacted);
+      console.log('[onRedact] entities:', JSON.stringify(entities, null, 2));
+    },
+    onUnredact: ({ raw, unredacted }) => {
+      console.log('[onUnredact] raw:', raw.slice(0, 200));
+      console.log('[onUnredact] unredacted:', unredacted.slice(0, 200));
+    },
+  }),
+});
+
+const result = await generateText({
+  model,
+  prompt: "My name is Alice Smith and my email is alice@example.com",
+});
+
+console.log('=== FINAL OUTPUT ===');
+console.log(result.text);
+```
+
+**Example output:**
+
+```
+[onRedact] original: My name is Alice Smith and my email is alice@example.com
+[onRedact] redacted: My name is <<PERSON_1>> and my email is <<EMAIL_1>>
+[onRedact] entities: [
+  {
+    "entity_group": "private_person",
+    "score": 0.9999969899654388,
+    "word": " Alice Smith"
+  },
+  {
+    "entity_group": "private_email",
+    "score": 0.9995789726575216,
+    "word": " alice@example.com"
+  }
+]
+[onUnredact] raw: Hello <<PERSON_1>>, I've noted your email <<EMAIL_1>>
+[onUnredact] unredacted: Hello Alice Smith, I've noted your email alice@example.com
+=== FINAL OUTPUT ===
+Hello Alice Smith, I've noted your email alice@example.com
+```
+
+This confirms the LLM only saw placeholders, never the real PII. The `onRedact` callback shows exactly what entities were detected and their confidence scores, while `onUnredact` demonstrates the placeholder-to-original mapping being restored.
+
+## When to Use This
+
+**Use browser deployment when:**
+- You're building a client-side chat interface
+- PII must never reach your server (maximum privacy)
+- Users have modern browsers with WebGPU support
+- You can tolerate the per-user model download
+
+**Use server deployment when:**
+- You're building API routes or serverless functions
+- You need predictable, consistent performance
+- You want to avoid pushing 1.5GB to every user
+- You're already running Node.js infrastructure
+
+**Don't use this when:**
+- You need centralized redaction across multiple languages — use [privacy-python-server](https://github.com/thegreataxios/privacy-python-server) instead
+- You can't afford 1.5GB memory per instance (browser or server)
+
+---
+
+<h2 id="sources">Sources</h2>
+
+1. Vercel, "AI SDK" documentation. [https://ai-sdk.dev](https://ai-sdk.dev)
+2. OpenRouter, "OpenRouter AI SDK Provider" documentation. [https://openrouter.ai/docs](https://openrouter.ai/docs)
+3. OpenAI, "privacy-filter" model card, HuggingFace. [https://huggingface.co/openai/privacy-filter](https://huggingface.co/openai/privacy-filter)
+4. HuggingFace, "Transformers.js" documentation. [https://huggingface.co/docs/transformers.js](https://huggingface.co/docs/transformers.js)
+
+import Footer from '../../snippets/_footer.mdx'
+
+<Footer />
