@@ -1,68 +1,47 @@
 ---
 layout: minimal
-description: "Open source projects by TheGreatAxios — spanning AI agents, x402 payments, SKALE infrastructure, and developer tools."
+description: "Projects by TheGreatAxios — agents, small models, AI tools, and infrastructure."
 ---
 
-# My Projects
+<div className="page-tabs">
+  <a href="/" className="page-tab">Writing</a>
+  <span className="page-tab-sep">|</span>
+  <a href="/my-projects" className="page-tab page-tab--active">Projects</a>
+</div>
 
-A collection of open source projects spanning AI agents, blockchain, payments, privacy, and developer infrastructure.
+## Projects
 
-## AI
+### Agents & AI
 
-AI inference, privacy, transcription, and general agent infrastructure (non-crypto).
+- **[triage-agent](https://github.com/TheGreatAxios/triage-agent)** — Cloudflare Workers agent for incident response. Telegram ingestion, Slack escalation, Linear management.
+- **[Prawl](https://github.com/thegreataxios/prawl)** — Browser automation CLI for AI agents. ~63MB self-contained binary with MCP support. Bun.WebView.
+- **[ai-sdk-privacy-filter-middleware](https://github.com/TheGreatAxios/ai-sdk-privacy-filter-middleware)** — Vercel AI SDK middleware that redacts PII locally using Transformers.js. No API calls.
+- **[privacy-filter-python](https://github.com/TheGreatAxios/privacy-filter-python)** — Local-first PII detection and reversible redaction for NanoBot and OpenAI Agents SDK.
+- **[privacy-python-server](https://github.com/TheGreatAxios/privacy-python-server)** — Privacy-first AI server with offline PII redaction.
+- **[video-transcription-modal](https://github.com/thegreataxios/video-transcription-modal)** — CPU-optimized transcription on Modal using faster-whisper with INT8 quantization.
+- **[agent-skills](https://github.com/thegreataxios/agent-skills)** — Reusable agent skills, workflows, and patterns for AI engineering.
+- **[nanobot-railway-template](https://github.com/thegreataxios/nanobot-railway-template)** — One-click deploy template for nanobots on Railway. 5+ platforms, 15+ LLM providers.
+- **[llms-txt-generator](https://github.com/TheGreatAxios/llms-txt-generator)** — Utility for generating llms.txt / llms-full.txt from documentation sources.
 
-| Project | Description | Tags | Links |
-|---------|-------------|------|-------|
-| Triage Agent | Cloudflare Workers triage agent — Telegram ingestion, Slack escalation, Linear management. | Cloudflare, Agents | [GitHub](https://github.com/TheGreatAxios/triage-agent) |
-| Privacy Filter Python | Local-first PII detection and reversible redaction with drop-in guardrails for NanoBot and OpenAI Agents SDK. | Privacy, Python | [GitHub](https://github.com/TheGreatAxios/privacy-filter-python) |
-| AI SDK Privacy Filter Middleware | My Vercel AI SDK middleware that redacts PII from chat messages using Transformers.js. Runs locally — no API calls. | Privacy, TypeScript | [GitHub](https://github.com/TheGreatAxios/ai-sdk-privacy-filter-middleware) |
-| Agent Skills | My collection of reusable agent skills, workflows, and patterns for AI engineering and automation. | Skills | [GitHub](https://github.com/thegreataxios/agent-skills) |
-| LLMs.txt Generator | My utility for generating clean llms.txt and llms-full.txt outputs from documentation sources. | CLI | [GitHub](https://github.com/TheGreatAxios/llms-txt-generator) |
-| Nanobot Railway Template | My one-click deploy template for nanobots on Railway with web-based config UI. Supports 5+ platforms, 15+ LLM providers. | Template, Bot | [GitHub](https://github.com/thegreataxios/nanobot-railway-template) |
-| Prawl | My browser automation CLI for AI agents using Bun.WebView. ~63MB self-contained binary with MCP support. | CLI, Browser | [GitHub](https://github.com/thegreataxios/prawl) |
-| Privacy Python Server | My privacy-first AI server with local PII redaction using Transformers.js. Runs entirely offline with no external API calls. | Privacy, Python | [GitHub](https://github.com/TheGreatAxios/privacy-python-server) |
-| Video Transcription Modal | My CPU-optimized transcription service on Modal using faster-whisper with INT8 quantization. SRT/VTT/JSON output, MCP-compatible CLI. | Whisper | [GitHub](https://github.com/thegreataxios/video-transcription-modal) |
+### Payments & Blockchain
 
-## Blockchain
+- **[Armory](https://github.com/thegreataxios/armory)** — Opinionated TypeScript x402 SDK. [armory.sh](https://armory.sh)
+- **[x402](https://github.com/coinbase/x402)** — Contributor to the open standard for internet-native payments. [x402.org](https://x402.org)
+- **[eip3009-forwarder](https://github.com/TheGreatAxios/eip3009-forwarder)** — Production-ready EIP-3009 forwarder contracts for x402 on EVM chains.
+- **[x402-examples](https://github.com/TheGreatAxios/x402-examples)** — Comprehensive examples and tests for the x402 payment standard.
+- **[confidential-poker](https://github.com/thegreataxios/confidential-poker)** — AI Texas Hold'em with 6 agent personalities. Foundry/Hono/Next.js.
+- **[gasless-rs](https://github.com/Dirt-Road-Development/gasless-rs)** — Rust implementation of gasless transaction infrastructure.
+- **[skale-cli](https://github.com/TheGreatAxios/skale-cli)** — CLI tools for SKALE network interactions and deployment.
+- **[skl-supply-ui](https://github.com/TheGreatAxios/skl-supply-ui)** — Real-time dashboard for SKL token economics and supply metrics.
 
-Onchain infrastructure — agents, payments, privacy, bridging, EVM developer tools.
+### Contributions
 
-| Project | Description | Tags | Links |
-|---------|-------------|------|-------|
-| Agent0 CLI | My CLI for agent0-ts SDK — agent portability, discovery, trust. Register agents on-chain via ERC-8004. | CLI, ERC-8004 | [GitHub](https://github.com/thegreataxios/agent0-cli) |
-| Agent0 Skills | Skills I wrote for the Agent0 protocol — agent discovery, reputation, and on-chain coordination workflows. | Skills | [GitHub](https://github.com/agent0lab/skills) |
-| Agent0 Subgraph | A multi-chain subgraph I contributed to for indexing ERC-8004 Trustless Agents. GraphQL APIs for discovery, reputation, validation. | ERC-8004, The Graph, Contributor | [GitHub](https://github.com/agent0lab/subgraph) |
-| Agent0 Watchtower | My monitoring and watchdog tooling for Agent0 operations and reliability workflows. | ERC-8004 | [GitHub](https://github.com/TheGreatAxios/watchtower) |
-| Armory | My opinionated TypeScript x402 SDK focused on delivering the best developer experience. | x402, SDK | [GitHub](https://github.com/thegreataxios/armory) · [Website](https://armory.sh) |
-| Awesome x402 | A curated resources list I maintain for the x402 ecosystem: specs, repos, SDKs, facilitators, tutorials. | x402, Resources, Contributor | [GitHub](https://github.com/merit-systems/awesome-x402) |
-| BITE Extension | A BITE Confidential Wallet extension I contributed to for managing viewer keys and confidential token balances. | Browser, SKALE, Contributor | [GitHub](https://github.com/skalenetwork/bite-extension) |
-| BITE TypeScript | A TypeScript library I contributed to for encrypting transaction data using the BITE protocol. | SKALE, Encryption, Contributor | [GitHub](https://github.com/skalenetwork/bite-ts) |
-| Confidential Poker | My AI Texas Hold'em game where 6 agents with unique personalities play against each other. Foundry/Hono/Next.js stack. | Solidity, Game | [GitHub](https://github.com/thegreataxios/confidential-poker) |
-| EIP-3009 Forwarder | My production-ready EIP-3009 forwarder contracts to accelerate x402 adoption on EVM chains. | x402, Solidity | [GitHub](https://github.com/TheGreatAxios/eip3009-forwarder) |
-| FAIR Documentation | Technical documentation and guides I wrote for the Fairchain ecosystem and infrastructure. | Docs | [GitHub](https://github.com/thegreataxios/docs.fairchain.ai) · [Site](http://docs-fairchain-ai.pages.dev/) |
-| Faremeter | A universal machine payments framework I contributed to with plugin system for x402, MPP, L402 standards. | x402, MPP, Contributor | [GitHub](https://github.com/faremeter/faremeter) · [Website](https://faremeter.xyz) |
-| Gasless SDK | My Rust implementation of gasless transaction infrastructure for seamless user experiences without gas fees. | SDK, Rust | [GitHub](https://github.com/Dirt-Road-Development/gasless-rs) |
-| Markdown Fetch | My agentic tool that converts content to markdown via API. | x402, App | [Website](https://markdownfetch.com) |
-| Metaport | A TypeScript widget I contributed to for embedding IMA bridging into any SKALE dApp. | SKALE, Bridge, Contributor | [GitHub](https://github.com/skalenetwork/metaport) |
-| MPP SDK | A SKALE payment method SDK I contributed to for Machine Payments Protocol with BITE encryption. | SDK, x402, Contributor | [GitHub](https://github.com/skalenetwork/mpp-sdk) |
-| Ox | A standard library for Ethereum I contributed to. TypeScript modules for ABIs, addresses, ECDSA, RLP, transactions. | TypeScript, Contributor | [GitHub](https://github.com/wevm/ox) · [Website](https://oxlib.sh) |
-| Peer Solidity Hooks | A SKALE Bridge Post-Intent Hook I contributed to for zkp2p. Auto-bridges USDC from Base to SKALE. | Solidity, Bridge, Contributor | [GitHub](https://github.com/skalenetwork/peer-solidity-hooks) |
-| sFUEL Distribution System | My automated distribution contracts for SKALE's SFUEL token with fair allocation mechanisms. | Solidity | [GitHub](https://github.com/Dirt-Road-Development/sfuel-distribution-contract) |
-| sFUEL Station | My smart contracts for SFUEL distribution and management within the SKALE ecosystem. | App | [GitHub](https://github.com/Dirt-Road-Development/sfuel-station) · [Website](https://sfuelstation.com) |
-| SKALE CLI | My developer tools and CLI for streamlined SKALE network interactions and deployment workflows. | CLI | [GitHub](https://github.com/TheGreatAxios/skale-cli) |
-| SKALE CLI (Official) | An official CLI I contributed to for interacting with SKALE Network and reading contract data. | CLI, Contributor | [GitHub](https://github.com/skalenetwork/skale-cli) |
-| SKALE Documentation | A documentation platform I contributed to for SKALE network, developer guides, and ecosystem resources. | Docs, Contributor | [GitHub](https://github.com/skalenetwork/docs.skale.space) · [Website](https://docs.skale.space) |
-| SKALE Faremeter Plugin | A Faremeter plugin I contributed to for encrypted, confidential token payments on SKALE chains via x402. | Plugin, x402, Contributor | [GitHub](https://github.com/skalenetwork/faremeter-plugin) |
-| SKALE Oracle SDK | An official SDK I contributed to for integrating with SKALE's decentralized oracle network. | SDK, Contributor | [GitHub](https://github.com/skalenetwork/oracle-sdk) |
-| SKALE Portal | A web interface I contributed to for IMA asset transfers, SKL staking, and developer resources. | SKALE, Bridge, Contributor | [GitHub](https://github.com/skalenetwork/portal) · [Website](https://portal.skale.space) |
-| SKALE RNG Service | My verifiable random number generation service for the SKALE ecosystem with cryptographic security. | Solidity | [GitHub](https://github.com/Dirt-Road-Development/skale-rng) |
-| SKALE Skills | Installable Agent Skills I wrote for SKALE workflows — deploy, BITE, x402, IMA bridging, CLI. | Skills | [GitHub](https://github.com/skalenetwork/skills) |
-| SKL Supply Dashboard | My real-time dashboard for SKL token economics, supply metrics, and network statistics. | Data | [GitHub](https://github.com/TheGreatAxios/skl-supply-ui) · [Site](https://skl-supply-ui.pages.dev) |
-| Text Merchant | My conversion-focused platform for high-performing written content. | x402, App | [Website](https://textmerchant.com) |
-| Viem | A TypeScript interface for Ethereum I contributed to. Smart contracts, JSON-RPC, ABI utilities, BigInt support. | TypeScript, Contributor | [GitHub](https://github.com/wevm/viem) · [Website](https://viem.sh) |
-| x402 (Coinbase) | An open standard I contributed to for internet native payments. HTTP-native protocol supporting all networks. | x402, Protocol, Contributor | [GitHub](https://github.com/coinbase/x402) · [Website](https://x402.org) |
-| x402 Payment Examples | My comprehensive examples and tests for the x402 onchain payment standard. | x402 | [GitHub](https://github.com/TheGreatAxios/x402-examples) |
+- **[Viem](https://viem.sh)** — TypeScript interface for Ethereum. Smart contracts, JSON-RPC, ABI utilities.
+- **[Ox](https://oxlib.sh)** — Standard library for Ethereum. ABIs, addresses, ECDSA, RLP, transactions.
+- **SKALE** — [BITE](https://github.com/skalenetwork/bite-ts), [MPP SDK](https://github.com/skalenetwork/mpp-sdk), [Metaport](https://github.com/skalenetwork/metaport), [Portal](https://portal.skale.space), [Oracle SDK](https://github.com/skalenetwork/oracle-sdk), [Skills](https://github.com/skalenetwork/skills), [Docs](https://docs.skale.space)
+- **[Faremeter](https://faremeter.xyz)** — Universal machine payments framework (x402, MPP, L402).
+- **[Awesome x402](https://github.com/merit-systems/awesome-x402)** — Curated resources for the x402 ecosystem.
 
 ---
 
-*Most projects are open source. For collaboration inquiries, [reach out on X](https://x.com/thegreataxios).*
+<div className="footer-credit">Inspired by <a href="https://huozhi.im" target="_blank" rel="noopener noreferrer">huozhi.im</a></div>

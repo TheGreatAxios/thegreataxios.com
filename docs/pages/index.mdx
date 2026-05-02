@@ -1,12 +1,19 @@
 ---
 layout: minimal
-description: "Sawyer Cutler — VP Developer Success at SKALE. Writing about AI agents, blockchain infrastructure, and the machine economy."
+description: "Sawyer Cutler — building agents, tuning small models, writing about AI infrastructure."
 ---
 
 import Hero from '../snippets/Hero.tsx'
+import BlogList from '../snippets/BlogList.tsx'
 
 <Hero />
 
-## Latest Posts
+<div className="page-tabs">
+  <a href="/" className="page-tab page-tab--active">Writing</a>
+  <span className="page-tab-sep">|</span>
+  <a href="/my-projects" className="page-tab">Projects</a>
+</div>
 
-::blog-posts
+<BlogList />
+
+<div className="footer-credit">Inspired by <a href="https://huozhi.im" target="_blank" rel="noopener noreferrer">huozhi.im</a></div>

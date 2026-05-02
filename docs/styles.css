@@ -1,53 +1,482 @@
-.vocs_H2 {
-    border: none !important;
-}
+/* ============================================================
+   HUOZHI-INSPIRED MINIMAL THEME
+   Strips Vocs chrome, monospace everything, content-first.
+   ============================================================ */
 
+/* Override Vocs CSS variables — these go :root, not in a div */
 :root,
 :root.light,
 :root.dark {
-    color-scheme: light !important;
-}
-
-/* Ensure SVG animations display at proper size */
-.vocs_Content img[src$=".svg"] {
-    width: 100%;
-    max-width: 900px;
-    height: auto;
+  color-scheme: light !important;
+  --vocs-content_width: 720px !important;
+  --vocs-sidebar_width: 0px !important;
 }
 
 /* ============================================================
-   GLOBAL WIDTH OVERRIDE - Apply to all pages
+   HIDE VOCS CHROME — target actual DOM classes
    ============================================================ */
 
-/* Override the CSS variable at root level */
-:root {
-    --vocs-content_width: 1200px !important;
+/* Desktop top nav bar */
+.vocs_DesktopTopNav {
+  display: none !important;
 }
 
-/* Override the main content container */
+/* Mobile top nav bar */
+.vocs_MobileTopNav {
+  display: none !important;
+}
+
+/* The gutter that holds the top nav */
+.vocs_DocsLayout_gutterTop,
+.vocs_DocsLayout_gutterTop_sticky {
+  display: none !important;
+  height: 0 !important;
+  min-height: 0 !important;
+}
+
+/* Top nav curtain (scroll shadow) */
+.vocs_DocsLayout_gutterTopCurtain {
+  display: none !important;
+}
+
+/* Search buttons */
+.vocs_DesktopSearch_search,
+.vocs_MobileSearch_searchButton {
+  display: none !important;
+}
+
+/* Nav logo title */
+.vocs_NavLogo_title,
+.vocs_DesktopTopNav_logo,
+.vocs_DesktopTopNav_logoWrapper {
+  display: none !important;
+}
+
+/* Sidebar */
+.vocs_Sidebar,
+.vocs_Sidebar_divider {
+  display: none !important;
+}
+
+/* Skip link */
+.vocs_SkipLink {
+  display: none !important;
+}
+
+/* AI CTA */
+.vocs_AiCta {
+  display: none !important;
+}
+
+/* Last updated + edit link */
+.vocs_LastUpdated,
+.vocs_DocsLayout_editLink {
+  display: none !important;
+}
+
+/* Outline (right sidebar) */
+.vocs_Outline {
+  display: none !important;
+}
+
+/* Breadcrumbs */
+.vocs_Breadcrumb {
+  display: none !important;
+}
+
+/* Footer (Vocs default is empty, hide it) */
+.vocs_Footer {
+  border-top: none !important;
+  min-height: 0 !important;
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+/* ============================================================
+   LAYOUT — centered, no chrome
+   ============================================================ */
+
+.vocs_DocsLayout {
+  padding-top: 0 !important;
+}
+
 .vocs_DocsLayout_content {
-    max-width: 1200px !important;
-    width: 100% !important;
+  max-width: 720px !important;
+  width: 100% !important;
+  margin: 0 auto !important;
+  padding: 3rem 1.5rem !important;
 }
 
-/* Override the inner content area */
+/* Override the withTopNav padding since nav is hidden */
+.vocs_DocsLayout_content_withTopNav {
+  padding-top: 3rem !important;
+}
+
 .vocs_Content {
-    max-width: 1200px !important;
-    width: 100% !important;
+  max-width: 720px !important;
+  width: 100% !important;
 }
 
-/* Tables */
-table {
-    width: 100% !important;
-    table-layout: auto;
+/* ============================================================
+   TYPOGRAPHY
+   ============================================================ */
+
+/* Force monospace on body — overrides Vocs inline style variable */
+body,
+body * {
+  font-family: "JetBrains Mono", monospace !important;
+}
+
+body {
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+  color: #1a1a1a !important;
+  background: #fff !important;
+}
+
+/* Monospace on code blocks too */
+pre, code, kbd, samp, tt {
+  font-family: "JetBrains Mono", monospace !important;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6,
+.vocs_H1, .vocs_H2, .vocs_H3, .vocs_H4, .vocs_H5, .vocs_H6 {
+  font-family: "JetBrains Mono", monospace !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.02em !important;
+}
+
+h1, .vocs_H1 {
+  font-size: 1.5rem !important;
+  font-weight: 500 !important;
+  border: none !important;
+  margin-top: 2rem !important;
+  margin-bottom: 1rem !important;
+}
+
+h2, .vocs_H2 {
+  font-size: 1.2rem !important;
+  font-weight: 500 !important;
+  border: none !important;
+  margin-top: 2rem !important;
+  margin-bottom: 0.75rem !important;
+}
+
+.vocs_H2 {
+  border: none !important;
+}
+
+h3, .vocs_H3 {
+  font-size: 1rem !important;
+  font-weight: 500 !important;
+}
+
+/* Paragraphs */
+p {
+  margin-bottom: 1rem !important;
+  line-height: 1.7 !important;
+}
+
+/* Links */
+a {
+  color: #1a1a1a !important;
+  text-decoration: underline !important;
+  text-underline-offset: 3px !important;
+  text-decoration-thickness: 1px !important;
+}
+
+a:hover {
+  color: #555 !important;
+}
+
+/* ============================================================
+   HOME ABOUT SECTION
+   ============================================================ */
+
+.about-section {
+  padding: 0 0 2rem;
+}
+
+.about-section p {
+  margin-bottom: 1rem;
+  line-height: 1.7;
+  color: #1a1a1a;
+}
+
+/* Name + role block */
+.hero-name-block {
+  margin-bottom: 1.25rem;
+}
+
+.hero-name {
+  font-size: 1.75rem;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  color: #1a1a1a;
+}
+
+.hero-role {
+  font-size: 0.85rem;
+  color: #888;
+  margin-top: 0.2rem;
+}
+
+.hero-role a {
+  color: #888 !important;
+  font-weight: 500 !important;
+  text-decoration: underline !important;
+  text-underline-offset: 2px !important;
+}
+
+.hero-role a:hover {
+  color: #555 !important;
+}
+
+/* Social links row */
+.hero-socials {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.hero-socials a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #1a1a1a !important;
+  text-decoration: none !important;
+  font-size: 0.85rem;
+}
+
+.hero-socials a:hover {
+  color: #555 !important;
+}
+
+.hero-x-icon {
+  font-size: 0.9rem;
+}
+
+/* ============================================================
+   BLOG LIST — custom, no ::blog-posts
+   ============================================================ */
+
+.blog-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.blog-list__post {
+  display: flex;
+  align-items: baseline;
+  padding: 0.35rem 0;
+}
+
+.blog-list__link {
+  display: flex !important;
+  align-items: baseline !important;
+  justify-content: space-between !important;
+  gap: 1rem !important;
+  text-decoration: none !important;
+  width: 100% !important;
+}
+
+.blog-list__title {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: #1a1a1a;
+  text-align: left;
+  order: 2;
+  flex: 1;
+}
+
+.blog-list__link:hover .blog-list__title {
+  color: #555;
+  text-decoration: underline;
+}
+
+.blog-list__date {
+  font-size: 0.85rem;
+  color: #888;
+  white-space: nowrap;
+  text-align: right;
+  min-width: 5.5rem;
+  order: 1;
+}
+
+/* Hide old Vocs blog styles */
+.vocs_BlogPosts {
+  display: none !important;
+}
+
+/* ============================================================
+   TABLES
+   ============================================================ */
+
+.vocs_Table {
+  display: block !important;
+  overflow-x: auto !important;
+  font-size: 0.78rem !important;
+  border-collapse: collapse !important;
+  margin-bottom: 1.5rem !important;
+}
+
+td, th,
+.vocs_TableCell, .vocs_TableHeader {
+  padding: 0.35rem 0.5rem !important;
+  vertical-align: top !important;
+  font-size: 0.78rem !important;
 }
 
 td:first-child {
-    white-space: nowrap;
-    font-weight: 600;
+  white-space: nowrap;
+  font-weight: 500;
 }
 
 td:nth-child(3) {
-    white-space: nowrap;
-    font-size: 0.8rem;
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+/* ============================================================
+   PROJECT LIST — minimal, no bullets
+   ============================================================ */
+
+.page-tabs + h2 {
+  margin-top: 0 !important;
+}
+
+.content ul {
+  list-style: none !important;
+  padding-left: 0 !important;
+}
+
+.vocs_Content ul {
+  list-style: none !important;
+  padding-left: 0 !important;
+}
+
+.vocs_Content li {
+  margin-bottom: 0.5rem !important;
+  line-height: 1.6 !important;
+  font-size: 0.9rem !important;
+}
+
+.vocs_Content li strong,
+.vocs_Content li b {
+  font-weight: 500 !important;
+}
+
+.vocs_Content li a:first-child {
+  font-weight: 500 !important;
+  text-decoration: none !important;
+}
+
+.vocs_Content li a:first-child:hover {
+  text-decoration: underline !important;
+}
+
+/* Project section headings */
+.vocs_Content h3 {
+  margin-top: 1.5rem !important;
+  margin-bottom: 0.75rem !important;
+  font-size: 0.9rem !important;
+}
+
+/* Separator line in projects */
+.vocs_Content hr {
+  margin: 2rem 0 !important;
+  border: none !important;
+  border-top: 1px solid #eee !important;
+}
+
+/* ============================================================
+   CODE BLOCKS
+   ============================================================ */
+
+pre, code {
+  font-family: "JetBrains Mono", monospace !important;
+  font-size: 0.85rem !important;
+}
+
+/* ============================================================
+   MISC
+   ============================================================ */
+
+/* SVG images at proper size */
+.vocs_Content img[src$=".svg"] {
+  width: 100%;
+  max-width: 900px;
+  height: auto;
+}
+
+/* Anchor link icons */
+.vocs_Autolink {
+  opacity: 0.3 !important;
+}
+
+/* ============================================================
+   PAGE TABS — Writing | Projects toggle (Huozhi-inspired)
+   ============================================================ */
+
+.page-tabs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.page-tab {
+  color: #888 !important;
+  text-decoration: none !important;
+  font-weight: 400;
+}
+
+.page-tab:hover {
+  color: #1a1a1a !important;
+}
+
+.page-tab--active {
+  color: #1a1a1a !important;
+  text-decoration: underline !important;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+
+.page-tab-sep {
+  color: #ccc;
+  user-select: none;
+}
+
+/* ============================================================
+   FOOTER CREDIT — bottom right, smaller
+   ============================================================ */
+
+.footer-credit {
+  margin-top: 2rem;
+  text-align: right;
+  font-size: 0.65rem;
+  color: #ccc;
+}
+
+.footer-credit a {
+  color: #ccc !important;
+  text-decoration: underline !important;
+  text-underline-offset: 2px;
+}
+
+.footer-credit a:hover {
+  color: #999 !important;
+}
+
+/* Inline code */
+code {
+  background: #f5f5f5 !important;
+  padding: 0.15em 0.3em !important;
+  border-radius: 3px !important;
+  font-size: 0.85em !important;
 }

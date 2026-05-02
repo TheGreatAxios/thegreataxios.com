@@ -6,3 +6,4 @@ node_modules
 docs/dist
 .kilo
 .claude
+.pi/agent/sandbox.json
