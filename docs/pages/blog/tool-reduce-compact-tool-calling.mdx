@@ -12,6 +12,8 @@ import BackLink from '../../snippets/BackLink.tsx'
 
 <BackLink />
 
+**Co-authored by [Sawyer Cutler](https://x.com/thegreataxios) and [Anthony Holley](https://www.linkedin.com/in/anthony-holley/)**
+
 # A Compact Flat Format for LLM Tool Calling
 
 The language model inference stack has been heavily optimized at the math layer — flash attention, speculative decoding, quantization, KV-cache tricks — but almost none of that work targets *how we structure the data the model sends back to us* [[1]](#ref-1)[[2]](#ref-2). We treat the model's output format as a fixed cost. If the API returns JSON tool calls, that's just what it costs.
