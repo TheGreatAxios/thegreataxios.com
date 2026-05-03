@@ -1,0 +1,220 @@
+---
+layout: minimal
+authors:
+    - "[thegreataxios](https://x.com/thegreataxios)"
+    - "[Anthony Holley](https://www.linkedin.com/in/anthony-holley/)"
+date: 2026-05-02
+title: "A Compact Flat Format for LLM Tool Calling"
+description: "tool-reduce replaces JSON tool-call blocks with a <call>ame k=v</call> format — dropping output tokens ~45% and input tokens ~60% on the Vercel AI SDK v6."
+---
+
+import BackLink from '../../snippets/BackLink.tsx'
+
+<BackLink />
+
+# A Compact Flat Format for LLM Tool Calling
+
+The language model inference stack has been heavily optimized at the math layer — flash attention, speculative decoding, quantization, KV-cache tricks — but almost none of that work targets *how we structure the data the model sends back to us* [[1]](#ref-1)[[2]](#ref-2). We treat the model's output format as a fixed cost. If the API returns JSON tool calls, that's just what it costs.
+
+A pattern I keep running into: the raw inference call is treated as a black box. You prompt, you pay, you parse. What happens inside that black box in terms of token allocation is opaque. How many tokens are spent on structural noise — keys, quotes, brackets — vs. actual semantic content? How much of your agent's latency is spent generating closing braces?
+
+This post is about a small experiment in answering that question. [**tool-reduce**](https://github.com/thegreataxios/tool-reduce) is a middleware for the Vercel AI SDK v6 that replaces the JSON tool-call protocol with a one-line compact flat format. The model emits `<call>getWeather location="Austin" units=metric</call>** instead of a ~40-character JSON block. The middleware parses it back into real AI SDK **tool-call** content parts — **streamText**, **generateText**, **onStepFinish**, multi-step execution, everything works unchanged.
+
+[Anthony Holley](https://www.linkedin.com/in/anthony-holley/) and I built it to measure a specific thing: **how much of a model's output budget is spent on the tool-call envelope rather than the tool-call content**.
+
+## The Token Economics of Tool Calling
+
+Output tokens are not cached [[3]](#ref-3). Every step of a multi-step agent loop regenerates the full tool-call envelope. Here's what that envelope costs for a representative set of calls:
+
+| Case | Native JSON | Compact | Reduction |
+|---|---:|---:|---:|
+| getWeather(location) | 23 tokens | 11 tokens | 2.09× |
+| getTime(timezone) | 24 tokens | 11 tokens | 2.18× |
+| webFetch(url) | 25 tokens | 12 tokens | 2.08× |
+| sendEmail(to, subject, body, priority) | 40 tokens | 25 tokens | 1.60× |
+| searchProducts(query, max, inStock) | 36 tokens | 23 tokens | 1.57× |
+
+These are 4-char-per-token estimates using **js-tiktoken**, which matches real tokenizer output to within ~10% [[4]](#ref-4). The ratio between formats is stable regardless of the estimator.
+
+Across a 10-step agent loop with mixed tools (9 tools, 10 representative invocations), the compact format averages **~45% fewer output tokens**:
+
+| Metric | Native JSON | Compact | Reduction |
+|---|---|---|---|
+| Output tokens (total) | 296 | 163 | **44.9%** |
+
+The input-side savings are larger. The JSON tool-definition block for 9 tools is ~396 tokens. The compact manual is ~260 tokens — a one-time cost that provider prompt caching amortizes to near-zero after the first call [[5]](#ref-5)[[6]](#ref-6).
+
+| Tool definitions | Tokens | Notes |
+|---|---:|---|
+| Native JSON | ~396 | Cold call only |
+| Compact | ~260 | Cold call only |
+| Savings | ~34% | ~0% after prompt-cache hit |
+
+The relevant comparison for production use is: with prompt caching, the input-side saving is a one-time win on cold start, but the per-step output saving compounds across every tool call in every session. In a 30-step agent loop doing 5 tool calls each, that's 150 tool-call envelopes where the compact format saves 10-15 tokens each. It adds up.
+
+## The Flat Format
+
+The model emits a `<call>` tag with a named tool and key=value arguments:
+
+```
+<call>etWeather location="Austin" units=metric</call>
+```
+
+Three encodings are available, selected per-tool based on schema shape:
+
+| Syntax | Output | Schema Requirement |
+|---|---|---|
+| **shell** (default) | `<call>getWeather location="Austin" units=metric</call>** | Flat record of primitives |
+| **csv** | `<call>getWeather "Austin", metric</call>** | Positional, all required |
+| **json** | `<call>etWeather {"location":"Austin"}</call>` | Nested objects, arrays, unions |
+
+Tools with complex schemas (nested objects, arrays, **anyOf** unions) automatically fall back to JSON encoding inside the `<call>` tag. You don't configure per-tool — the middleware inspects each tool's Zod schema and picks the encoding.
+
+The middleware injects a compact signature manual into the system prompt:
+
+```
+getWeather: location:string, units?:"metric"|"imperial" — Get the weather for a city
+getTime: timezone:string — Get the current time for a timezone
+sendEmail: to:string, subject:string, body:string, priority?:"low"|"normal"|"high" — Send an email
+```
+
+And rewrites conversation history so prior tool-call parts are in the same format — the model never sees JSON tool calls in its own transcript.
+
+## Why This Works
+
+The AI SDK v6 **LanguageModelV3Middleware** interface provides three hooks that make this possible:
+
+**transformParams** — Strips **tools** and **toolChoice** from the request. Renders each tool's JSON Schema as a one-line signature. Appends the compact manual to the system message. Deserializes any existing **tool-call** parts in the conversation history into compact text, and converts **tool** messages to user-role text blocks. The original tool plans are stashed in **providerOptions.toolReduce** for the wrap hooks.
+
+**wrapGenerate** — Scans the model's text output for `<call>...</call>` spans. Parses each against the matching **ToolPlan**. Emits AI SDK **tool-call** content parts. Surrounding text is preserved; parse errors become inline `<tool-error>` text the model can self-correct on the next step.
+
+**wrapStream** — A **TransformStream** state machine that holds back partial open/close tags across chunk boundaries (`<ca...`, `</cal...`), emits **tool-input-start** / **tool-input-delta** / **tool-input-end** parts as the body streams in, and finalizes a **tool-call** part on `</call>`.
+
+```text
+                 transformParams
+  generateText ──────────────────►  strip tools + toolChoice
+  streamText                        inject compact manual
+  (your code)                       rewrite history to <call>format
+       ▲                                    │
+       │                    ┌───────────────▼──────────────┐
+       │                    │      upstream LLM            │
+       │                    │   (text response only)       │
+       │                    └───────────────┬──────────────┘
+       │                                    │
+       │          wrapGenerate / wrapStream  │
+       └──────────── parser ◄───────────────┘
+               <call>..</call> → tool-call parts
+```
+
+The history rewriting is the most subtle piece. Without it, a multi-step agent conversation would look like this to the model on step 2:
+
+```
+User: What's the weather in Austin?
+Assistant: The weather is 72°F. I'll look up the time.
+<call>etWeather location="Austin" units=imperial</call>
+Tool: [result]
+Assistant: {"type":"tool_use","id":"toolu_01...","name":"getTime","input":{"timezone":"America/Chicago"}}
+```
+
+The model sees its own speech in two different formats — confusing for smaller models. The middleware rewrites the JSON **tool-call** part as compact text, so the transcript is self-consistent.
+
+## Benchmarks
+
+We ran two benchmarks: an offline measurement with a deterministic mock model, and a live measurement against a real model via [OpenRouter](https://openrouter.ai/).
+
+### Offline Benchmark
+
+**bun run bench** compares token counts for native JSON vs. compact tool calling on a fixed catalogue of 9 tools and 10 representative invocations. Token counts use a 4-char-per-token heuristic (matches **tiktoken** within ~10% [[4]](#ref-4)).
+
+| Metric | Native JSON | Compact | Reduction |
+|---|---|---|---|
+| Output tokens (total) | 296 | 163 | **44.9%** |
+| Tool definition | ~396 | ~260 | — |
+| Round-trip correctness | — | 10/10 | — |
+
+### Live Benchmark
+
+**bun run bench/live.ts** runs each case twice through **generateText** against a real model — once unwrapped (native JSON tool calling) and once wrapped with **compactTools()**. We capture actual **usage.inputTokens**, **usage.outputTokens**, latency, and strict-match rate from the provider.
+
+Configuration: **minimax/minimax-m2.5:free** via [OpenRouter](https://openrouter.ai/), temperature 0, one shot per case, no retries.
+
+| Metric | Native JSON | Compact | Delta |
+|---|---|---|---|
+| Total output tokens | 803 | 654 | **−18.6%** |
+| Total input tokens | 10,898 | 4,308 | **−60.5%** |
+| Strict match rate | 8/10 | 9/10 | **+1** |
+| Soft match rate | 10/10 | 10/10 | — |
+| Mean latency | 34.2 s | 31.4 s | — |
+
+The live output reduction (18.6%) is smaller than the offline projection (44.9%) for two reasons. First, live models add quoting and whitespace beyond the minimal compact form — they don't emit the idealized string. Second, the offline bench uses the *expected* compact string verbatim. The input reduction is massive because the JSON tool block (~400 tokens for 9 functions) gets replaced entirely by the compact manual.
+
+The strict-match misses are not parsing failures — they're equivalence-class differences:
+
+- **getWeather**: model returned **"Austin, TX"** vs expected **"Austin"** (in JSON mode)
+- **askDb** (JSON): model added trailing **;** to SQL
+- **askDb** (compact): model folded **LIMIT 100** into the SQL string instead of using the dedicated parameter
+
+Under soft matching (whitespace normalization, trailing punctuation stripped, substring containment), both modes hit 10/10.
+
+The match rate difference is incidental — the JSON mode happened to get the city-qualification expansion on **getWeather**, while the compact mode emitted `<call>getWeather location="Austin"</call>** faithfully. One data point, not a trend.
+
+## Caveats
+
+**First-call quality dip.** GPT-5 and Sonnet 4.5 are heavily trained on the JSON tool protocol. They follow the compact format from a system prompt reliably, but expect a small accuracy hit on the very first call of a session before the format is in context. We need more data on this — the live benchmark only measured one-shot cases, not multi-turn adaptation.
+
+**Lossy schema flattening.** Nested objects, arrays, and unions can't be expressed in **shell**/**csv** syntax. Those tools fall back to JSON inside `<call>`. If your toolset is mostly nested objects, you'll save very little. We don't currently flatten one-level-deep nested objects with dotted keys, or encode arrays of primitives — both are obvious extensions.
+
+**No responseFormat enforcement.** The middleware doesn't force JSON mode for **toolChoice: required**. If you need hard tool-choice enforcement, use the native protocol for that specific call. This is a **LanguageModelV3Middleware** limitation — the interface doesn't expose a way to assert a structured output mode through middleware.
+
+**Streaming edge cases.** The state machine that holds back partial `<call>` and `</call>` across chunk boundaries is the most fragile piece. The test suite covers character-level and split-tag scenarios explicitly (36 tests across parser, signature compiler, middleware, and history rewriting).
+
+**Latency variance.** The free-tier outliers (147 s for one compact case, 170 s for one JSON case) make per-call timing unreliable. Both modes cluster around 8-15 s for a single tool-calling step on this model. A paid model at moderate concurrency would give a cleaner latency picture.
+
+## Related Work
+
+The compact flat format follows an established pattern in protocol design:
+
+- **HTTP/2 HPACK** [[7]](#ref-7) compresses header frames by replacing repeated key-value pairs with a static table — trading human-readability for format efficiency. Tool-call JSON has the same structural repetition.
+- **Protocol Buffers** [[8]](#ref-8) replace named key-value encoding with field-number encodings. The JSON tool protocol is the equivalent of sending XML for every RPC call.
+- **Anthropic's prompt caching** [[5]](#ref-5) and **OpenAI's prompt caching** [[6]](#ref-6) reduce input-side cost by avoiding reprocessing of conversation prefixes. The compact manual's smaller footprint compounds this — smaller cache entries, cheaper cache misses.
+- **Speculative decoding** [[2]](#ref-2) generates multiple candidate tokens in parallel and accepts the first valid continuation. It optimizes *latency*, not the number of tokens generated. The compact format optimizes both: fewer tokens to generate, fewer tokens to verify.
+
+The key difference: all of the above optimize the *transport*. **tool-reduce** optimizes the *generation* — the model itself produces fewer tokens.
+
+## What We Don't Know
+
+This is an initial measurement, not a definitive study. Open questions:
+
+1. **Multi-step compounding.** We only measured one tool call per case. The whole point of compacting outputs is multi-step agent loops where reductions stack. A 10-step agent loop should show the per-step savings multiplied — but the model might behave differently when it sees its own compact output in context.
+
+2. **Frontier model variance.** We tested one model (minimax/m2.5). Frontier models (GPT-5, Sonnet 4.5) are more heavily trained on JSON tool calling. Do they follow the compact format as reliably? Does the quality dip on first calls persist?
+
+3. **Tau-bench style evaluation.** The synthetic 10-case catalogue is a starting point. A tau-bench style task suite with multi-turn, multi-tool workflows would give a more realistic measure of cumulative output-token cost.
+
+4. **LLM-judge evaluation.** Strict **deepEq** is too strict for tool-call evaluation. A small judge that scores semantic match (location ≡ city, SQL with/without trailing **;**) would give a more accurate match rate than the current binary pass/fail.
+
+5. **Schema flattening depth.** The current fallback-to-JSON for nested schemas is conservative. Dotted-key flattening (**profile.name** → **profile.name:string**) and array-of-primitive encoding would extend coverage to more real-world tool sets.
+
+The code is MIT, the benchmark suite is reproducible, and the README documents how to run both the offline and live benchmarks yourself. If you have a tool-heavy agent loop, run **bun run bench** against your own toolset — the numbers will differ based on schema complexity and model.
+
+---
+
+<a id="ref-1"></a>[1] Dao, T. et al. *FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness.* 2022. https://arxiv.org/abs/2205.14135
+
+<a id="ref-2"></a>[2] Leviathan, Y. et al. *Fast Inference from Transformers via Speculative Decoding.* 2023. https://arxiv.org/abs/2211.17192
+
+<a id="ref-3"></a>[3] Anthropic. *Prompt Caching.* https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching
+
+<a id="ref-4"></a>[4] OpenAI. *tiktoken: A fast BPE tokeniser for use with OpenAI's models.* https://github.com/openai/tiktoken
+
+<a id="ref-5"></a>[5] Anthropic. *Prompt Caching with Claude.* 2025. https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching
+
+<a id="ref-6"></a>[6] OpenAI. *Prompt Caching.* https://platform.openai.com/docs/guides/prompt-caching
+
+<a id="ref-7"></a>[7] IETF. *RFC 7541: HPACK — Header Compression for HTTP/2.* 2015. https://datatracker.ietf.org/doc/html/rfc7541
+
+<a id="ref-8"></a>[8] Google. *Protocol Buffers: Encoding.* https://protobuf.dev/programming-guides/encoding/
+
+---
+
+[**tool-reduce** on GitHub](https://github.com/thegreataxios/tool-reduce)

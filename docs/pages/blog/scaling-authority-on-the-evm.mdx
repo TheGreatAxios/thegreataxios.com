@@ -7,6 +7,11 @@ title: "Scaling Authority on the EVM"
 description: "Solving EVM nonce collision issues with a Signing Pool architecture using HD wallet-derived child signers for high-throughput authoritative servers."
 ---
 
+
+import BackLink from '../../snippets/BackLink.tsx'
+
+<BackLink />
+
 # Scaling Authority on the EVM
 
 This technical guide addresses the critical scaling challenges faced by authoritative servers in blockchain applications due to the EVM's sequential nonce requirement. By implementing a Signing Pool architecture using HD wallet-derived child signers, developers can overcome nonce collision issues and scale from handling just a few concurrent requests to hundreds per second, complete with automatic gas balance management and dynamic signer selection for high-throughput applications on zero-gas-fee networks like SKALE.

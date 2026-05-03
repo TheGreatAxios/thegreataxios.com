@@ -134,6 +134,15 @@ body {
   background: #fff !important;
 }
 
+/* Blog prose uses a readable system font; code and headings stay monospace. */
+.vocs_Content p,
+.vocs_Content li,
+.vocs_Content td,
+.vocs_Content th,
+.vocs_Content blockquote {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+}
+
 /* Monospace on code blocks too */
 pre, code, kbd, samp, tt {
   font-family: "JetBrains Mono", monospace !important;
