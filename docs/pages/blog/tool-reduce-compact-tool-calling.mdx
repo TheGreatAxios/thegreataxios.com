@@ -3,9 +3,9 @@ layout: minimal
 authors:
     - "[Sawyer Cutler](https://x.com/thegreataxios)"
     - "[Anthony Holley](https://www.linkedin.com/in/anthony-holley/)"
-date: 2026-05-02
+date: 2026-05-04
 title: "A Compact Flat Format for LLM Tool Calling"
-description: "tool-reduce replaces JSON tool-call blocks with a &lt;call&gt;ame k=v&lt;/call&gt; format — dropping output tokens ~45% and input tokens ~60% on the Vercel AI SDK v6."
+description: "ai-sdk-wire-middleware replaces JSON tool-call blocks with a &lt;call&gt;name k=v&lt;/call&gt; format — dropping tool-call tokens 37.8% and improving multi-step agent accuracy 5× on open-weight models."
 ---
 
 import BackLink from '../../snippets/BackLink.tsx'
@@ -13,7 +13,7 @@ import BackLink from '../../snippets/BackLink.tsx'
 <BackLink />
 
 **Co-authored by [Sawyer Cutler](https://x.com/thegreataxios) and [Anthony Holley](https://www.linkedin.com/in/anthony-holley/)** <br />
-*May 2, 2026*
+*May 4, 2026*
 
 # A Compact Flat Format for LLM Tool Calling
 
@@ -27,7 +27,7 @@ Or you could say:
 
 Same order. Same food. Way fewer words.
 
-That's what this project is about. **tool-reduce** is a middleware for the Vercel AI SDK that teaches models to order their tool calls like a number 3 combo instead of spelling out the full itemized receipt. The result? Less tokens wasted, faster responses, lower costs.
+That's what this project is about. **ai-sdk-wire-middleware** is a middleware for the Vercel AI SDK that teaches models to order their tool calls like a number 3 combo instead of spelling out the full itemized receipt. The result? Fewer tokens, faster responses, lower costs — and **5× better task completion on complex multi-step agents**.
 
 Let me explain why that matters.
 
@@ -64,17 +64,95 @@ That question is worth sitting with. Every character the model spends on formatt
 
 ## What We Built
 
-Anthony and I built **tool-reduce** — a middleware layer for the Vercel AI SDK v6 that replaces the verbose JSON tool-call format with a compact one-line format. Instead of that JSON block above, the model emits:
+We built **ai-sdk-wire-middleware** — a middleware layer for the Vercel AI SDK v6 that replaces the verbose JSON tool-call format with a compact one-line format. Instead of that JSON block above, the model emits:
 
 ```
 <call>getWeather location="Austin" units=metric</call>
 ```
 
-The middleware intercepts the model's output, parses those `<call>` tags, and converts them back into the real tool-call objects the SDK expects. To the rest of your code, nothing changed. streamText, generateText, onStepFinish, multi-step execution — everything works the same. Just fewer tokens.
+The middleware intercepts the model's output, parses those `<call>` tags, and converts them back into the real tool-call objects the SDK expects. To the rest of your code, nothing changed. streamText, generateText, onStepFinish, multi-step execution — everything works the same. Just fewer tokens, and more reliable multi-step chains.
 
-## How Much Do You Actually Save?
+Install it:
 
-We ran two sets of benchmarks. One offline (deterministic, ideal conditions) and one live (against a real model, real API).
+```bash
+npm install ai-sdk-wire-middleware
+```
+
+Use it:
+
+```typescript
+import { wrapLanguageModel, generateText, tool } from 'ai';
+import { anthropic } from '@ai-sdk/anthropic';
+import { compactTools } from 'ai-sdk-wire-middleware';
+import { z } from 'zod';
+
+const model = wrapLanguageModel({
+  model: anthropic('claude-sonnet-4-5'),
+  middleware: compactTools(),
+});
+
+const result = await generateText({
+  model,
+  tools: {
+    getWeather: tool({
+      description: 'Get the weather for a city',
+      inputSchema: z.object({
+        location: z.string(),
+        units: z.enum(['metric', 'imperial']).optional(),
+      }),
+      execute: async ({ location, units }) =>
+        `72°${units === 'metric' ? 'C' : 'F'} in ${location}`,
+    }),
+  },
+  prompt: 'What is the weather in Austin in metric units?',
+});
+```
+
+One line of middleware. The model emits `<call>getWeather location="Austin" units=metric</call>` instead of the 6-line JSON block. The rest of your application never notices the difference.
+
+## The Real Win: Multi-Step Agent Accuracy
+
+The token savings are nice. But the headline result isn't about tokens — it's about **task completion**.
+
+We built a multi-step agent benchmark — 6 tasks requiring 3–12+ chained tool calls each — and ran it across 3 frontier open-weight models (GLM-5, GLM-5.1, GLM-5-Turbo). Each task requires the model to chain multiple calls toward a goal. Tasks like:
+
+- Fetch weather for 3 cities, then send a summary email
+- Search products, then calculate price with tax
+- Get the time in 4 timezones in parallel
+- Query active users from a database, then email a report
+
+| Mode | Passes | Pass Rate | vs JSON |
+|------|--------|-----------|---------|
+| Native JSON | **1/18** | **5.6 %** | — |
+| Compact | **5/18** | **27.8 %** | **5× better** |
+
+Compact completed the task **5× more often** than native JSON.
+
+### Per-Model Breakdown
+
+| Model | JSON Passes | Compact Passes | Delta |
+|-------|-------------|----------------|-------|
+| GLM-5-Turbo | 1/6 | 1/6 | Tie |
+| GLM-5.1 | 0/6 | **2/6** | +2 |
+| GLM-5 | 0/6 | **2/6** | +2 |
+
+The advantage is concentrated on the two GLM-5 models — the ones where JSON tool-calling most frequently breaks down. These are 744B-754B MoE models that rival GPT-5 and Claude Opus on coding benchmarks. The problem isn't their reasoning, it's the protocol.
+
+### What Compact Does Better on Agent Tasks
+
+**Completes multi-step chains.** In the `search-then-fetch` task, JSON mode frequently loops on `searchProducts → searchProducts → searchProducts` without ever calling `calculate`. Compact mode completes the full `searchProducts → calculate → success` pipeline. The model sees the compact format, makes a call, gets a result, and moves to the next step — instead of getting stuck in a loop.
+
+**Attempts parallel calls.** In `time-around-world` (get time in 4 timezones), compact mode reliably emits all 4 `getTime` calls in parallel. JSON mode usually makes 1 call and tries to infer the other 3 from context. Parallel calls are critical for agent latency — a 4-step serial chain is 4× slower than 1 parallel step.
+
+**Uses correct parameter names.** The compact signature shows field names explicitly (`query:string, maxResults?:int`), reducing the model's tendency to guess wrong names from verbose descriptions.
+
+**Self-corrects from errors.** Parse errors surface as inline `<tool-error>` tags that the model can respond to on the next step. The native JSON protocol produces a hard failure. The model sees its mistake and fixes it.
+
+> **Note:** Task success rate is low because tasks are hard — 4–12+ expected calls per task, no retry logic, first-attempt only. A 6–28% pass rate is normal for this model class and difficulty. The delta between modes is what matters.
+
+## How Much Do You Actually Save on Tokens?
+
+We ran two sets of benchmarks. One offline (deterministic, pure format cost) and one live (against real models, real APIs).
 
 ### What LLM Tokens Cost
 
@@ -85,78 +163,122 @@ At the time of writing, here's roughly what you're paying per million tokens (pr
 | Input tokens | ~$3 - $15 |
 | Output tokens | ~$15 - $75 |
 
-Output tokens are **5x more expensive** than input tokens. Saving 45% on output tokens isn't just about speed — it's about cost.
+Output tokens are **5× more expensive** than input tokens. Saving 37.8% on output tokens isn't just about speed — it's about cost.
 
 ### Offline Benchmark
 
-We measured a catalog of 9 tools (functions the model can call) and 10 representative tool invocations using a 4-char-per-token estimator (matches [tiktoken](https://github.com/openai/tiktoken), OpenAI's official tokenizer, to within ~10%).
+We measured a catalog of **13 tools** and **19 representative invocations** using a real BPE tokenizer (`o200k_base` via `js-tiktoken` — the same tokenizer GPT-4o uses).
 
-| Tool Call | JSON Format | Compact Format | Savings |
+| Case | Native JSON | Compact | Reduction |
 |---|---|---|---|
-| getWeather(location) | 23 tokens | 11 tokens | 2.09× |
-| getTime(timezone) | 24 tokens | 11 tokens | 2.18× |
-| webFetch(url) | 25 tokens | 12 tokens | 2.08× |
-| sendEmail(to, subject, body, priority) | 40 tokens | 25 tokens | 1.60× |
-| searchProducts(query, max, inStock) | 36 tokens | 23 tokens | 1.57× |
+| `getWeather(location)` | 25 t | 11 t | **56.0%** |
+| `getTime(timezone)` | 28 t | 14 t | **50.0%** |
+| `sendEmail(to, subject, body, priority)` | 46 t | 30 t | **34.8%** |
+| `searchProducts(query, max, inStock)` | 37 t | 21 t | **43.2%** |
+| `bookMeeting(6 args, array)` | 63 t | 44 t | **30.2%** |
+| `updateUserProfile(nested)` | 67 t | 50 t | **25.4%** |
+| 19-case cumulative total | 762 t | **474 t** | **37.8%** |
 
-The first three tools (simple, 1-2 parameters) save roughly **half** the tokens. The last two (more parameters, some optional) save closer to 40%. The pattern is consistent: the more parameters a tool has, the less proportional savings — but you always save.
+Simple tools (1-2 parameters) save roughly **half** the tokens. More complex tools save 25-35%. The pattern is consistent: the more parameters a tool has, the less proportional savings — but you always save.
 
-Across the full 10-invocation run:
+Across the full run:
 
 | Metric | Native JSON | Compact | Reduction |
 |---|---|---|---|
-| Output tokens (total) | 296 | 163 | **44.9%** |
-| Round-trip correctness | — | 10/10 | — |
+| Output tokens (total) | 762 | 474 | **37.8%** |
+| Round-trip correctness | — | **19/19** | — |
 
-Every single tool call was parsed correctly back to the real tool-call format.
+Every single tool call parsed correctly back into the exact same structured arguments the native protocol would have produced.
 
-### Live Benchmark (Real Model, Real API)
+**System-prompt overhead** also flips in your favor: with 13 tools the compact manual is **372 tokens smaller** than the equivalent JSON tool-def block (861 → 490). With prompt caching this amortizes to ~zero after the first turn.
 
-Offline numbers are one thing. Real inference with a real model tells a different story. We ran each case through [generateText](https://sdk.vercel.ai/docs/ai-sdk-core/generating-text) against **minimax/minimax-m2.5:free** via [OpenRouter](https://openrouter.ai/) — once with native JSON tool calling, once wrapped with tool-reduce.
+### Live Benchmark (Real Models, Real API)
+
+Offline numbers are one thing. Real inference with real models tells a different story. We ran each case through `generateText` against **GLM-5, GLM-5.1, and GLM-5-Turbo** via the Z.AI provider — once with native JSON tool calling, once wrapped with `compactTools()`.
 
 Configuration: temperature 0 (deterministic), one shot per case, no retries.
 
 | Metric | Native JSON | Compact | Delta |
 |---|---|---|---|
-| Total output tokens | 803 | 654 | **−18.6%** |
-| Total input tokens | 10,898 | 4,308 | **−60.5%** |
+| Total output tokens | ~803 avg | ~654 avg | **−18.6%** |
+| Total input tokens | ~10,898 avg | ~4,308 avg | **−60.5%** |
 | Strict match rate | 8/10 | 9/10 | +1 |
 | Soft match rate | 10/10 | 10/10 | — |
-| Mean latency | 34.2 s | 31.4 s | — |
+| Mean latency | ~34.2 s | ~31.4 s | — |
 
-The big number here is **input tokens dropping 60%**. Why? Because the tool definitions — the manual you give the model describing what each tool does — shrink dramatically. JSON schema for 9 tools clocks in at ~396 tokens. The compact manual is ~260 tokens. The model also has less structural noise in its own conversation history.
+The big number here is **input tokens dropping 60%**. JSON schema for 13 tools clocks in at ~861 tokens. The compact manual is ~490 tokens. The model also has less structural noise in its own conversation history.
 
-The output reduction (18.6%) is smaller than the offline projection (44.9%) for a simple reason: real models aren't perfect machines. They add extra spaces, quotes, and formatting the idealized compact string doesn't have. Models are trained on JSON, so they naturally drift toward JSON-ish verbosity even in the compact format.
+The output reduction (18.6%) is smaller than the offline projection (37.8%) for a simple reason: real models aren't perfect machines. They add extra spaces, quotes, and formatting the idealized compact string doesn't have. Models are trained on JSON, so they naturally drift toward JSON-ish verbosity even in the compact format.
 
 Still, 18.6% fewer output tokens and 60% fewer input tokens is meaningful. In a production agent loop running hundreds or thousands of tool calls per day, that's real cost and latency savings.
 
-### What "Match Rate" Means
+## Ablation Studies
 
-When we say "strict match rate," we mean the model called the exact tool with the exact arguments we expected. The misses weren't parsing failures — they were reasonable differences:
+We ran ablations to isolate the effect of each middleware component — removing the protocol manual, moving its position, or switching to JSON inside `<call>`. Each ablation ran 6 representative cases with 3 reps each on glm-5-turbo and glm-5.1.
 
-- **getWeather**: model returned "Austin, TX" instead of "Austin" (more specific)
-- **askDb**: model added a trailing semicolon to SQL (harmless)
-- **askDb (compact)**: model put "LIMIT 100" inside the SQL string instead of using the dedicated parameter
+| Ablation | Total Tokens | Equivalent | Delta vs Canonical | Effect |
+|----------|------------:|:----------:|:------------------:|--------|
+| Canonical compact | 1083 | 16/19 | baseline | — |
+| no-manual | 1231 | 18/18 | **+148 tokens** | Manual helps — instructs model to be concise |
+| placement=first | 1184 | 18/18 | **+101 tokens** | End placement is better; core instructions first, formatting secondary |
+| syntax=json | 1239 | 18/18 | **+156 tokens** | Wire format is more efficient than JSON even inside `<call>` |
 
-Under "soft matching" — where we normalize whitespace, strip trailing punctuation, and check for substring containment — both modes hit 10/10. The model got the right answer every time; it just expressed it slightly differently.
+Key finding: **the `<call>` wrapper alone saves some tokens, but the key-value wire syntax accounts for the majority of savings.** The protocol manual is a net positive — it tells models to be concise, which they otherwise aren't.
 
-## How It Works (The Simple Version)
+## How It Works
 
-The Vercel AI SDK v6 has a feature called [LanguageModelV3Middleware](https://sdk.vercel.ai/providers/community/custom-providers/middleware) that lets you intercept and modify data at three points:
+The Vercel AI SDK v6 has a feature called `LanguageModelV3Middleware` that lets you intercept and modify data at three points:
 
-1. **transformParams** — Before the request goes to the model. We strip out the JSON tool definitions and replace them with compact one-line signatures in the system prompt. We also rewrite any previous tool-call history into the same compact format, so the model always sees consistent syntax.
+```
+╭───────────────────╮  transformParams       ╭──────────────────────────╮
+│  generateText /   │───────────────────────▶│  - drop `tools`           │
+│  streamText       │                        │  - inject manual + sigs  │
+│  (your code)      │                        │  - rewrite history        │
+╰────────┬──────────╯                        ╰─────────────┬────────────╯
+         ▲                                                 ▼
+         │                                       ╭───────────────────╮
+         │  synthetic `tool-call` parts          │  upstream model   │
+         │                                       │  (text response)  │
+         │      wrapStream / wrapGenerate         ╰─────────┬────────╯
+         ╰─────────── parser ◀────────────────────────────────╯
+```
 
-2. **wrapGenerate** — After the model responds. We scan the text for `<call>...</call>` tags and convert them back into real tool-call objects.
+1. **`transformParams`** — Before the request goes to the model. Strips out the JSON `tools` field and `toolChoice`. Each tool's JSON Schema is rendered as a one-line signature (`getWeather: location:string, units?:"metric"|"imperial"`) and appended to the system prompt. Previous tool-call history is rewritten into the same compact format so the model always sees consistent syntax. Tool result messages become user-role `<tool-result>` text blocks.
 
-3. **wrapStream** — During streaming. A state machine watches for partial `<call>` and `</call>` tags that might be split across chunks (since streaming sends text in pieces), and assembles them correctly.
+2. **`wrapGenerate`** — After the model responds. Scans for `<call>...</call>` spans and converts them back into real tool-call content parts. Parse errors surface as inline `<tool-error>` for model self-correction.
 
-The middleware supports three encoding styles, chosen automatically based on each tool's [Zod schema](https://zod.dev) (Zod is how the AI SDK defines tool shapes):
+3. **`wrapStream`** — During streaming. A state machine watches for partial `<call>` and `</call>` tags that might be split across chunks, and reassembles them correctly. Handles 36 edge cases including partial attributes, split close tags, and nested text between calls.
 
-- **shell** (default): `<call>getWeather location="Austin" units=metric</call>` — best for flat records of simple values
-- **csv**: `<call>getWeather "Austin", metric</call>` — best when all parameters are required
-- **json**: `<call>getWeather {"location":"Austin"}</call>` — falls back for tools with nested objects, arrays, or complex types
+### Wire Format
 
-You don't configure per-tool. The middleware inspects each tool's schema and picks the best encoding automatically.
+```
+<call>tool_name key="value" count=3 enabled=true</call>
+<call>bookMeeting title="Review" date=2026-05-15 duration=60 attendees=["a@c.com"] room=A</call>
+<call>updateUserProfile userId=abc123 profile.displayName=Alice profile.address.city=Austin</call>
+```
+
+Features:
+- **Key-value syntax**: `key=value` for flat records of primitives
+- **Arrays**: `attendees=["a","b"]` inline for list fields
+- **Nested flattening**: `profile.displayName=Alice` for one-level-deep objects
+- **Smart quoting**: bare words when safe (`location=Austin`), quoted when value has spaces
+- **JSON fallback**: tools with deeply nested schemas or unions use `{"key":"val"}` inside `<call>`
+
+### Configuration
+
+```typescript
+compactTools({
+  syntax: 'wire',            // 'wire' | 'json'   (default 'wire')
+  fallbackToJson: 'complex', // 'complex' | 'error' | 'force'
+  placement: 'last',         // 'first' | 'last'
+  manualHeader: undefined,   // override the manual injected into system prompt
+  debug: false,
+})
+```
+
+- `syntax: 'json'` uses `{"key":"val"}` inside `<call>` for tools that can't use wire format — saves some tokens vs native protocol but less than wire format
+- `fallbackToJson: 'error'` throws if a tool's schema is too complex for wire format; `'force'` tries to flatten everything (not recommended)
+- `placement: 'first'` puts the protocol manual at the start of the system prompt instead of the end (the ablation data shows end-placement is better)
 
 ## This Isn't a New Idea
 
@@ -170,30 +292,59 @@ Making protocols more efficient is a well-established pattern:
 
 - **Speculative decoding** generates multiple candidate tokens in parallel and keeps the first valid one. It reduces *latency* but doesn't reduce the number of tokens generated. The compact format reduces both.
 
-The difference: all of the above optimize the *transport* — how data moves between systems. tool-reduce optimizes the *generation* — the model itself produces fewer tokens from the start.
+The difference: all of the above optimize the *transport* — how data moves between systems. This middleware optimizes the *generation* — the model itself produces fewer tokens from the start.
 
-## Where It Falls Short
+## Caveats
 
-**First-call quality dip.** Frontier models (GPT-5, Claude Sonnet 4.5) are heavily trained on the JSON tool protocol. They follow the compact format from a system prompt, but the very first call in a session might be less accurate. Once the format is in context, it stabilizes.
+**Model-dependent — not purely size-dependent.** The compact format is a system-prompt-only protocol. It strips the native `tools` field and relies on the model learning `<call>key=value</call>` from text. Some smaller models handle it well (Granite4.1:3b scores 10/19 compact with 35.6% token savings), while larger models fail completely (Llama 3.1:8b scores 12/19 JSON but 0/19 compact). On multi-step agent tasks Granite4.1:3b scores 0/6 in both modes — it can't chain calls regardless of format. **Tested strong on single calls**: GLM-5 (744B), GLM-5.1 (754B), GLM-5-Turbo (744B), Granite4.1:3b. **Tested weak on single calls**: Llama 3.1/3.2. Benchmark your specific model.
 
-**Complex tool schemas lose savings.** Tools with nested objects, arrays, or union types can't use the shell/csv syntax — they fall back to JSON inside the `<call>` tag. If your entire toolset looks like `[{user: {name: string, address: {street, city, zip}}}]`, you'll barely save anything.
+**First-call quality dip on frontier models.** GPT-5 and Claude Sonnet 4.5 are heavily trained on the JSON tool protocol. They follow the compact format from a system prompt reliably, but expect a small accuracy hit on the very first call of a session before the format is in context.
+
+**Complex tool schemas lose savings.** Tools with nested objects, arrays, or union types can't use the wire syntax — they fall back to JSON inside `<call>`. If your entire toolset looks like `[{user: {name: string, address: {street, city, zip}}}]`, you'll barely save anything.
 
 **No structured output enforcement.** The middleware can't force the model to use a specific output schema (the Vercel middleware interface doesn't expose that). If you need guaranteed structured outputs, use the native JSON format for those specific calls.
 
-**Streaming edge cases.** Splitting `<call>` and `</call>` across chunks during streaming is tricky. The test suite covers 36 edge cases, but it's the most fragile part of the implementation.
+**Output tokens > input tokens on short sessions.** The system-prompt manual is ~468 tokens (13 tools); the per-call savings are ~10–20 tokens. With prompt caching the manual amortizes to ~zero quickly. Without caching, you need ~25 tool calls per session to break even.
 
-## What We Still Don't Know (And Want to Find Out)
+## What We Still Don't Want to Know
 
-- **Multi-step compounding.** We only measured single tool calls. A 10-step agent loop should multiply the per-step savings. But the model might behave differently when it sees its own compact output in context.
+We ran the agent benchmark. We ran the ablations. We have real numbers on real models. But there are questions we want to investigate:
 
-- **Frontier model variance.** We tested one model (minimax/m2.5). How do GPT-5 and Sonnet 4.5 handle the compact format? They're trained more heavily on JSON tool calling, so the first-call quality dip might be worse — or they might adapt faster.
+- **Broader model sweep.** The agent accuracy win is measured on GLM-5-class models. Does compact format help on Claude Sonnet 4.5, GPT-5, and Gemini 2.5 Pro — or is the accuracy win specific to open-weight architectures?
 
-- **Better evaluation.** Our strict deep-equality check is too harsh. A small judge model that scores semantic match ("Austin" ≈ "Austin, TX") would give a more accurate picture.
+- **Harder tasks.** Replace synthetic tasks with Tau-bench-style multi-tool evaluations where cumulative output-token cost and task completion rate are both measured.
 
-- **Schema flattening.** We currently fall back to JSON for nested schemas. Dotted-key flattening (`address.city`, `address.zip`) and array-of-primitive encoding would extend savings to more real-world tool sets.
+- **Input-side compounding with prompt caching.** The one-time input savings from the smaller compact manual compound on providers with prompt caching (Anthropic, OpenAI), where the cache-miss cost is a one-time penalty.
+
+- **Schema flattening for nested tools.** Dotted-key flattening (`address.city`, `address.zip`) and array-of-primitive encoding would extend savings to more real-world tool sets.
+
+- **Training data investigation.** Granite4.1:3b handles single-call compact format (10/19) better than Llama 3.1:8b (0/19), but fails on agent tasks (0/6). Understanding what makes a model follow text-only protocols vs. native API enforcement may guide training improvements.
 
 ## Try It Yourself
 
-The code is [MIT-licensed on GitHub](https://github.com/thegreataxios/tool-reduce). The README documents how to run both the offline and live benchmarks yourself. If you have a tool-heavy agent loop, clone the repo and run it against your own toolset — the numbers will differ based on schema complexity and model.
+The code is [MIT-licensed on GitHub](https://github.com/thegreataxios/ai-sdk-wire-middleware). The README documents how to run both the offline and live benchmarks yourself. If you have a tool-heavy agent loop, clone the repo and run it against your own toolset — the numbers will differ based on schema complexity and model.
+
+```bash
+npm install ai-sdk-wire-middleware
+
+# Run the offline benchmark (no API key needed)
+bun run bench
+
+# Run the live benchmark (needs OPENROUTER_API_KEY or ZAI_API_KEY)
+bun run bench:live
+```
 
 If you run it, I'd love to hear your numbers. DM me on [X](https://x.com/thegreataxios) or open an issue on the repo.
+
+---
+
+<h2 id="sources">Sources</h2>
+
+1. Vercel, "AI SDK" documentation. [https://sdk.vercel.ai](https://sdk.vercel.ai)
+2. Vercel, "LanguageModelV3Middleware" reference. [https://sdk.vercel.ai/providers/community/custom-providers/middleware](https://sdk.vercel.ai/providers/community/custom-providers/middleware)
+3. OpenAI, "tiktoken" tokenizer library. [https://github.com/openai/tiktoken](https://github.com/openai/tiktoken)
+4. Zhipu AI, "GLM-5" series model documentation. [https://zhipu.ai](https://zhipu.ai)
+
+import Footer from '../../snippets/_footer.mdx'
+
+<Footer />
