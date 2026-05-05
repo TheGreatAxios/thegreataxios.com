@@ -9,7 +9,7 @@
     "preview": "vocs preview"
   },
   "dependencies": {
-    "@rollup/rollup-linux-arm64-gnu": "4.60.2",
+    "@rollup/rollup-linux-arm64-gnu": "4.60.3",
     "@vercel/og": "^0.11.1",
     "lucide-react": "^1.14.0",
     "react": "^19.2.5",
