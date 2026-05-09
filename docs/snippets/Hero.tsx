@@ -10,7 +10,7 @@ interface HeroProps {
 export default function Hero({
   name = "Sawyer Cutler",
   github = "https://github.com/thegreataxios",
-  x = "https://linkedin.com/in/sawyercutler",
+  x = "https://x.com/thegreataxios",
   linkedin = "https://linkedin.com/in/sawyercutler"
 }: HeroProps) {
   return (
