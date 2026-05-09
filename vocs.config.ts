@@ -2,7 +2,8 @@ import { defineConfig } from 'vocs'
 import { createElement } from 'react'
 
 export default defineConfig({
-  title: 'thegreataxios',
+  title: 'Sawyer Cutler',
+  titleTemplate: 'Sawyer Cutler | %s',
   baseUrl: "/",
   description: "Sawyer Cutler — VP Developer Success at SKALE. Writing about AI agents, blockchain infrastructure, and the machine economy.",
   font: {
