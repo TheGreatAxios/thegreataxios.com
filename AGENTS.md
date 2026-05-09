@@ -79,41 +79,51 @@ Vocs-based static documentation site/blog for sawyercutler.com. Built with React
 
 ### Tone
 - Direct and declarative — state the thesis immediately
-- Technical and developer-focused — assume EVM/blockchain knowledge
+- Technical and developer-focused — assume domain knowledge, no oversimplification
 - Concise: no fluff, no filler phrases
 - First-person perspective when sharing beliefs or experiences
-- Action-oriented, minimal adjectives
+- Full, flowing sentences — NEVER sentence fragments
+- Complex ideas expressed in complete clauses, not chopped into isolated short sentences
 
 ### Structural Patterns
-- **Opening:** 1-2 sentence hook stating the core problem/insight
-- **Problem Definition:** Concrete, specific language
-- **Technical Explanation:** Mechanics first, theory second
-- **Examples:** Real code, real use cases — include imports, make them copy-paste ready
-- **Architecture Diagrams:** ASCII flow diagrams for data/middleware patterns
-- **Comparison Tables:** For contrasting approaches (environment A vs B, tool X vs Y)
-- **Callouts:** Use `> **Warning:**` or `> **Note:**` blockquotes for critical caveats
-- **Sources:** Numbered citations at end for external references (models, specs, docs)
-- **Closing:** Direct CTA ("reach out", "DM me", "build this")
+- **Opening:** 1-2 paragraphs establishing a thesis or framing a problem. Not a list of facts about the environment. Should orient the reader around a concept, not an implementation.
+- **Concept First, Implementation Second:** Explain why the architecture matters before showing your specific code. The reader needs to understand the problem before they care about your solution.
+- **Comparison Tables:** For contrasting approaches (chat loop vs agent loop, tool calling strategies, etc.)
+- **Examples:** Real code with specific callouts for the interesting parts. Show imports so it's copy-paste ready.
+- **Callouts:** Use `> **Note:**` blockquotes for critical caveats
+- **Closing:** Direct CTA with repo link
 
 ### Language Guidelines
-- Short paragraphs (2-4 sentences maximum)
-- Use em dashes for emphasis — like this
+- FULL SENTENCES. Always. No fragments. No single-word sentences. No staccato lists masquerading as prose.
+- Each paragraph should be 2-5 complete sentences that develop a single idea
+- Use em dashes for emphasis within a sentence — like this — not as a replacement for conjunctions
 - Industry terminology used naturally without explanation
 - No hedging language ("maybe", "perhaps", "I think")
-- Bullet points for lists
-- Tables for multi-dimensional comparisons
+- Bullet points only for actual lists, not for expressing ideas that should be prose
+- Tables for multi-dimensional comparisons only
 
 ### Forbidden Patterns
+- ❌ Sentence fragments of any kind
+- ❌ Lists of short declarative statements arranged as paragraphs ("X happens. Y fails. Z breaks.")
 - ❌ "In this blog post, we will explore..."
 - ❌ "It's important to note that..."
-- ❌ Long theoretical introductions
+- ❌ Long theoretical introductions that don't make a point
 - ❌ Passive voice constructions
 - ❌ Generic conclusions
+- ❌ Opening with a description of the environment instead of the concept
+
+### Post Structure Template
+1. **Thesis paragraph** — What is the common misconception or underappreciated idea?
+2. **Why it matters** — Who should care and why should they read further?
+3. **Concept introduction** — Explain the architecture/framework at a high level
+4. **Deep dive** — Specific details with code, tables, comparisons
+5. **Tradeoffs and caveats** — What are the limitations and alternatives?
+6. **Closing** — CTA and repo link
 
 ### CTAs to Use
 - "If you're building X, reach out"
-- "DM me and I'll help you integrate"
-- "I'm working on this daily — happy to walk through patterns"
+- "The full source is at [github.com/...]"
+- "I'm working on this daily — happy to talk through the patterns"
 
 ## File Organization
 

@@ -1,0 +1,281 @@
+---
+layout: minimal
+authors:
+- "[thegreataxios](https://linkedin.com/in/sawyercutler)"
+date: 2026-05-09
+title: "Designing for LLM Failure"
+description: "LLMs fail 10-30% of the time in unpredictable ways. Building an agent that survives means designing for that failure at every layer — here's what I learned."
+---
+
+
+import BackLink from '../../snippets/BackLink.tsx'
+
+<BackLink />
+
+# Designing for LLM Failure
+
+The LLM will fail. Not sometimes, not in edge cases — regularly, unpredictably, and in ways that are hard to reproduce. It will return prose instead of a tool call, use action names that do not exist, invent parameter values outside the valid range, or return nothing at all. Building an agent that survives this means designing for LLM failure at every layer of the architecture.
+
+Most agent frameworks treat model errors as exceptions to handle in the calling code. The model generates output, the application validates it, and if it is wrong the application tells the model to try again. This works in a chat loop where the user is waiting and the cost of a retry is a few seconds of latency. It does not work in an agent loop where the environment changes between iterations, other actors modify shared state, and the agent cannot ask for help.
+
+This post walks through a concrete architecture that handles LLM failure at every layer: enforcing tool calls at the infrastructure level rather than relying on the model to format them correctly, layering deterministic fallbacks underneath the LLM so a bad model output never reaches the environment, persisting state across restarts with verification against live state, and building an audit trail that turns every failure into training data for the next iteration. The architecture is built around a poker agent — it holds a wallet, reads its cards, signs transactions, and keeps playing until it runs out of money — but the patterns apply to any agent operating in a live, irreversible environment.
+
+## Three Common Agent Patterns
+
+There are more ways to build an agent than there are people building them, but three patterns come up repeatedly in conversations and each has different tradeoffs around control, security, and predictability.
+
+The confusion between these two architectures is understandable because they look similar at the code level. Both involve a model that generates text and calls tools. The difference is in the control flow, the state model, and the failure handling.
+
+A chat loop processes one user request at a time. The model receives the conversation history, decides whether to call tools, and generates a response. The application executes any tool calls, appends the results to the conversation, and the model generates a final answer. The session is bounded by the user's patience and the context window. If a tool call fails, the model can try a different approach or admit defeat. The user can always say "try again" or "do it differently."
+
+An agent loop has no natural boundary. It runs until it is stopped, crashes, or exhausts its resources. It cannot ask a human for help because there is no human in the loop. Every tool call must produce a valid result or the agent needs to handle the failure independently. The state of the environment changes between loop iterations — other actors modify shared state, timing constraints expire, resources become unavailable — so the agent cannot assume the world looks the same as it did during the previous iteration.
+
+| Property | Chat Loop | Agent Loop |
+|----------|-----------|------------|
+| Control flow | Request-response, bounded | Continuous, unbounded |
+| State model | Conversation history only | Persistent across iterations |
+| Human in loop | Yes | No |
+| Failure handling | Can ask for help | Must handle independently |
+| Environment assumptions | Static during request | Changes between iterations |
+| Tool call expectations | Best effort, retriable | Must succeed or have fallback |
+
+The poker agent maps cleanly onto the agent loop side of this table. It runs as a `while (true)` loop that only exits on fatal errors. It maintains session state across hands and recovers from crashes by verifying its seat onchain. It cannot ask for help when it does not know what to do — it has a deterministic fallback policy for exactly that situation. The environment (other players, the blockchain state, the blind structure) changes every hand and the agent needs to re-read state before every decision.
+
+---
+
+## Why Tool Calling Works Differently in an Agent Loop
+
+The most common approach to tool calling in chatbots is to give the model a list of tools and trust it to format them correctly, and this works reasonably well in a chat loop because the cost of failure is low. Consider a weather chatbot: the model returns `getWeather location: Austin` instead of the expected JSON format, the application catches the error and tells the model to retry, the model corrects itself, and the user gets their answer one extra round-trip later. The conversation continues, nobody loses anything, and the user probably did not even notice the delay.
+
+Now consider the same kind of error in an agent loop. The poker agent is in the middle of a hand and needs to act before the turn passes. The model returns prose instead of a `submit_action` call — something like "I think I should raise to 500" with no tool call attached. There is no human to correct it, no opportunity to retry, and the blockchain does not wait. The turn expires, the agent folds by default, and the buy-in is lost. The same model behavior that produced a minor inconvenience in the chatbot produces a financial loss in the agent loop.
+
+The errors are not limited to missing tool calls. The model might call `submit_action` with an action of "all-in," which is not a valid action in the contract (only fold, check, call, and raise exist), or it might provide a raise amount that is below the table minimum. In a chatbot, these would trigger a validation error and a retry. In the agent loop, by the time the error propagates and the agent could retry, the turn has already passed to the next player.
+
+Even correct tool calls can fail due to timing. The model calls `get_game_state`, sees that it is its turn, spends a few seconds reasoning, and then calls `submit_action`. In a chatbot this would be fine because the environment does not change while the model is thinking. In the agent loop, another player may have acted between the state read and the action submission, meaning the agent is now betting out of turn and the contract rejects the transaction. The agent cannot simply re-read state and retry because the turn has passed.
+
+These failure modes lead to a different design philosophy for tool calling in agent loops:
+
+**Enforce tool choice at the infrastructure level.** The agent creates a dedicated model instance for decision-making that is configured with `tool_choice: "required"`, meaning the model must call at least one tool on every turn:
+
+```typescript
+function createSubmitActionCaller() {
+  return createModel().bindTools(
+    [submitAction],
+    { tool_choice: "required", strict: true },
+  )
+}
+```
+
+**Prefer broad tool requirements over narrow ones.** The `"required"` option forces at least one tool call without prescribing which tool, and this turns out to be significantly more reliable than requiring a specific tool. When pinned to `submit_action`, models refuse more often — they hit uncertainty about the exact raise amount and freeze. With `"required"`, the model can call `read_hole_cards` to verify its hand or `get_game_state` to recheck the board before committing, and the compliance rate goes up because the model has an escape valve for uncertainty.
+
+**Give the model permission to reason before acting.** The original prompt told the model "Return exactly one submit_action tool call now. Do not answer with text," which caused Claude to say "I understand the instructions" and return nothing — not a refusal, not a tool call, just empty output. The current prompt produces better results:
+
+```
+Think step by step about your decision, then call submit_action with your chosen action.
+```
+
+Giving the model room to reason before committing improves tool call reliability significantly because the model arrives at confidence before it has to act, and the `"required"` tool choice ensures that confidence produces a concrete action rather than more prose.
+
+**Validate output at the parsing layer, not just the tool layer.** Even with `"required"` tool choice, the model can return malformed or invalid tool calls. The agent parses responses through an extraction function that handles two possible output shapes — direct tool calls from the model and the `{ messages }` wrapper from Deep Agents — and validates the action type before executing:
+
+```typescript
+function extractSubmitActionArgs(response, tableAddress) {
+  const toolCall = extractToolCalls(response)
+    .find(call => call.name === "submit_action")
+  if (!toolCall || !toolCall.args) return null
+  const args = toolCall.args
+  if (!isPokerAction(args.action)) return null
+  return {
+    tableAddress,
+    action: args.action,
+    raiseAmount: args.action === "raise" ? args.raiseAmount : null,
+  }
+}
+```
+
+If `extractSubmitActionArgs` returns null — which happens roughly 10-30% of the time depending on the model and provider — the agent does not retry or ask for clarification because the turn would pass before the model could respond. It immediately invokes the deterministic fallback policy, which runs in microseconds and always produces a legal action.
+
+---
+
+## The Risk-Reward of Fallback Strategies
+
+The core design question for any agent loop is: what happens when the model fails to produce a valid action? There are three common approaches, and each has different cost and risk characteristics.
+
+**Approach 1: Auto-retry the LLM.** The agent re-prompt the model with the error context and ask it to try again. This is the most common pattern in chatbot architectures and the default behavior of most agent frameworks. The advantage is that the model might correct itself on the second attempt — perhaps it needed the error feedback to get the formatting right. The disadvantage is that retrying costs tokens, consumes time, and is not guaranteed to succeed. In the poker agent, a retry takes 2-5 seconds, during which the turn may pass and the agent forfeits the hand. Each retry also doubles the token cost of the decision. If you retry three times and the model still fails, you have spent three times the tokens and still need a fallback.
+
+**Approach 2: Fall back to a human.** Escalate the decision to a human operator when the model cannot produce a valid action. This works well in systems where latency is acceptable and human oversight is desired, but it breaks the autonomy guarantee of the agent loop. If the agent is running at 2 AM and needs to act within 30 seconds, a human fallback means the agent fails by default. For the poker agent, this approach is not viable because the game does not pause while waiting for a human to review the board.
+
+**Approach 3: Deterministic fallback policy.** Use a hardcoded decision engine that runs in microseconds and always produces a legal action. This is the approach I used. The policy cannot bluff or make sophisticated reads, but it never refuses, never hallucinates, and never costs more than a few microseconds of CPU time. The tradeoff is between strategic creativity and guaranteed uptime.
+
+The poker agent uses a three-layer architecture that attempts all three approaches in order, with the most creative but least reliable layer running first and the least creative but most reliable layer running last. Each layer catches the failures of the layer above it.
+
+**Layer 1: The LLM.** The model produces a reasoned decision based on game state, cards, persona, and phase context. This is the most creative layer — it can bluff, read opponents, make sophisticated pot-odds calculations, and adapt its strategy. It is also the least reliable, producing valid tool calls roughly 70-90% of the time depending on the provider.
+
+**Layer 2: The deterministic policy.** A 200-line poker engine that classifies hands and computes actions without calling any model. Preflop it checks for premiums, pairs, broadways, and suited connectors. Postflop it evaluates made-hand strength on a 0-8 scale and checks for draws. It runs in microseconds, never refuses, and never hallucinates invalid actions. It produces a reasonable action 99% of the time, though it lacks the creativity to bluff or exploit opponent tendencies.
+
+```typescript
+function preflopDecision(state, holeCards) {
+  const code = handCode(holeCards)
+  const premium = isPair(code) && pairRank(code) >= rankIndex("T")
+    || ["AKs", "AQs", "AJs", "KQs", "AKo"].includes(code)
+
+  if (premium && !facingRaise) return { action: "raise", raiseAmount: openSize.toString(), reason: `${code} is a value open heads-up with dynamic sizing.` }
+  if (canCheck) return { action: "check", raiseAmount: null, reason: `${code} can realize equity for free.` }
+  if (!facingRaise || playable) return { action: "call", raiseAmount: null, reason: `${code} is playable at current price.` }
+  return { action: "fold", raiseAmount: null, reason: `${code} is too weak against a real raise.` }
+}
+```
+
+**Layer 3: The last resort.** If both the LLM and the deterministic policy fail to produce an action that the contract accepts, the agent uses a simple rule: call if facing a bet, check otherwise. This is not strategic in any sense. It exists purely to keep the agent legal when everything else has failed.
+
+```typescript
+function getFallbackAction(state) {
+  const currentBet = BigInt(state.currentBet ?? "0")
+  const myBet = BigInt(state.myBet ?? "0")
+  return currentBet > myBet ? "call" : "check"
+}
+```
+
+| Layer | Source | Speed | Creativity | Reliability |
+|-------|--------|-------|------------|-------------|
+| 1 | LLM | Seconds | High | ~70-90% |
+| 2 | Deterministic policy | Microseconds | Medium | ~99% |
+| 3 | Last resort | Microseconds | None | 100% |
+
+The layered approach avoids the downsides of each individual strategy. Auto-retry would burn tokens and time while still needing a fallback when it eventually fails. Human escalation would break autonomy and fail under time pressure. The deterministic policy runs fast enough that it can be invoked after every failed LLM call without meaningful delay, and the last resort ensures the agent always produces a legal action even when the policy encounters an edge case it was not designed for.
+
+Most agent frameworks only implement layer 1 with a retry loop. Adding a fallback policy that runs at a different speed and has different failure characteristics makes the system much more robust than any single layer could be.
+
+---
+
+## Strategy as Data, Not Prompting
+
+I defined six strategy personas — wolf, bull, owl, fox, shark, cat — as a way to make the system prompt easy to track and experiment with. Each persona is a set of numeric parameters consumed by both the prompt and the deterministic policy, which means changing the strategy is a data change rather than a prompt rewrite.
+
+```typescript
+interface PersonaConfig {
+  name: string
+  philosophy: string
+  aggression: number
+  tightness: number
+  bluffFrequency: number
+  adaptSpeed: number
+  riskTolerance: "low" | "medium" | "high"
+  positionalRules: string
+  handSelection: string
+  bluffConditions: string
+  adaptationRules: string
+}
+```
+
+| Persona | Aggression | Tightness | Bluff Frequency | Playing Style |
+|---------|-----------|-----------|----------------|---------------|
+| Wolf | 0.55 | 0.55 | 0.25 | Balanced game-theory-optimal with adaptive adjustments |
+| Bull | 0.90 | 0.20 | 0.40 | Extreme pressure, raises constantly |
+| Owl | 0.35 | 0.90 | 0.05 | Tight, mathematical, premium hands only |
+| Fox | 0.55 | 0.45 | 0.45 | Tricky, semi-bluffs, exploits weaknesses |
+| Shark | 0.75 | 0.80 | 0.10 | Patient, calculated, strikes selectively |
+| Cat | 0.50 | 0.50 | 0.35 | Unpredictable, mixed strategy |
+
+The parameters are serialized into the system prompt at startup, giving the model a clear behavioral identity. The same parameters feed the deterministic policy when the model fails, so the fallback action reflects the same strategy the model would have chosen. A bull that cannot decide still acts like a bull — it raises instead of folding — because the policy uses the persona's aggression and tightness values.
+
+This matters beyond poker. Any agent with a configurable strategy should encode that strategy as data that both the model and the fallback mechanism can consume. If your deterministic fallback does not reflect the same behavioral model as your prompt, you introduce inconsistency where the agent acts one way during normal operation and a different way under stress.
+
+---
+
+## State Persistence and Recovery
+
+An agent loop that cannot survive a crash is not production-ready. The agent needs memory across sessions — not just for long-term learning, but for basic recovery when the process dies and restarts.
+
+The poker agent uses a memory backend interface with three implementations: an in-memory store capped at 1000 entries, SQLite via Bun's native driver, and Postgres for multi-agent deployments. The critical piece is the session state, which stores the agent's table address and seat position so it can recover after a restart.
+
+```sql
+CREATE TABLE IF NOT EXISTS session_state (
+  key TEXT PRIMARY KEY,
+  value TEXT NOT NULL,
+  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+```
+
+On boot, the agent loads its session and verifies it is still seated by calling `getPlayer()` on the contract for each active player. If the address matches, it readies up and continues playing from where it left off. If the seat is gone — perhaps the agent was force-removed during downtime, or the contract was reset — it clears the stale session and discovers a new table.
+
+This verification step is the important detail. You cannot trust the persisted session unconditionally because the world may have changed while the agent was offline. The agent must verify its assumptions against the live environment before proceeding. Many agent implementations skip this step and get stuck trying to operate on state that no longer exists.
+
+---
+
+## The Audit Trail Is the Seed for Self-Learning
+
+The agent logs every action with its raw reasoning, the game state snapshot at decision time, and the action that was actually submitted onchain. This creates a complete record of what the agent saw, what it thought about it, and what it did.
+
+This log serves two immediate purposes. First, it creates an audit trail for investigating failures after the fact — without the game state snapshot, debugging an agent that folded a winning hand hours ago is nearly impossible because the context that led to the decision is gone. Second, it provides a training data pipeline for the next iteration of the agent.
+
+The next step is to use this log to build a self-learning loop. Each logged decision is a labeled example: given this game state and these cards, the agent chose this action. Over thousands of hands, this becomes a dataset for fine-tuning the model on its own play history, or for training a smaller model that handles routine decisions while the larger model handles complex situations. The logging infrastructure that exists for debugging today is the training pipeline for tomorrow.
+
+---
+
+## The Hardest Part Is the Infrastructure
+
+The problems that broke the agent during development had nothing to do with the model. Every agent loop that interacts with external systems will encounter equivalent problems regardless of the environment, and they will consume more debugging time than the model ever will.
+
+- **Resource availability.** An agent needs a minimum balance of whatever resource its environment requires to operate — gas on a blockchain, API credits on a SaaS platform, compute time on a cloud function. The agent should read the requirement from the live system rather than hardcoding it, because the requirement can change when the environment is updated. If the agent cannot confirm it has sufficient resources before acting, it will fail partway through an operation with no clean recovery path.
+
+- **Concurrent state changes.** When an agent reads state and then acts on it, other actors can modify that state between the read and the write. This is true in any multi-tenant environment. The agent needs to handle the case where its action is rejected because the state no longer matches its assumptions. Retrying the read and write in a tight loop is often sufficient, but for time-sensitive operations the agent needs a fallback that produces a legal action based on the current state rather than the stale state.
+
+- **Event reliability.** Event-driven notification is low-latency but unreliable in any distributed system — connections drop, events fire before finalization, events fire multiple times. Polling is reliable but adds latency. Using neither means the agent misses state changes. Using only events causes missed notifications when the connection drops. Using only polling causes unnecessary delay. The hybrid approach runs an immediate poll on entry to catch notifications that arrived before the watcher started, subscribes to events for low-latency notification, and continues polling in a loop to catch everything the events missed.
+
+- **Identity and signing.** The agent's identity — whether a blockchain wallet, an API key, or a service account — should be derived once at startup and reused for the lifetime of the process. Re-deriving identity on every operation is wasteful and introduces opportunities for inconsistent signing state. The key store is a singleton that derives the identity from the private key once and reuses it for all subsequent operations.
+
+These are not architecturally interesting problems. They are the operational details that break running agents, and every one of them had to be solved before the agent could play through a full session. The model is the most visible component of the system, but the infrastructure around it is what determines whether the agent survives in production.
+
+---
+
+## Running It
+
+The agent runs as a standalone process with environment variables for configuration:
+
+```bash
+PRIVATE_KEY=0x... LLM_API_KEY=sk-... STRATEGY=wolf bun run start
+```
+
+Or Docker with one private key per container:
+
+```yaml
+services:
+  agent:
+    build: .
+    environment:
+      PRIVATE_KEY: "${PRIVATE_KEY}"
+      LLM_API_KEY: "${LLM_API_KEY}"
+      STRATEGY: "${STRATEGY:-wolf}"
+      MEMORY_BACKEND: "${MEMORY_BACKEND:-memory}"
+    restart: unless-stopped
+```
+
+The agent discovers the factory contract, joins or creates a table, funds itself from the faucet, and starts playing. It handles restarts, gas exhaustion, model failures, stale state, and race conditions between reading and writing.
+
+---
+
+## What I Learned
+
+- **The model is the least reliable component in the system.** The LLM produces invalid output 10-30% of the time depending on provider and model, and it fails in unpredictable ways — returning prose instead of tool calls, using invalid action names, inventing parameter values that do not match the schema, or returning nothing at all. Designing for model failure at every layer is not pessimism; it is the minimum bar for a production agent loop.
+
+- **A deterministic fallback policy is more important than prompt engineering.** No amount of prompt tuning will make the model 100% reliable. A 200-line deterministic engine that runs in microseconds and always produces a legal action is worth more than weeks of prompt iteration. The LLM gets the first vote, but the runtime must have the final say.
+
+- **The three-layer decision architecture is the key pattern.** The LLM provides creativity and adaptation. The deterministic policy provides speed and reliability. The last resort provides guaranteed output. Each layer catches the failures of the layer above it, and each layer operates at a different speed and cost profile so they complement rather than duplicate each other.
+
+- **Session recovery must verify against live state, not trust persisted state.** Persisting the agent's position and restoring it on boot is necessary but not sufficient. The agent must call the live system to verify that the persisted state is still valid, because the world may have changed while the agent was offline. Many agent implementations skip this verification and get stuck operating on stale assumptions.
+
+- **Event-driven notification and polling must be used together.** Neither approach is reliable enough alone. Events are low-latency but drop under network issues. Polling is reliable but adds latency and misses short-lived state transitions. The hybrid approach of polling on entry, subscribing to events, and continuing to poll in a catch-up loop handles the failure modes of both strategies.
+
+- **The logging infrastructure is the future training pipeline.** Every action the agent takes is logged with its reasoning and the full state at decision time. This creates an audit trail for debugging today and a labeled dataset for fine-tuning tomorrow. The self-learning loop that uses this data to improve the model over time is the next evolution of the system.
+
+- **Strategic consistency is a design choice with real tradeoffs.** The fallback policy uses the same aggression and tightness parameters as the LLM prompt, so a bull that cannot get a valid LLM response still raises rather than folding passively. This means the agent sometimes loses money it could have saved, but the agent's long-term behavior stays predictable and measurable against its design goals. The opposite choice — a conservative fallback that minimizes downside risk — is equally valid for different contexts. A payment agent should not default to sending more money when uncertain, and a content moderation agent should not default to approving content when confused. The right answer depends on whether the cost of acting against strategy is higher or lower than the cost of failing to act.
+
+Agent loops and agent frameworks are severely under-documented, and the actual design of building production agents is still very much up for grabs. There are no canonical patterns for handling model failures in a loop, no established wisdom around fallback architectures or session recovery, and most of what exists is buried in blog posts or locked inside private codebases. The goal of this post was to add one more data point — and to make the case that agent loops are not chat loops, and building them requires treating model failure as a first-class design constraint rather than an edge case.
+
+The full source is at [github.com/thegreataxios/confidential-poker](https://github.com/thegreataxios/confidential-poker), with the agent code under `agents/langchain/`. If you are building agent loops that need to handle real-world failure modes, I am working on this daily and happy to talk through the patterns.
+
+
+import Footer from '../../snippets/_footer.mdx'
+
+<Footer />
