@@ -1,0 +1,159 @@
+---
+layout: minimal
+authors:
+  - "[thegreataxios](https://linkedin.com/in/sawyercutler)"
+date: 2026-05-10
+title: "Let the Chef Cook: Removing JSON Schema from tool definitions"
+description: "Stripping JSON Schema from Claude's tool definitions improved accuracy on multi-step tasks in a small benchmark — here's the data, the chef metaphor that explains it, and everything I'm still uncertain about."
+---
+
+import BackLink from '../../snippets/BackLink.tsx'
+
+<BackLink />
+
+# Let the Chef Cook
+
+When you give an AI model access to tools — a weather API, a database query, a file system — you have to tell it what tools are available and how to use them. The standard approach is JSON Schema. For each tool, you define its name, its parameters, their types, which ones are required, and what values are valid. Every major SDK defaults to this.
+
+This is not just a convention. The industry invests heavily in making JSON Schema tool calling work. Anthropic [includes tool definitions in RL safety training](https://www.anthropic.com/research/teaching-claude-why) to improve agentic behavior. Researchers are building benchmarks like [SchemaBench](https://arxiv.org/abs/2502.18878) — 40,000 JSON schemas — and proposing reinforcement learning pipelines to teach models to generate valid structured output, because even frontier models struggle with schema correctness. The assumption baked into all of this is that the model needs more exposure to schemas, more training on structured output, more guardrails.
+
+I have been experimenting with the opposite: stripping the JSON Schema out entirely and describing tools in plain English. On complex multi-step tasks, models performed better without the schema. The benchmark is small and the findings are early, but the pattern was consistent enough to write up.
+
+## Imagine you are a chef
+
+The standard approach — sending tools as JSON Schema — is like being handed a cookbook written in legal jargon:
+
+> Pursuant to Article 3, Section B, the applicant shall: chop(ingredient: VegetableType, method: ChopStyle, thickness: Integer ∈ [1, 10]), boil(liquid: LiquidType, duration: Integer)
+
+You have to read the legalese every time before you cook. When you want to chop an onion, you cannot just reach for the knife — you have to fill out a form:
+
+```json
+{"type": "tool_use", "name": "chop", "input": {"ingredient": "onion", "method": "dice", "thickness": 3}}
+```
+
+Now imagine instead that someone just tells you, in plain English:
+
+> You have a knife. Use it like: `chop onion dice`\
+> You have a pot. Use it like: `boil water 10min`
+
+And when cooking, you naturally say:
+
+> I'll chop the onion first. `<call>chop onion dice 3</call>`\
+> Done. Now I'll boil water. `<call>boil water 10</call>`
+
+No legal jargon. No forms. You just cook.
+
+## Why it works
+
+The legalese was never helping the chef. It was helping the kitchen management system — the API — validate that recipes are formatted correctly. But the chef already knows how to chop an onion. The legalese only distracts them.
+
+Same dynamic with the model. JSON Schema was designed for developers — it validates types, enums, required fields. The model may not benefit from it in the same way. The natural language descriptions already convey what tools expect. The JSON Schema may just consume attention the model could use for reasoning.
+
+## Simple recipes, complex recipes
+
+### What I mean by difficulty
+
+Easy — difficulty 1 through 4 — is a single tool call with straightforward parameters. "Get the weather in Austin" is one call, one parameter, no dependencies.
+
+Medium — 5 through 7 — chains three to five calls where the output of one feeds into the next. "Get the weather in three cities, find the hottest one, and log the result" requires sequential calls with the model tracking state between them.
+
+Hard — 8 through 10 — involves five or more coordinated calls with branching logic. Think multi-step research workflows, or agents that need to fetch, transform, validate, and report.
+
+### The benchmark
+
+To test whether the compact format actually helped, I built a small benchmark. Eleven prompts, three modes each, across Claude Haiku 4.5 and Claude Sonnet 4.6, using [`anthropic-compact-tools`](https://github.com/thegreataxios/anthropic-compact-tools). Tasks ranged from single-call trivia to multi-step chained workflows. Sixty-six total runs.
+
+| Metric | Native (tools in API) | Compact (stripTools) | Change |
+|--------|----------------------|---------------------|--------|
+| Sonnet accuracy | 5/11 (45%) | 11/11 (100%) | +55 pp / +120% relative |
+| Haiku accuracy | 5/11 (45%) | 8/11 (73%) | +27 pp / +60% relative |
+| Input tokens (both models) | ~9,100 | ~3,600 | -61% |
+| Haiku cost per 11 calls | $0.0158 | $0.0130 | -18% |
+
+Broken down by task difficulty:
+
+| Difficulty | Native (Sonnet) | Compact (Sonnet) | Native (Haiku) | Compact (Haiku) |
+|------------|:---------------:|:----------------:|:--------------:|:---------------:|
+| Easy (0-4) | 5/5 | 5/5 | 5/5 | 5/5 |
+| Medium (5-7) | 0/3 | 3/3 | 0/3 | 2/3 |
+| Hard (8-10) | 0/3 | 3/3 | 0/3 | 1/3 |
+
+On easy tasks, both formats worked. At medium difficulty and above, the legalese approach went zero-for-six on both models — not degraded, just complete failure. The plain-English format handled five of six medium tasks and four of six hard tasks.
+
+### Back to the chef
+
+Picture a simple recipe — boiling an egg. One tool (a pot), one parameter (how long). No dependencies, no sequencing. The legalese form is annoying but manageable. There is room for it.
+
+Now picture a complex recipe — preparing a three-course meal. The chef needs to chop vegetables, boil water, sear protein, check temperatures, and coordinate timing so everything finishes together. With legalese, half the brainpower goes to the forms and the food burns. Without it, the chef just cooks:
+
+> I will start with the vegetables. `<call>chop onion dice 3</call>` Done. Now the water needs to go on first since it takes longest. `<call>boil water 12</call>` While that heats up, let me season the steak. `<call>season steak salt pepper garlic</call>`
+
+A few mechanisms seem to be at play here, and I suspect they compound.
+
+**JSON Schema consumes attention budget, not just token budget.** The model has to parse schema definitions, extract parameter names and types, hold constraints in working memory, and simultaneously reason about the task. On simple tasks there is enough spare capacity. On complex tasks the schema parsing crowds out reasoning. The model does not run out of tokens — it runs out of attention.
+
+**Serial reasoning bottleneck.** With JSON Schema, all tool calls must be output at the end of the response, before any execute. The model plans everything upfront with no chance to adjust mid-stream. The compact format lets calls appear inline as the model reasons, creating chain-of-thought for function calling.
+
+**The two-language problem.** Switching between natural language and JSON output appears to add friction — the model has to shift modes mid-generation. Compact format keeps everything in one mode.
+
+**Distribution shift failure.** The default `tool_use` JSON format works reliably on simple tool calls and collapses on complex multi-step tasks. This pattern — flawless performance on simple tasks, sudden failure at higher complexity — looks like a generalization boundary. Anthropic documented a similar shape in *Teaching Claude Why*: their safety training produced strong results on in-distribution evals but did not hold up when the scenario shifted to agentic tool use. The more effective approach was teaching the principles behind the behavior rather than relying on narrow scenario-specific training.
+
+The compact format may avoid a similar pitfall. It does not require the model to execute a specific output routine (a JSON `tool_use` block). It gives the model a lightweight pattern — `<call>name args</call>` — and lets the model decide when and how to use it during generation. The accuracy cliff did not appear in the compact format, which suggests the rigid output structure of JSON Schema was part of the problem, not the solution.
+
+## Would this work at scale?
+
+Yes, even better. The benefit compounds.
+
+**More tools = bigger savings.** The JSON Schema for a typical 20-tool set can run 800+ tokens per request (more for verbose schemas). The compact format sends tool definitions once in the system message — roughly 200 tokens. The bigger the tool set, the more overhead you remove.
+
+**Longer conversations = compound savings.** History rewriting converts past `tool_use` blocks to compact format, compressing every turn's tool calls. Over 10 turns, the savings multiply.
+
+**Complex schemas are handled.** Tools with deep JSON args use dot-path notation — `profile.address.city=Austin` — or a JSON inline fallback:
+
+```
+<call>submit_order {"items":[{"id":1,"qty":3}],"shipping":{"address":"..."}}</call>
+```
+
+The parser detects which format the model used.
+
+**The accuracy cliff widens.** More real-world tasks sit above the difficulty-5 line than below it. If the compact format continues to handle complex multi-step tasks where JSON Schema fails, the impact on production agent systems is larger than what a 66-call benchmark can capture.
+
+## What I have not tested
+
+- **Model forgets tools exist.** The system message lists them, which usually works, but the model could return text with no calls. In my small benchmark this did not happen, but I would not rely on that holding at scale without a retry loop.
+
+- **Large tool sets (50+).** The system message gets long. I have not found the ceiling, and I do not know where the compact format starts degrading relative to native.
+
+- **Binary or multipart outputs.** The text format does not support these. Untested.
+
+- **Strict server-side validation.** Key=value pairs are less strict than JSON Schema. For validated schemas, use the JSON inline fallback — `<call>submit {"key":"value"}</call>` — which the parser handles.
+
+- **Extended thinking mode.** Untested. Extended thinking might help native mode close the gap, or it might conflict with the compact format. I do not know yet.
+
+- **Deeply nested schemas (5+ levels).** Dot-path flattening gets awkward. The JSON inline fallback handles it, but at that point you are halfway back to native format.
+
+- **`tool_choice` enforcement.** If you rely on `any` or `tool` modes to force tool calls, those require the `tools` parameter to be present in the API call. Compact format replaces `tools` with system message instructions, so `tool_choice` is not directly compatible.
+
+## Bottom line
+
+The compact format is like removing training wheels from a bike. For simple rides, both setups work. For complex terrain, the training wheels actively prevent maneuvering. The more complex the terrain, the worse they get.
+
+The accuracy cliff I measured was real and model-independent — both Haiku and Sonnet collapsed on multi-step tasks under JSON Schema and recovered under the compact format. If this generalizes, the implication is uncomfortable: the tool-calling format most of the industry uses by default may be actively hurting accuracy on the tasks that matter most.
+
+```sh
+npm install anthropic-compact-tools
+```
+
+The full source, benchmark runner, and all results are at [github.com/thegreataxios/anthropic-compact-tools](https://github.com/thegreataxios/anthropic-compact-tools). Fork the benchmark, swap in your own tools and models, and see where your accuracy cliff lives.
+
+## Methodology
+
+- 66 total calls across two Anthropic models (Claude Haiku 4.5 and Claude Sonnet 4.6)
+- 11 prompts in 3 modes each: native (tools in API), compact (stripTools), and a control
+- Tasks ranged from single-call trivia to multi-step chained workflows
+- Difficulty scored on a 0–10 scale based on number of calls, dependencies, and branching logic
+- This is an early experiment. The absolute numbers are directional, not definitive. Your results will vary by model, tool set, and task complexity. Run the benchmark on your own workload before drawing conclusions.
+
+import Footer from '../../snippets/_footer.mdx'
+
+<Footer />
