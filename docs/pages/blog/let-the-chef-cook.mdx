@@ -108,15 +108,9 @@ Yes, even better. The benefit compounds.
 
 **Longer conversations = compound savings.** History rewriting converts past `tool_use` blocks to compact format, compressing every turn's tool calls. Over 10 turns, the savings multiply.
 
-**Complex schemas are handled.** Tools with deep JSON args use dot-path notation — `profile.address.city=Austin` — or a JSON inline fallback:
+**Complex schemas are handled.** Tools with deep JSON args use dot-path notation — `profile.address.city=Austin` — or a JSON inline fallback like `<call>submit_order {"items":[{"id":1,"qty":3}],"shipping":{"address":"..."}}</call>`. The parser detects which format the model used either way.
 
-```
-<call>submit_order {"items":[{"id":1,"qty":3}],"shipping":{"address":"..."}}</call>
-```
-
-The parser detects which format the model used.
-
-**The accuracy cliff widens.** More real-world tasks sit above the difficulty-5 line than below it. If the compact format continues to handle complex multi-step tasks where JSON Schema fails, the impact on production agent systems is larger than what a 66-call benchmark can capture.
+**The accuracy cliff widens.** The impact on production agent systems compounds because the hardest tasks are the ones that matter most. If the compact format continues to handle complex multi-step tasks where JSON Schema fails, the savings in debugging time alone justify the switch.
 
 ## What I have not tested
 
@@ -126,11 +120,9 @@ The parser detects which format the model used.
 
 - **Binary or multipart outputs.** The text format does not support these. Untested.
 
-- **Strict server-side validation.** Key=value pairs are less strict than JSON Schema. For validated schemas, use the JSON inline fallback — `<call>submit {"key":"value"}</call>` — which the parser handles.
-
 - **Extended thinking mode.** Untested. Extended thinking might help native mode close the gap, or it might conflict with the compact format. I do not know yet.
 
-- **Deeply nested schemas (5+ levels).** Dot-path flattening gets awkward. The JSON inline fallback handles it, but at that point you are halfway back to native format.
+- **Deeply nested schemas (5+ levels).** Dot-path flattening gets awkward. I have not tested whether the model handles deeply nested args well in compact format.
 
 - **`tool_choice` enforcement.** If you rely on `any` or `tool` modes to force tool calls, those require the `tools` parameter to be present in the API call. Compact format replaces `tools` with system message instructions, so `tool_choice` is not directly compatible.
 
@@ -148,11 +140,23 @@ The full source, benchmark runner, and all results are at [github.com/thegreatax
 
 ## Methodology
 
-- 66 total calls across two Anthropic models (Claude Haiku 4.5 and Claude Sonnet 4.6)
+- 66 calls across two models (Claude Haiku 4.5 and Claude Sonnet 4.6)
 - 11 prompts in 3 modes each: native (tools in API), compact (stripTools), and a control
 - Tasks ranged from single-call trivia to multi-step chained workflows
 - Difficulty scored on a 0–10 scale based on number of calls, dependencies, and branching logic
-- This is an early experiment. The absolute numbers are directional, not definitive. Your results will vary by model, tool set, and task complexity. Run the benchmark on your own workload before drawing conclusions.
+
+This is an early experiment. The absolute numbers are directional, not definitive. Your results will vary by model, tool set, and task complexity. Run the benchmark on your own workload before drawing conclusions.
+
+This post is a follow-up to [A Compact Flat Format for LLM Tool Calling](/blog/tool-reduce-compact-tool-calling), which introduced the compact format and parser. Here I benchmark whether the approach actually works under pressure while applying it directly to Anthropic's models and SDK.
+
+---
+
+<h2 id="sources">Sources</h2>
+
+1. anthropic-compact-tools repository (benchmark code, parser, stream interceptor). [https://github.com/thegreataxios/anthropic-compact-tools](https://github.com/thegreataxios/anthropic-compact-tools)
+2. Anthropic, "Teaching Claude Why" (RL safety training research, May 2026). [https://www.anthropic.com/research/teaching-claude-why](https://www.anthropic.com/research/teaching-claude-why)
+3. SchemaBench: 40,000 JSON Schema benchmark. arXiv 2502.18878. [https://arxiv.org/abs/2502.18878](https://arxiv.org/abs/2502.18878)
+4. anthropic-compact-tools on npm. [https://www.npmjs.com/package/anthropic-compact-tools](https://www.npmjs.com/package/anthropic-compact-tools)
 
 import Footer from '../../snippets/_footer.mdx'
 
