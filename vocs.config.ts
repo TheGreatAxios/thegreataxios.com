@@ -5,7 +5,7 @@ export default defineConfig({
   title: 'Sawyer Cutler',
   titleTemplate: 'Sawyer Cutler | %s',
   baseUrl: "/",
-  description: "Sawyer Cutler — VP Developer Success at SKALE. Writing about AI agents, blockchain infrastructure, and the machine economy.",
+  description: "Sawyer Cutler — Lead Product Engineer at Corbits. Writing about applied AI, AI agents, and developer tools.",
   font: {
     google: "JetBrains Mono"
   },

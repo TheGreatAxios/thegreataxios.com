@@ -17,14 +17,14 @@ export default function Hero({
     <div className="about-section">
       <div className="hero-name-block">
         <div className="hero-name">{name}</div>
-        <div className="hero-role">VP Developer Success @ <a href="https://skale.space" target="_blank" rel="noopener noreferrer">SKALE</a></div>
+        <div className="hero-role">Lead Product Engineer @ <a href="https://corbits.dev" target="_blank" rel="noopener noreferrer">Corbits</a></div>
       </div>
 
       <p>
-        I build AI agents, experiment with tiny models, and create developer tools.
-      </p>
-      <p>
-        My goal isn't just writing more code. It's using AI to become 100x more capable, and making tools that make that possible for others.
+        I work with small and medium-sized businesses at{" "}
+        <a href="https://dirtroad.dev" target="_blank" rel="noopener noreferrer"><b>Dirt Road Dev</b></a>{" "}
+        to build custom software, websites, developer tools, and AI solutions. If you're interested in working with me, reach out through{" "}
+        <a href="https://dirtroad.dev" target="_blank" rel="noopener noreferrer"><b>Dirt Road Dev</b></a>.
       </p>
       <p>
         Recent work includes{" "}
