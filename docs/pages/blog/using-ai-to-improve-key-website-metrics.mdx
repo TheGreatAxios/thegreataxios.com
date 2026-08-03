@@ -1,0 +1,176 @@
+---
+layout: minimal
+authors:
+  - "[thegreataxios](https://linkedin.com/in/sawyercutler)"
+date: 2026-08-03
+title: "Using AI to Improve Key Website Metrics"
+description: "Core Web Vitals are what matter for users and Google Search. I used an AI coding agent against Lighthouse lab data to fix a real site — LCP from ~30s to 2.3s — and kept the work grounded in CWV, not vanity scores."
+---
+
+import BackLink from '../../snippets/BackLink.tsx'
+
+<BackLink />
+
+# Using AI to Improve Key Website Metrics
+
+I recently used an AI coding agent to improve the performance of a production marketing site for a skilled nursing facility. The site uses React Router with server-side rendering (SSR), which means the server sends the browser a ready-to-display page instead of making it build everything from scratch. That server runs on Cloudflare Workers, a platform that runs application code close to users around the world.
+
+I ran the work through [Pi](https://pi.dev/) using xAI's **Grok 4.5** with high reasoning enabled.
+
+The mobile [Lighthouse](https://developer.chrome.com/docs/lighthouse/overview) report showed that it took roughly **30 seconds** for the page's main content to appear. Lighthouse is an automated website test that loads a page on a simulated phone and reports what happened. That number was bad enough that I did not need a sophisticated performance theory to know something was wrong. A multi-megabyte building photo was being loaded as a JPEG, a Matterport tour was loading before anyone had asked to use it, and several smaller issues were making the page work harder than it needed to.
+
+After working through the report with the agent, the main content appeared in **2.3 seconds**, the layout did not jump around while loading, and there was essentially no work blocking the browser after the first pixels appeared. The interesting part was not that the agent discovered a new way to build a website. It did the same work a developer would do: read the report, identify the expensive resources, make a series of focused changes, and run the test again. It was simply willing to keep going through the repetitive parts of that loop.
+
+## A quick translation of the terms
+
+Before getting into the work, it helps to translate the language used by performance tools. A webpage is not finished loading at the moment the browser receives the first bit of HTML. It still needs to download images, fonts, stylesheets, and JavaScript, arrange those things on the screen, and respond when someone taps or clicks.
+
+The [Core Web Vitals](https://developers.google.com/search/docs/appearance/core-web-vitals) are three measurements for the parts of that experience people notice most:
+
+- **Largest Contentful Paint (LCP)** measures how long it takes for the largest important piece of content, usually a hero image, headline, or product image, to appear. In plain English: *when can I see the thing I came here for?*
+- **Interaction to Next Paint (INP)** measures how long the page takes to visibly respond after someone clicks, taps, or types. In plain English: *when I do something, does the page respond quickly?*
+- **Cumulative Layout Shift (CLS)** measures whether things unexpectedly move while the page loads. In plain English: *will the button move away from my finger because an image or advertisement appeared?*
+
+Google uses these metrics as part of its page experience signals, but they are also useful without thinking about search rankings. They describe whether a page shows its important content, responds to its visitor, and stays in place, which is really what most people mean when they say that a website feels fast.
+
+## Core Web Vitals are the scoreboard
+
+The metrics I cared about were the Core Web Vitals, often shortened to **CWV**, not the Lighthouse score by itself. The three current vitals cover loading, interaction, and visual stability:
+
+| Vital | Question it answers | "Good" threshold at p75 |
+|-------|---------------------|--------------------------|
+| **LCP** (Largest Contentful Paint) | When does the main content appear? | **≤ 2.5s** |
+| **INP** (Interaction to Next Paint) | How quickly does the page respond to input? | **≤ 200ms** |
+| **CLS** (Cumulative Layout Shift) | Does the layout move while the page loads? | **≤ 0.1** |
+
+These thresholds are measured at the 75th percentile, usually written as **p75**, and separated between mobile and desktop. The 75th percentile means that at least three out of every four page loads should be at or better than the threshold. It is a way to avoid declaring a site healthy because one developer happened to test it on a fast laptop; a page that feels fast to me is not necessarily fast for the users who find it on a phone over a weak connection.
+
+There are two kinds of data involved here. **Field data** from real users, including the Chrome User Experience Report (CrUX) or Search Console, tells me what people are experiencing over time. **Lab data** from Lighthouse gives me a repeatable test environment for debugging a change today. I used the lab report to drive the agent because it is immediate and structured, but I would still use field data as the final acceptance criteria. If the lab report looks good and field LCP does not, the site still has a problem. The difference could come from the mix of devices and connections, caching, external services, or a different LCP element appearing for real visitors.
+
+> **Note:** Lighthouse Performance is a weighted composite. It is useful as a general dashboard, but it is not the optimization target. A 96 Performance score with a 4-second LCP is still a failed performance brief.
+
+## The first report was not subtle
+
+The first mobile report gave us a straightforward list of work. A few of the labels below are other Lighthouse measurements, so here is the short version: FCP is when the first visible pixel appears, TBT adds up time when the browser was too busy to respond during the test, and transfer size is how much data the browser had to download. The Lighthouse Performance number is a score from 0 to 1, or 0 to 100 when displayed as a percentage.
+
+| Signal | Before | After (mobile lab) |
+|--------|--------|--------------------|
+| LCP | ~30s, with a 4.3MB hero JPEG | **2.3s** |
+| CLS | Risk from unsized media | **0** |
+| TBT / long tasks | Elevated by third-party work | **0ms TBT** |
+| FCP | Slowed by bytes, CSS, and fonts | **2.2s** |
+| Transfer size | Multi-megabyte first load | **~355 KiB** |
+| Lighthouse Performance | Broken | **0.96** |
+| Accessibility / Best Practices / SEO | Partial failures | **1.0 / 1.0 / 1.0** |
+
+The LCP candidate was a large building photo served as a JPEG. The Matterport embed was pulling around 2MB into the initial page load even though most visitors were not going to start a virtual tour immediately. There were also generic links such as "Learn More," missing security headers on the responses from the Worker, and media without enough information for the browser to reserve its space.
+
+The SEO label in the table means search engine optimization, the work that helps search engines understand and display a page. Accessibility checks whether people using screen readers or other assistive tools can use the page. Best Practices is Lighthouse's general checklist for safer, more reliable web development. None of this called for a framework migration or a new frontend architecture. It called for opening the right files and fixing the problems in the order they appeared in the waterfall, the chart that shows which files were requested, how large they were, and when they finished loading.
+
+## How I used the agent
+
+I did not start by asking the agent to "make the site faster." That kind of prompt is too broad and gives the agent permission to make changes that might look productive without necessarily improving the thing I care about. Instead, I gave it a prompt that looked roughly like this:
+
+```text
+Use the Lighthouse JSON report and the repository to improve the site's mobile
+performance.
+
+Goals:
+- Get mobile lab LCP under 2.5 seconds
+- Keep CLS under 0.1
+- Minimize the work the browser has to do before it can respond
+
+Constraints:
+- Treat the Lighthouse report as evidence, not as a reason to redesign the site
+- Do not migrate the framework
+- Limit changes to the application, Worker headers, image assets, and content data
+- Do not touch secrets or git configuration
+
+Process:
+- Explain which resources or code are causing the largest problems
+- Make changes in focused, reviewable groups
+- Run the build and checks after the work
+- Keep commits separated by type of fix
+```
+
+Those constraints mattered. Without them, an agent can easily turn a performance task into a refactor or a visual redesign. Both might be reasonable tasks in isolation, but neither is what I wanted to ship. The useful part of the first pass was that the agent connected the report to the codebase: it mapped the LCP element to the building photo, saw that the image transfer size made most other optimizations second-order, identified Matterport as a first-paint cost, and found that the security headers needed to be applied in the Worker response path rather than in a React component. First paint means the first visible content, even if the page is not fully ready yet.
+
+This is where I find agents useful. They can keep the Lighthouse report and the project's source files in context at the same time. I still need to review the conclusion, but I do not have to spend an afternoon manually connecting every audit to the component or configuration file that caused it.
+
+## The changes that moved the numbers
+
+### Start with the image that owns LCP
+
+The biggest change was also the least interesting one. The large JPEG became a WebP, a newer image format that can deliver the same picture in a smaller file, with a smaller variant for narrow screens. The page used a responsive `srcset`, which gives the browser several image sizes and lets it choose the one that fits the visitor's screen. The browser could discover the LCP image in the initial HTML, so the request was preloaded and marked with `fetchpriority="high"` without being lazy-loaded. In other words, the important image was requested early, while images farther down the page could wait until they were close to being visible.
+
+This is basic image work, and the agent did not invent it. It handled the conversions, paths, and component changes consistently after the LCP element had been identified. Telling an agent to "optimize images" is vague; telling it which image is the LCP candidate and showing it the transfer size is much more useful.
+
+### Reserve space for media
+
+CLS is also not particularly mysterious. Images without dimensions, late-loading fonts, and injected UI can all move the page after the first render, so the fix was to add explicit dimensions and stable containers for the hero and below-the-fold media, meaning the content that appears after the first screen. Once the browser knows how much space an image needs, it does not have to negotiate with the layout when the image finally arrives. This is another area where an agent is good at checking many related components without getting bored halfway through the list.
+
+### Load the tour when someone wants it
+
+Matterport is a useful feature on this site and a poor first-paint guest. The agent replaced the eager iframe, an embedded page loaded inside another page, with a facade containing a poster image and an accessible control. The actual embed only loads after the visitor clicks to start the tour. That change helped performance, but it was also a product decision: the virtual tour is valuable once someone wants it, while its cookies, scripts, and viewer code do not help someone read the page or contact the facility before then.
+
+I use a similar rule for third-party content generally. A third party is an outside service such as a tour, analytics tool, video player, or map. If it is not needed for the first screen or for the action the visitor is taking right now, it probably should not be on the critical path, the chain of work the browser must finish before the page can feel ready.
+
+### Keep the main thread available
+
+INP is a field metric, so Lighthouse cannot replace CrUX for measuring it, but lab traces still show the things that put pressure on INP, including long tasks, expensive event handlers, the work required to make server-rendered HTML interactive, and third-party scripts. Removing Matterport from startup and keeping the initial JavaScript work small gave the page a better chance of responding when a visitor interacted with it. The zero TBT result is not proof that field INP is perfect, but it is a useful sign that the page is not spending its first moments doing unnecessary work.
+
+### Clean up the adjacent issues
+
+Some of the work was not directly responsible for the LCP improvement. The agent replaced generic CTA, or call-to-action, text with descriptive links, updated image paths, checked heading and alt text, and added the missing security headers. Alt text is the short description a screen reader uses when a visitor cannot see an image. These are useful tasks for an agent once the message and design are already decided, but I still own the copy, especially on a site where families are evaluating care. The agent can make sure the markup reflects that message; I do not want it inventing the message.
+
+The same is true for the security policy. On a Workers SSR app, security headers such as HSTS, frame controls, CSP, and COOP belong on the Worker response. These are browser instructions covering things such as forcing HTTPS, controlling whether the page can be embedded elsewhere, and limiting which outside resources can run. An agent can draft the header map, but the third-party allowlist needs a human review. A CSP that is technically restrictive but breaks the map, video, font, or tour in production is not a successful fix.
+
+## Why this workflow worked
+
+The agent had a scoreboard and a clear way to check its work, which changed the interaction from asking for opinions to asking for a sequence of measurable changes:
+
+1. Capture the mobile Lighthouse report.
+2. Identify the resource or behavior behind the largest issue.
+3. Make one focused group of changes.
+4. Build and run the report again.
+5. Keep the change if it improved the relevant metric without breaking the site.
+
+I had the agent separate the work into a few logical buckets: image bytes, content and SEO markup, third-party loading, image discovery and layout stability, and Worker headers. That made the diffs easier to review and made it more obvious when a proposed fix was unrelated to the performance goal. The report functioned much like a failing test suite. It did not decide the product tradeoffs for me, but it gave the agent a concrete failure to work against. "Make the site faster" is a feeling; "get mobile lab LCP under 2.5 seconds, keep CLS below 0.1, and do not load Matterport before a click" is a brief.
+
+## What still required my judgment
+
+I did not outsource the important decisions. I chose the metric that mattered, since the Lighthouse composite score was useful but LCP and CLS were the actual targets. I made the product call to defer Matterport because a performance audit can tell me what that decision costs, but not whether the virtual tour is important enough to load immediately. I also reviewed the copy, accessibility details, and security policy, because automated checks can identify missing alt text or a weak header configuration without deciding how a care facility should speak to a family or which external services the site should trust.
+
+Finally, I decided when to stop. Agents are very willing to keep working through secondary audits, so my stopping point was a deployed mobile run with LCP and CLS in the good range, no unnecessary third party on first paint, and a clean build. After that, the next step is watching Search Console and field data rather than polishing the Lighthouse score forever.
+
+## A playbook you can reuse
+
+If you want to try this on another site, this is the process I would use. You do not need to understand every browser implementation detail to follow it. The basic idea is to measure what visitors are waiting for, fix the biggest delay, and measure again:
+
+1. Write down the Core Web Vitals targets: LCP ≤ 2.5s, INP ≤ 200ms, and CLS ≤ 0.1 at the 75th percentile.
+2. Pull field baselines from Search Console or CrUX when the site has enough data.
+3. Capture a mobile Lighthouse JSON report against the real deployment target.
+4. Give the agent explicit allowed surfaces, forbidden actions, and a commit policy.
+5. Fix the LCP resource before working on secondary diagnostics.
+6. Handle layout stability and third-party work next.
+7. Run the build and functional checks after each group of changes.
+8. Deploy, meaning publish the changes to the live site, run Lighthouse again, and keep monitoring field CWV after the lab numbers improve.
+
+The agent is helpful here because it can do the repetitive work quickly and keep the feedback loop moving. It can compress a directory of images, update all of the references, add dimensions to a group of components, or compare another report without losing patience. The metrics, the product requirements, and the decision about what is safe to change still come from me.
+
+## Conclusion
+
+Using AI to improve website metrics worked for me because I gave the agent a real site, a real report, and a narrow definition of success. I did not ask it to act like a senior frontend engineer. I asked it to help investigate a bad LCP, make a series of small changes, and show me whether the numbers moved. The Valley Hi work was not especially clever: the page had a huge image, an eager third-party embed, and a handful of normal frontend issues. What made the agent useful was that it could stay with the boring parts of the process, measuring, editing, building, and measuring again.
+
+If you are running a marketing or product site on the edge and want help setting up a CWV-driven agent workflow, reach out. I am doing this kind of work at [Dirt Road](https://dirtroad.dev) and writing about the operator patterns here as I go.
+
+Live site for the run above: [vhnursing.com](https://vhnursing.com).
+
+## Sources
+
+1. Google Search Central, "Understanding Core Web Vitals and Google search results." [https://developers.google.com/search/docs/appearance/core-web-vitals](https://developers.google.com/search/docs/appearance/core-web-vitals)
+2. web.dev, "Web Vitals." [https://web.dev/articles/vitals](https://web.dev/articles/vitals)
+
+import Footer from '../../snippets/_footer.mdx'
+
+<Footer />
