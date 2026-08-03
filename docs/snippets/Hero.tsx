@@ -28,13 +28,13 @@ export default function Hero({
       </p>
       <p>
         Recent work includes{" "}
-        <a href="https://github.com/TheGreatAxios/triage-agent" target="_blank" rel="noopener noreferrer"><b>triage-agent</b></a>,{" "}
-        <a href="https://github.com/TheGreatAxios/ai-sdk-privacy-filter-middleware" target="_blank" rel="noopener noreferrer"><b>privacy-filter-middleware</b></a>,{" "}
-        <a href="https://github.com/thegreataxios/prawl" target="_blank" rel="noopener noreferrer"><b>Prawl</b></a>, and{" "}
-        <a href="https://github.com/TheGreatAxios/privacy-filter-python" target="_blank" rel="noopener noreferrer"><b>privacy-filter-python</b></a>.
+        <a href="https://github.com/corbitsdev/corbits-code" target="_blank" rel="noopener noreferrer"><b>Corbits Code</b></a>,{" "}
+        <a href="https://github.com/corbitsdev/knowledge-engine" target="_blank" rel="noopener noreferrer"><b>Knowledge Engine</b></a>,{" "}
+        <a href="https://github.com/corbitsdev/corbits-artifacts" target="_blank" rel="noopener noreferrer"><b>Artifacts</b></a>, and{" "}
+        <a href="https://github.com/corbitsdev/corbits-mailbox" target="_blank" rel="noopener noreferrer"><b>Mailbox</b></a>.
       </p>
       <p>
-        I'm researching how to make consuming AI at scale more efficient — bigger models aren't always the answer.
+        I'm researching how to apply AI within key business applications, with a focus on making it useful inside the tools teams already use.
       </p>
       <p>
         I write about agents, developer tools, and the machine economy.
