@@ -1,24 +1,36 @@
 import { GithubIcon, LinkedinIcon } from "./BrandIcons.tsx";
+import PageTabs from "./PageTabs.tsx";
 
 interface HeroProps {
   name?: string
   github?: string
   x?: string
   linkedin?: string
+  tabsActive?: 'writing' | 'projects'
+}
+
+export function HeroHeader({ name = "Sawyer Cutler", tabsActive }: Pick<HeroProps, 'name' | 'tabsActive'>) {
+  return (
+    <div className="hero-name-block">
+      <div className="hero-name-row">
+        <div className="hero-name">{name}</div>
+        {tabsActive && <PageTabs active={tabsActive} />}
+      </div>
+      <div className="hero-role">Lead Product Engineer @ <a href="https://corbits.dev" target="_blank" rel="noopener noreferrer">Corbits</a></div>
+    </div>
+  )
 }
 
 export default function Hero({
   name = "Sawyer Cutler",
   github = "https://github.com/thegreataxios",
   x = "https://x.com/thegreataxios",
-  linkedin = "https://linkedin.com/in/sawyercutler"
+  linkedin = "https://linkedin.com/in/sawyercutler",
+  tabsActive
 }: HeroProps) {
   return (
     <div className="about-section">
-      <div className="hero-name-block">
-        <div className="hero-name">{name}</div>
-        <div className="hero-role">Lead Product Engineer @ <a href="https://corbits.dev" target="_blank" rel="noopener noreferrer">Corbits</a></div>
-      </div>
+      <HeroHeader name={name} tabsActive={tabsActive} />
 
       <p>
         I build AI agents, agent tooling, and write about putting AI to work.

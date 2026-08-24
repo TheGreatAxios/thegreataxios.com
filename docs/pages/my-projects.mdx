@@ -3,11 +3,11 @@ layout: minimal
 description: "Projects by TheGreatAxios — applied AI, agent workflows & tools, and infrastructure."
 ---
 
-<div className="page-tabs">
-  <a href="/" className="page-tab">Writing</a>
-  <span className="page-tab-sep">|</span>
-  <a href="/my-projects" className="page-tab page-tab--active">Projects</a>
-</div>
+import { HeroHeader } from '../snippets/Hero.tsx'
+
+<HeroHeader tabsActive="projects" />
+
+<div className="fade-up">
 
 ## Projects
 
@@ -41,5 +41,7 @@ description: "Projects by TheGreatAxios — applied AI, agent workflows & tools,
 - **[railway-hermes-agent-template](https://github.com/TheGreatAxios/railway-hermes-agent-template)** — Railway 1-click Hermes agent template.
 
 ---
+
+</div>
 
 <div className="footer-credit">Inspired by <a href="https://huozhi.im" target="_blank" rel="noopener noreferrer">huozhi.im</a></div>
