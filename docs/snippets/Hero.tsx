@@ -17,27 +17,24 @@ export default function Hero({
     <div className="about-section">
       <div className="hero-name-block">
         <div className="hero-name">{name}</div>
-        <div className="hero-role">VP Developer Success @ <a href="https://skale.space" target="_blank" rel="noopener noreferrer">SKALE</a></div>
+        <div className="hero-role">Lead Product Engineer @ <a href="https://corbits.dev" target="_blank" rel="noopener noreferrer">Corbits</a></div>
       </div>
 
       <p>
-        I build AI agents, experiment with tiny models, and create developer tools.
-      </p>
-      <p>
-        My goal isn't just writing more code. It's using AI to become 100x more capable, and making tools that make that possible for others.
+        I build AI agents, agent tooling, and write about putting AI to work.
       </p>
       <p>
         Recent work includes{" "}
-        <a href="https://github.com/TheGreatAxios/triage-agent" target="_blank" rel="noopener noreferrer"><b>triage-agent</b></a>,{" "}
-        <a href="https://github.com/TheGreatAxios/ai-sdk-privacy-filter-middleware" target="_blank" rel="noopener noreferrer"><b>privacy-filter-middleware</b></a>,{" "}
-        <a href="https://github.com/thegreataxios/prawl" target="_blank" rel="noopener noreferrer"><b>Prawl</b></a>, and{" "}
-        <a href="https://github.com/TheGreatAxios/privacy-filter-python" target="_blank" rel="noopener noreferrer"><b>privacy-filter-python</b></a>.
+        <a href="https://github.com/corbitsdev/corbits-code" target="_blank" rel="noopener noreferrer"><b>Corbits Code</b></a>,{" "}
+        <a href="https://github.com/corbitsdev/workbench" target="_blank" rel="noopener noreferrer"><b>Workbench</b></a>,{" "}
+        <a href="https://github.com/thegreataxios/pulumi-railway" target="_blank" rel="noopener noreferrer"><b>pulumi-railway</b></a>, and{" "}
+        <a href="https://github.com/thegreataxios/pi-extensions" target="_blank" rel="noopener noreferrer"><b>pi-extensions</b></a>.
       </p>
       <p>
-        I'm researching how to make consuming AI at scale more efficient — bigger models aren't always the answer.
+        I'm researching applied AI in the tools teams already use — and getting more out of smaller models along the way.
       </p>
       <p>
-        I write about agents, developer tools, and the machine economy.
+        I write about applied AI and agent infrastructure.
       </p>
 
       <div className="hero-socials">
