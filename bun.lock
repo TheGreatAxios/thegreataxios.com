@@ -6,13 +6,13 @@
       "name": "sawyercutler.com",
       "dependencies": {
         "@vercel/og": "^0.11.1",
-        "lucide-react": "^1.14.0",
-        "react": "^19.2.6",
-        "react-dom": "^19.2.6",
+        "lucide-react": "^1.25.0",
+        "react": "^19.2.8",
+        "react-dom": "^19.2.8",
         "vocs": "^1.4.1",
       },
       "devDependencies": {
-        "@types/react": "^19.2.14",
+        "@types/react": "^19.2.17",
         "typescript": "^6.0.3",
       },
     },
