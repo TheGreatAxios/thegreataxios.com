@@ -1,0 +1,135 @@
+---
+layout: minimal
+authors:
+  - "[thegreataxios](https://linkedin.com/in/sawyercutler)"
+date: 2026-08-25
+title: "I Wrote a Native Pulumi Provider for Railway"
+description: "pulumi-railway brings Railway projects, services, domains, volumes, and buckets under Pulumi management — no Terraform bridge involved. Why I built it, how drift detection and import actually work, and what's still missing."
+---
+
+import BackLink from '../../snippets/BackLink.tsx'
+
+<BackLink />
+
+# I Wrote a Native Pulumi Provider for Railway
+
+I deploy a lot of things to [Railway](https://railway.com) — agent templates, side projects, client services. And like most people who use a platform long enough, I eventually hit the point where the dashboard stops scaling. Twelve services across four environments, each with its own variables and domains, all configured by hand. Change something on Tuesday, forget you changed it by Friday. The dashboard is a great place to *discover* your infrastructure and a terrible place to *remember* it.
+
+So I wrote [pulumi-railway](https://github.com/thegreataxios/pulumi-railway): a native Pulumi provider that manages Railway projects, environments, services, variables, custom domains, volumes, and object storage buckets as code. It ships as [`@thegreataxios/pulumi-railway`](https://www.npmjs.com/package/@thegreataxios/pulumi-railway) on npm, and it is usable today even though it is pre-1.0.
+
+This post is the build log: why native instead of bridged, which parts of the problem were more interesting than expected, and what is still missing.
+
+## Why infrastructure as code for a platform like Railway
+
+Part of the answer is the usual infrastructure-as-code pitch: environments become reproducible, changes get reviewed in pull requests, and rolling back means reverting a commit instead of archaeology in an activity feed.
+
+But there is a second reason that matters more to me right now. Infrastructure described as code is infrastructure an **AI agent can safely operate on**. Handing an agent a dashboard and saying "deploy this" is a trust fall. Handing it a stack directory and a `pulumi preview` is a reviewable plan — the agent proposes a diff, the diff states exactly what will be created, updated, or replaced, and nothing happens until someone approves it. Most of my recent deployments were driven by an agent working against this provider, and the preview step is what made that arrangement sane.
+
+## Why native?
+
+Pulumi providers usually come in two flavors. A **bridged** provider wraps an existing Terraform provider so Pulumi can drive it. A **native** provider speaks to the platform's API directly, with no Terraform in the middle.
+
+Railway did not have a Terraform provider worth wrapping, so the decision was effectively made for me — but native ended up being the right call regardless:
+
+- **No translation layer.** The provider maps Pulumi's resource model onto Railway's API directly. When something breaks, the stack trace ends at the actual API call, not at a shim interpreting a shim.
+- **Schema stays honest.** Bridged providers inherit years of Terraform-era baggage in their schemas. Native let me model only what Railway actually exposes.
+- **One binary, one language.** The provider plugin is a single Go binary distributed through GitHub releases; the SDK downloads the matching version automatically on install.
+
+## The seven resources
+
+The provider covers the part of Railway that everything else hangs off of:
+
+| Resource | Description |
+| --- | --- |
+| `railway.Project` | Project and its default environment |
+| `railway.Environment` | Named environment (staging, previews) |
+| `railway.Service` | Service source and per-environment runtime config |
+| `railway.Variable` | Service or shared environment variable |
+| `railway.CustomDomain` | Domain, DNS verification, certificate status |
+| `railway.Volume` | Persistent volume and mount path |
+| `railway.Bucket` | S3-compatible object storage bucket |
+
+A minimal stack looks like this:
+
+```typescript
+import * as railway from "@thegreataxios/pulumi-railway";
+
+const project = new railway.Project("my-project", {
+  name: "my-app",
+  // Strongly recommended — see the gotcha below.
+  workspaceId: "your-workspace-id",
+});
+
+const web = new railway.Service("web", {
+  projectId: project.id,
+  environmentId: project.defaultEnvironmentId,
+  name: "web",
+  image: "node:20-alpine",
+  startCommand: "node server.js",
+});
+```
+
+## The parts that were more interesting than expected
+
+### Drift detection
+
+Drift is when reality and state disagree — someone edited a variable in the dashboard, scaled a service by hand, added a domain over lunch. Detecting it means reading the live state from Railway's API on every refresh and comparing it to what the stack last recorded. That sounds mechanical until you meet the edge cases: resources that exist on Railway but not in the stack, fields the API computes that should never count as drift, values that differ only in representation. Getting refresh to say *nothing changed* when nothing changed was most of the work.
+
+### Import
+
+Import answers the question every existing Railway user will ask first: "do I have to throw away my current setup?" You should not have to. `pulumi import` adopts an existing project or service into a stack so the next `pulumi up` sees it as already-correct instead of something to recreate. For a tool aimed at people whose infrastructure already exists, this is not a nice-to-have — it is the feature.
+
+### Replacement semantics
+
+Some fields cannot be edited in place. Rather than pretend otherwise, the provider marks those fields immutable: change one and Pulumi replaces the resource — create the new thing, cut over, destroy the old one. Lying about mutability is how providers end up sending APIs requests they cannot honor halfway.
+
+### One small API design decision I'm proud of
+
+The provider accepts two kinds of credentials: account/workspace tokens and project tokens. If both are configured, it returns an error instead of picking one implicitly. Ambiguous authentication is worse than failed authentication — the wrong-token case would look almost like success and fail somewhere downstream, mysteriously. Fail loudly at the boundary instead.
+
+## The gotcha worth knowing before your first deploy
+
+Projects created without a workspace ID are **temporary public projects that expire after 24 hours** unless claimed. The provider lets you pass `workspaceId` on `railway.Project`, and I strongly recommend you always do — yours is in the Railway dashboard under workspace settings. Without it, your beautifully declared infrastructure quietly evaporates tomorrow. This is documented in the README, but documentation only helps the people who read it, so: now you have read it.
+
+## What's missing
+
+Being honest about the gaps:
+
+- No deployment triggers — the provider manages configuration, not CI-style redeploy hooks
+- No Railway-provided domains or TCP proxies
+- No lookup functions yet
+- Not listed in the Pulumi Registry — install comes from npm
+- Only the TypeScript/Node SDK is published as a package. Go, Python, and .NET users can generate local SDKs from the installed plugin:
+
+```bash
+pulumi package gen-sdk railway --language go
+pulumi package gen-sdk railway --language python
+pulumi package gen-sdk railway --language dotnet
+```
+
+Whether any of these gaps matter depends on how much demand exists — issues and PRs are open on the repo.
+
+## Try it
+
+```bash
+npm install @thegreataxios/pulumi-railway
+pulumi config set --secret railway:token <your-token>
+```
+
+Account/workspace tokens come from [railway.com/account/tokens](https://railway.com/account/tokens). If you adopt an existing project, start with `pulumi import` before anything else.
+
+## Conclusion
+
+The provider is pre-1.0 and deliberately scoped: the core Railway objects, done properly, with drift detection, import, and honest replacement semantics. It has already absorbed most of my own deployment work — including the agent-driven kind, where a reviewable plan matters more than any individual feature.
+
+If you run infrastructure on Railway and want it reviewed, versioned, and agent-operable, give it a spin and tell me what breaks.
+
+## Sources
+
+1. pulumi-railway repository. [https://github.com/thegreataxios/pulumi-railway](https://github.com/thegreataxios/pulumi-railway)
+2. @thegreataxios/pulumi-railway on npm. [https://www.npmjs.com/package/@thegreataxios/pulumi-railway](https://www.npmjs.com/package/@thegreataxios/pulumi-railway)
+3. Railway account tokens. [https://railway.com/account/tokens](https://railway.com/account/tokens)
+
+import Footer from '../../snippets/_footer.mdx'
+
+<Footer />
