@@ -1,0 +1,79 @@
+---
+layout: minimal
+authors:
+  - "[thegreataxios](https://linkedin.com/in/sawyercutler)"
+date: 2026-09-04
+title: "Your local agent isn't slow. It's re-reading your files."
+description: "Local coding agents paste the same project files every turn, usually in a new order. The model re-reads them from scratch while you stare at a blank screen. I timed that wait, then took it out."
+---
+
+import BackLink from '../../snippets/BackLink.tsx'
+
+<BackLink />
+
+# Your local agent isn't slow. It's re-reading your files.
+
+I run coding agents on a Mac. Local model, no cloud. You send a message, then you wait. Sometimes a long wait. Then it starts typing and feels fine.
+
+I used to assume the model was just slow.
+
+It isn't. Before it can type a single character, it has to read the entire prompt. Agents stuff that prompt with your project files — the spec, the last file they opened, three more they grepped. Next turn they paste a lot of the same files again, usually in a different order, often not at the beginning.
+
+Most local servers already have a shortcut: if the *start* of the prompt is exactly what we already read, skip that part. Agents break that constantly. Files land in the middle. A second agent on the same repo shuffles the pile. The shortcut misses. The Mac re-reads thousands of lines it already read thirty seconds ago. You sit there looking at a blank screen.
+
+I built a local server for Apple Silicon that remembers files even when they show up in a new place in the prompt. Read a file once. Next request, don't read it again.
+
+## Two clocks, same prompt
+
+I took a pile of files totaling about 41,000 tokens, shuffled the order so the usual shortcut would miss, and waited for the first character.
+
+| What I used | Blank screen |
+| --- | --- |
+| Read everything from scratch | **18.7 seconds** |
+| Usual shortcut (start of prompt must match) | **18.6 seconds** |
+| Remember the files anyway | **0.83 seconds** |
+
+Same files. New order. The usual shortcut did nothing.
+
+On the local coding model I actually run day to day (Ornith, about 12 GB), a smaller pile of shared files went **6.94 seconds → 1.09 seconds**. Four agents talking to that one process finished in about 4.8 seconds instead of 12 seconds added up one after another. Same process. I did not load the model four times.
+
+## Then I had them build 24 games
+
+A one-shot "write me a file" is a bad test of this. There is almost nothing to reuse.
+
+The test that matches real agent work: one local model, 24 tiny browser games from scratch, and every request includes the same packet of design docs (about 16,000 tokens). The files are shared. The order is not. An automated checker wanted a real game file, not a shrug.
+
+| | Games that passed | Average time per game |
+| --- | --- | --- |
+| Re-read the docs every time | 17 / 24 | ~46 seconds |
+| Remember the docs | 22 / 24 | ~28 seconds |
+
+The model did not type faster. Each turn spent less time ingesting the same docs, so the agents finished more of the work. Whole batch was about 18 minutes without it, about 11 minutes with it.
+
+## What this is not
+
+It does not make the model type faster after the first character. It does not help if every prompt is a brand-new file. It does not fit ten copies of a 12 GB model in RAM. Five agents each holding a huge live chat still cost five huge live chats.
+
+It also is not free. I ran the same short reshuffle across 15 local models. Some got slower — remembering and stitching files costs something, and a tiny prompt does not pay for it. Use it when agents keep handing the same repo to one local server. Skip it for one-off questions.
+
+## Try it
+
+```bash
+pic up
+```
+
+Leave that terminal open. In as many other terminals as you want:
+
+```bash
+pi --provider mlx-pic --model ornith
+```
+
+Other tools can hit the printed OpenAI URL (`http://127.0.0.1:8091/v1`). You do not configure the client.
+
+If your Mac feels frozen *before* the first token, time that freeze. That is the number this is for.
+
+The benches and the 15-model table live in `REPORT.md` in mlx-pic. If you are wiring local agents at an MLX server, I am working on this daily.
+
+import Footer from '../../snippets/_footer.mdx'
+
+<Footer />
