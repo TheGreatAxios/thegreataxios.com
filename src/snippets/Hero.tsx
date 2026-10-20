@@ -37,10 +37,11 @@ export default function Hero({
       </p>
       <p>
         Recent work includes{" "}
-        <a href="https://github.com/corbitsdev/corbits-code" target="_blank" rel="noopener noreferrer"><b>Corbits Code</b></a>,{" "}
+        <a href="https://github.com/corbitsdev/corbits-triage" target="_blank" rel="noopener noreferrer"><b>Corbits Triage</b></a>,{" "}
+        <a href="https://github.com/TheGreatAxios/webmcp" target="_blank" rel="noopener noreferrer"><b>WebMCP</b></a>,{" "}
         <a href="https://github.com/corbitsdev/workbench" target="_blank" rel="noopener noreferrer"><b>Workbench</b></a>,{" "}
-        <a href="https://github.com/thegreataxios/pulumi-railway" target="_blank" rel="noopener noreferrer"><b>pulumi-railway</b></a>, and{" "}
-        <a href="https://github.com/thegreataxios/pi-extensions" target="_blank" rel="noopener noreferrer"><b>pi-extensions</b></a>.
+        <a href="https://github.com/corbitsdev/corbits-solution-builder" target="_blank" rel="noopener noreferrer"><b>Solution Builder</b></a>, and{" "}
+        <a href="https://github.com/faremeter/interchange" target="_blank" rel="noopener noreferrer"><b>Interchange</b></a>.
       </p>
       <p>
         I'm researching applied AI in the tools teams already use — and getting more out of smaller models along the way.
