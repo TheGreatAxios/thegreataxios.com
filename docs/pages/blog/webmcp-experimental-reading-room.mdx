@@ -1,0 +1,91 @@
+---
+layout: minimal
+authors:
+  - "[thegreataxios](https://linkedin.com/in/sawyercutler)"
+date: 2026-10-19
+title: "WebMCP: The Web's Missing Agent Interface"
+description: "WebMCP turns web pages into agent-native applications. I shipped it as three NPM packages and built Faraday — a 3D medical scan viewer that won the OpenAI WebMCP Challenge — to prove the model."
+---
+
+import BackLink from '../../snippets/BackLink.tsx'
+
+<BackLink />
+
+# WebMCP: The Web's Missing Agent Interface
+
+Every "AI browses the web" story ends the same way: the agent drives an interface built for humans. It screenshots the page, guesses where the button is, clicks, and reads back whatever text survives the scrape. That model treats the web as a visual environment to be interpreted, and it breaks the moment an application's meaningful state lives somewhere a screenshot cannot reach — inside a canvas, a WebGL surface, or a GPU-backed viewer.
+
+WebMCP proposes the inverse. The page publishes a tool interface, the agent calls it, and the application decides exactly what the agent can see, change, and export. That is a technology shift, not a demo trick — and it deserves the same treatment any technology gets: a core API, bindings, an integration story, and a real application that exercises all of it. I shipped that stack as three packages on NPM and built [Faraday](https://github.com/TheGreatAxios/faraday), a browser-based 3D medical scan viewer, as the reference implementation. Faraday won the [OpenAI WebMCP Challenge](https://webmcp.devpost.com) in September 2026.
+
+## What WebMCP actually is
+
+WebMCP adds a model context at the document level. The application registers tools on that context — each with a name, a description, an input schema, and an executor. The agent discovers those tools the way it discovers MCP servers everywhere else, but the executor runs in the page, next to the application state, rather than in some external process scraping the DOM.
+
+```ts
+document.modelContext.registerTool({
+  name: 'find_regions',
+  description: 'Find connected 3D regions by intensity window',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      min_intensity: { type: 'number' },
+      max_intensity: { type: 'number' },
+    },
+    required: ['min_intensity', 'max_intensity'],
+  },
+  execute: async ({ min_intensity, max_intensity }) => {
+    // Compute in the browser. Return measurements, never raw scan data.
+  },
+})
+```
+
+The difference from browser automation is architectural, not cosmetic:
+
+| | Browser automation | WebMCP tools |
+| --- | --- | --- |
+| Interface | Human UI, interpreted visually | Application-defined operations |
+| Access | Pixels and DOM text | Structured, schema-validated calls |
+| State | Whatever is on screen | Application state, exposed on purpose |
+| Boundaries | Prompt instructions, mostly | Data flow and output schemas, in code |
+
+That last row is the one I care about most. With automation, the boundary between "agent reads the page" and "agent does something consequential" lives inside a prompt. With WebMCP, the boundary is the tool surface itself, and the output schema defines exactly what crosses it. That makes agent behavior testable in the application instead of hoped-for in the model.
+
+## From spec to stack
+
+`registerTool` alone is where most WebMCP demos stop, and it is not enough for a real application. The moment you have more than one workflow, you inherit coordination problems the base API does not settle: which tools the agent should see at each phase, which calls need human approval, how mutations serialize against shared state, and how a desktop agent reaches a browser tab at all. I packaged the answers as three libraries, all at 0.1.1 on NPM:
+
+- **[`@thegreataxios/webmcp`](https://www.npmjs.com/package/@thegreataxios/webmcp)** — the umbrella package. Re-exports the core model context wrapper plus the React and bridge packages, so one install covers most applications.
+- **[`@thegreataxios/webmcp-react`](https://www.npmjs.com/package/@thegreataxios/webmcp-react)** — React bindings. Providers define tools declaratively, hooks consume the context, and components describe experimental features like journeys and guarded tools.
+- **[`@thegreataxios/webmcp-bridge`](https://www.npmjs.com/package/@thegreataxios/webmcp-bridge)** — a local stdio MCP server that bridges desktop agent clients to browser-registered tools over a loopback WebSocket, so an agent running outside the browser can call into a page without exposing that page to the network.
+
+Three experimental primitives in those packages carry most of the weight, and each one exists because a real application forced the question.
+
+**Journeys** limit the active tool surface. An application has phases — in a reading room, the agent needs orientation and measurement tools during review, and the export tool during reporting. Showing every tool at once pads the agent's context and makes a consequential action look like just another read. A journey is a visibility boundary, not an authorization system; the handler still validates its own inputs. Hiding a tool is not securing it, but a smaller active vocabulary makes the workflow legible.
+
+**Confirmations** keep the human in the loop for calls that produce external results. A guarded tool turns the agent's request into a pending approval in the interface, and the handler runs only after the user accepts. The application must also bind the approval to the state being exported — if the user approves an export and then loads a different study, the pending confirmation for the old study has to die with it. That detail is easy to omit in a demo and difficult to repair after deployment.
+
+**State synchronization** treats agent calls as mutations over named application state rather than arbitrary DOM manipulation. The tool result and the UI render from the same state, so the agent and the user always see one truth. Mutating tools serialize so concurrent calls cannot interleave, and stale computations cannot paint results onto newer state.
+
+## Faraday: the technology under load
+
+[Faraday](https://github.com/TheGreatAxios/faraday) is where all of this runs for real. It renders three-dimensional medical scans — NIfTI files or bundled demo studies — entirely in the browser using [NiiVue](https://github.com/niivue/niivue), with data never leaving the user's machine. An attached agent can describe the loaded study, find unusually bright regions inside an intensity window, shift focus to those regions, and switch between slice and rendering views. The `find_regions` tool returns measurements such as volume, bounding-box dimensions, average intensity, and location — never the original voxel grid. The output schema is part of the privacy boundary, not just documentation for the model.
+
+The judge-facing question was whether the privacy story holds under agent interaction, and it does — because it is enforced by data flow rather than by instruction. Faraday computes locally, returns lightweight measurements, and requires explicit human approval before any text summary or JSON report leaves the page. The WebMCP Challenge win came from that completeness: the tool interface, the guardrails, and the rendering all had to work as one system.
+
+> **Note:** Faraday is a research and education project. It is not a medical device and not for diagnostic use.
+
+## The honest caveats
+
+These packages are 0.1.x and the experimental APIs carry an `experimental_` prefix on purpose. The prefix is honest about two layers of instability. The first is the specification itself: WebMCP is a [Draft Community Group Report](https://webmachinelearning.github.io/webmcp/) incubating in the W3C Web Machine Learning Community Group — proposal stage, not a shipped browser standard — so the surface it describes can and will change as the draft advances. The second is my own layer: journeys, confirmations, synchronization, and the bridge are answers to problems that appear after the first successful tool call, and I expect their designs to change as more applications exercise them. The bridge is loopback-only by design — it is a local development and desktop integration, not a remotely accessible service, and I would not treat it as one. That is exactly why building against the proposal now matters: applications are how the primitives get discovered and how the draft earns its way to a standard.
+
+If you are building agent-facing web applications, the stack is on NPM:
+
+```sh
+npm install @thegreataxios/webmcp
+```
+
+Faraday is live at [thegreataxios.github.io/faraday](https://thegreataxios.github.io/faraday/), and the full source is at [github.com/TheGreatAxios/faraday](https://github.com/TheGreatAxios/faraday). I'm working on this daily — happy to talk through the patterns.
+
+import Footer from '../../snippets/_footer.mdx'
+
+<Footer />
