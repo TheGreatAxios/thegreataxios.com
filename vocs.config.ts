@@ -1,36 +1,19 @@
-import { defineConfig } from 'vocs'
-import { createElement } from 'react'
+import { defineConfig } from 'vocs/config'
 
 export default defineConfig({
   title: 'Sawyer Cutler',
   titleTemplate: 'Sawyer Cutler | %s',
   baseUrl: "/",
+  renderStrategy: 'full-static',
+  colorScheme: 'light',
   description: "Sawyer Cutler — Lead Product Engineer at Corbits. Writing about applied AI, agent infrastructure, and developer tools.",
-  font: {
-    google: "JetBrains Mono"
+  head: {
+    link: [
+      { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+      { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: 'anonymous' },
+      { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap' },
+    ],
   },
-  theme: {
-    colorScheme: "light",
-    variables: {
-      fontFamily: {
-        default: "JetBrains Mono, monospace",
-        mono: "JetBrains Mono, monospace"
-      }
-    }
-  },
-  head: createElement("script", {
-    dangerouslySetInnerHTML: {
-      __html: `
-        (function () {
-          try {
-            localStorage.setItem("vocs.theme", "light");
-          } catch (e) {}
-          document.documentElement.classList.remove("dark");
-          document.documentElement.classList.add("light");
-        })();
-      `,
-    },
-  }),
   iconUrl: `/thegreataxios.jpg`,
   ogImageUrl: `/api/og?logo=%logo&title=%title&description=%description`,
   topNav: []

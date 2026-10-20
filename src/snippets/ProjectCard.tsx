@@ -12,6 +12,7 @@ interface ProjectCardProps {
 export default function ProjectCard({ title, description, tags, github, website }: ProjectCardProps) {
   return (
     <div
+      className="project-card"
       style={{
         border: "1px solid #dbe7ff",
         background: "linear-gradient(180deg, #ffffff 0%, #f8fbff 100%)",
@@ -22,19 +23,7 @@ export default function ProjectCard({ title, description, tags, github, website 
         gap: "0.35rem",
         minWidth: 0,
         height: "118px",
-        overflow: "hidden",
-        boxShadow: "0 1px 2px rgba(15, 23, 42, 0.06)",
-        transition: "transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease"
-      }}
-      onMouseOver={(e) => {
-        e.currentTarget.style.transform = "translateY(-1px)";
-        e.currentTarget.style.boxShadow = "0 6px 16px rgba(37, 99, 235, 0.12)";
-        e.currentTarget.style.borderColor = "#bfdbfe";
-      }}
-      onMouseOut={(e) => {
-        e.currentTarget.style.transform = "translateY(0)";
-        e.currentTarget.style.boxShadow = "0 1px 2px rgba(15, 23, 42, 0.06)";
-        e.currentTarget.style.borderColor = "#dbe7ff";
+        overflow: "hidden"
       }}
     >
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.5rem" }}>

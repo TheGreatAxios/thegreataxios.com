@@ -47,8 +47,8 @@ Vocs-based static documentation site/blog for sawyercutler.com. Built with React
 - YAML frontmatter with `layout: minimal` for posts
 - Date format: `YYYY-MM-DD`
 - Authors array with quoted strings
-- Use `::blog-posts` for blog listing component
-- Store snippets in `docs/snippets/`
+- Blog listing: import `BlogList` from `src/snippets/BlogList.tsx` (post list is generated into `src/snippets/blog-posts.ts` by `scripts/generate-blog-list.mjs`, run automatically via pre-scripts)
+- Store snippets in `src/snippets/`
 
 ### Error Handling
 - Use `try/catch` for async operations
@@ -128,14 +128,16 @@ Vocs-based static documentation site/blog for sawyercutler.com. Built with React
 ## File Organization
 
 ```
-docs/
+src/
   pages/           # Main content (MDX files)
     index.mdx      # Homepage
     blog/           # Blog posts
+    _root.css      # Global styles (vocs 2.x convention)
   snippets/         # Reusable MDX components
-  styles.css        # Global styles
 
 public/             # Static assets + generated markdown
+
+api/                # Vercel edge functions (og image generation)
 ```
 
 ## Dependencies
@@ -144,12 +146,12 @@ public/             # Static assets + generated markdown
 - **UI**: React 19, React DOM 19
 - **Icons**: lucide-react
 - **Analytics**: None (previously @vercel/speed-insights, removed)
-- **Types**: @types/react, TypeScript 6.x
+- **Types**: @types/react, TypeScript 7.x
 
 ## Notes
 
 - No test framework currently configured
 - No ESLint/Prettier/Biome configured - rely on TypeScript strict mode
-- Light theme enforced globally (see `docs/styles.css`)
+- Light theme enforced globally (see `src/pages/_root.css`)
 - Deployment via Vercel (see `vercel.json` for redirects)
 - When showing install commands, default to `npm` for broader compatibility (readers may not use Bun)

@@ -1,4 +1,4 @@
-import { posts } from 'virtual:blog'
+import { posts } from './blog-posts.ts'
 
 function formatDate(dateStr?: string): string {
   if (!dateStr) return ''

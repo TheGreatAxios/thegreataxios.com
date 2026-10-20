@@ -1,0 +1,49 @@
+import { Globe } from "lucide-react";
+import { GithubIcon, LinkedinIcon } from "./BrandIcons.tsx";
+
+<div style={{
+  borderTop: '1px solid #e1e5e9',
+  padding: '3rem 0 2rem',
+  marginTop: '4rem',
+  textAlign: 'center',
+  maxWidth: '600px',
+  marginLeft: 'auto',
+  marginRight: 'auto'
+}}>
+
+  <div style={{
+    fontSize: '0.95rem',
+    color: '#64748b',
+    lineHeight: '1.7',
+    marginBottom: '2rem'
+  }}>
+    Sawyer Cutler is Lead Product Engineer at [Corbits](https://corbits.dev) and actively building AI systems and agents.
+  </div>
+
+  <div style={{
+    display: 'flex',
+    flexDirection: 'row',
+    gap: '1rem',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '0.9rem',
+    flexWrap: 'wrap'
+  }}>
+    <a href="https://x.com/thegreataxios" className="footer-social-link">
+      <span>𝕏</span>
+    </a>
+
+    <a href="https://github.com/thegreataxios" className="footer-social-link">
+      <span><GithubIcon size={18} /></span>
+    </a>
+
+    <a href="https://linkedin.com/in/sawyercutler" className="footer-social-link">
+      <span><LinkedinIcon size={18} /></span>
+    </a>
+
+    <a href="https://dirtroad.dev" className="footer-social-link">
+      <span><Globe size={18} /></span>
+    </a>
+  </div>
+
+</div>

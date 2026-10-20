@@ -543,3 +543,44 @@ code {
   border-radius: 3px !important;
   font-size: 0.85em !important;
 }
+
+/* Back link (RSC-safe hover via CSS) */
+.back-link {
+  color: #888 !important;
+  text-decoration: none !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.back-link:hover {
+  color: #555 !important;
+}
+
+/* Project card (RSC-safe hover via CSS) */
+.project-card {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+  border-color: #dbe7ff;
+  transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+}
+
+.project-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.12);
+  border-color: #bfdbfe;
+}
+
+/* Footer social links (RSC-safe hover via CSS) */
+.footer-social-link {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.footer-social-link:hover {
+  text-decoration: underline;
+}
