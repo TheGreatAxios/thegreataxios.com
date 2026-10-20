@@ -19,7 +19,7 @@ WebMCP proposes the inverse. The page publishes a tool interface, the agent call
 
 ## What WebMCP actually is
 
-WebMCP adds a model context at the document level. The application registers tools on that context — each with a name, a description, an input schema, and an executor. The agent discovers those tools the way it discovers MCP servers everywhere else, but the executor runs in the page, next to the application state, rather than in some external process scraping the DOM.
+WebMCP adds a model context at the document level. The application registers tools on that context — each with a name, a description, an input schema, and an executor. The spec frames a page using WebMCP as an MCP server whose tools are implemented in client-side script instead of on a backend, so agents speak the same tool vocabulary they use everywhere else, but the executor runs in the page, next to the application state, rather than in some external process scraping the DOM.
 
 ```ts
 document.modelContext.registerTool({
