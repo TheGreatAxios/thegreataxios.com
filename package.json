@@ -8,6 +8,7 @@
     "dev": "vocs dev",
     "prebuild": "node scripts/generate-blog-list.mjs",
     "build": "vocs build",
+    "postbuild": "node scripts/postbuild-seo.mjs",
     "prepreview": "node scripts/generate-blog-list.mjs",
     "preview": "vocs preview"
   },

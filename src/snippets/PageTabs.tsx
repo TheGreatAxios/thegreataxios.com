@@ -14,7 +14,7 @@ export default function PageTabs({ active }: PageTabsProps) {
       </a>
       <span className="page-tab-sep" aria-hidden="true">|</span>
       <a
-        href="/my-projects"
+        href="/my-projects/"
         className={`page-tab${active === 'projects' ? ' page-tab--active' : ''}`}
         aria-current={active === 'projects' ? 'page' : undefined}
       >
