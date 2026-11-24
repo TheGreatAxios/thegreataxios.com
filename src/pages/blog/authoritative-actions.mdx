@@ -18,7 +18,7 @@ This article explores how authoritative servers can enhance Web3 applications by
 
 Authority is a grey area in Web3. We often want to remove authority in favor of decentralization, yet more often than not we go to far and the end result lacks any benefit back to the user. The following works through an example of why using authority the right way can be so impactful towards a decentralized application (dApp), while also exploring why authority is often ignored by applications due to the underlying network.
 
-### An Authoritative Example
+## An Authoritative Example
 
 Game developers have been finding innovative ways to push the boundaries of what can be done on-chain. However, whether the in-game actions have value or not one of the biggest issues that Web3 games naturally pick up is bots. While bots are not just a Web3 issue, due to the public nature of smart contracts, individuals can often times run bots that can simulate real users without the knowledge of the developer far easier than they can in a traditional game or app.
 
@@ -74,7 +74,7 @@ contract Bounties {
 
 In theory, these contracts wouldn’t actually be too bad if we wanted to have a fully permissionless game. However, the claimBounty could easily be spammed/botted. As most Web3 games are backed and operated by the creator and are meant to continue to grow, it would be better for the contracts to have some protection to ensure a smooth gameplay experience for everyone.
 
-### Authoritative Bounties
+## Authoritative Bounties
 
 ```solidity
 // SPDX-License-Identifier: MIT  
@@ -121,21 +121,21 @@ contract Bounties is AccessControl {
 }
 ```
 
-#### **Addition of Roles**
+### **Addition of Roles**
 
 The addition of the AccessControl contract by [OpenZeppelin](https://docs.openzeppelin.com/contracts/5.x/access-control) is recommended since it enables the greatest level of flexiblity and scalability. You can setup as many servers as needed with a signer on each and load balance them to manage many calls simultaneously. Additionally, roles compared to ownable makes it simpler to assign different “wallets” to manage different functions while also maintaining scalability.
 
-#### **An Authoritative Function**
+### **An Authoritative Function**
 
 The `addHunter` function utilizes the original cooldown functionality in addition to a role. The role is then used temporarily to allow an EOA (externally owned account) to claim a bounty. This authoritative function should be automated through a server **OR** another smart contract. In most cases this is probably best done through one or more servers, however, for games that have dozens or hundreds of smart contracts; the protection could occur in another contract which then calls out to the bounties.
 
-#### **The Authoritative Server**
+### **The Authoritative Server**
 
 Authoritative servers have a number of benefits to a Web3 game. The first and most important part is that they can enable secure authority. The server can act automatically on behalf of a game or an app to do some action(s) on chain. The other nice part is that servers are often used by teams even if they are building a Web3 game from Day 1. This is great because it can help avoid extra expenses for indie developers. Lastly, servers are great because they are flexible with how the blockchain interaction occurs. Many developers choose to use private keys or seed phrases through the environment to be the “authoritative signers”, however, servers have alternative options like 3rd-party custodial infra like [Stardust](https://stardust.gg/) or using [Amazon Web Services (AWS) KMS](https://www.npmjs.com/package/@dirtroad/kms-signer). Once the signing is in-place the server can now manage the gameplay automatically for you.
 
-### Blockchain and Authority
+## Blockchain and Authority
 
-#### **Gas Fees**
+### **Gas Fees**
 
 Understanding how gas fees plays into authoritative actions is very important. Chains that have variable gas fees are more difficult to build on for the long term due to the lack of stability in operating costs.
 
@@ -143,14 +143,14 @@ Example, if the above transaction costs on average $0.01, then every one player 
 
 Chains that offer zero-gas fees have the leg up from both a standard authority approach as well as for teams looking to put more on-chain.
 
-#### **Consensus and Time to Finality**
+### **Consensus and Time to Finality**
 
 Requests from the client to the server take time. Calls from the server to the blockchain take time. Waiting for consensus and then finality takes time.
 
 Creating user experiences to manage waiting for many blocks to confirm  in addition to the normal time of travel between all these calls can be  highly disruptive. Picking chains that have fast consensus and finality is   
 incredible important. Layer-2’s and Layer-3’s may boast sub-second finality; however the additional rollup generally requires multiple minutes to post and be validated by the Layer 1. Pick wisely to find a protocol that is designed for high throughput, low latency applications.
 
-#### **SKALE and Authoritative Actions**
+### **SKALE and Authoritative Actions**
 
 The [SKALE Network](https://skale.space/) is a great option for building games and applications that use authoritative actions. Thanks to the zero gas fees for developers and end-users; builders on SKALE know they don’t need to worry about variable gas fees EVER.
 

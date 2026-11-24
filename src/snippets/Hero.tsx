@@ -13,7 +13,7 @@ export function HeroHeader({ name = "Sawyer Cutler", tabsActive }: Pick<HeroProp
   return (
     <div className="hero-name-block">
       <div className="hero-name-row">
-        <div className="hero-name">{name}</div>
+        <h1 className="hero-name">{name}</h1>
         {tabsActive && <PageTabs active={tabsActive} />}
       </div>
       <div className="hero-role">Lead Product Engineer @ <a href="https://corbits.dev" target="_blank" rel="noopener noreferrer">Corbits</a></div>
@@ -56,7 +56,7 @@ export default function Hero({
             href={github}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="github"
+            aria-label="thegreataxios on GitHub"
           >
             <GithubIcon size={16} />
             <span>thegreataxios</span>
@@ -67,10 +67,10 @@ export default function Hero({
             href={x}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="twitter"
           >
-            <span className="hero-x-icon">𝕏</span>
+            <span className="hero-x-icon" aria-hidden="true">𝕏</span>
             <span>thegreataxios</span>
+            <span className="sr-only"> on X</span>
           </a>
         )}
         {linkedin && (
@@ -78,7 +78,7 @@ export default function Hero({
             href={linkedin}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="linkedin"
+            aria-label="sawyercutler on LinkedIn"
           >
             <LinkedinIcon size={16} />
             <span>sawyercutler</span>

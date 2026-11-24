@@ -12,7 +12,7 @@ export default function PageTabs({ active }: PageTabsProps) {
       >
         Writing
       </a>
-      <span className="page-tab-sep">|</span>
+      <span className="page-tab-sep" aria-hidden="true">|</span>
       <a
         href="/my-projects"
         className={`page-tab${active === 'projects' ? ' page-tab--active' : ''}`}

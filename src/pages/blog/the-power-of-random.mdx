@@ -24,7 +24,7 @@ Read on for a deep dive into RNG on SKALE and the implementation within the Shap
 
 ---
 
-### SKALE RNG
+## SKALE RNG
 
 Every [SKALE](https://skale.space/) Chain has a random number generator contract pre-compiled and available. A new random number is generated for every block based on the threshold signature of that block. As SKALE Chain consensus is asynchronous and leaderless the blocks must be signed by at least 11/16 nodes [on the SKALE Chain]. The signature from each node is glued together so that single node can influence the resulting signature. This process ensures that the results cannot be manipulated by a single entity.
 
@@ -59,11 +59,11 @@ contract A {
 }
 ```
 
-### RNG Package
+## RNG Package
 
 The above code, while simple enough to use for a single random number, requires some additional work to generate **many** random numbers in a single function. To make this easy to consume, [Dirt Road Development](https://dirtroad.dev/) has created a utility package called [skale-rng](https://docs.dirtroad.dev/skale/skale-rng). This NPM package can be added to your codebase and offers a number of pre-built utilities to quickly iterate on the RNG value to grab many random numbers. It also helps with selecting and maintaining ranges for the random numbers.
 
-### Shape Storm & RNG
+## Shape Storm & RNG
 
 In the code below you will notice a few things:
 

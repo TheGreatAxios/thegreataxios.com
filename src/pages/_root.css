@@ -16,8 +16,11 @@
    HIDE VOCS CHROME — target actual DOM classes
    ============================================================ */
 
-/* Desktop top nav bar */
-.vocs_DesktopTopNav {
+/* Desktop top nav bar (Vocs 1.x + 2.x) */
+.vocs_DesktopTopNav,
+[data-v-gutter-top],
+[data-v-skip-to-content],
+[data-v-ask-ai-container] {
   display: none !important;
 }
 
@@ -227,29 +230,31 @@ a:hover {
   flex-wrap: wrap;
 }
 
-.hero-name {
-  font-size: 1.75rem;
-  font-weight: 500;
-  letter-spacing: -0.03em;
-  line-height: 1.2;
-  color: #1a1a1a;
+.hero-name,
+h1.hero-name {
+  font-size: 1.75rem !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.03em !important;
+  line-height: 1.2 !important;
+  color: #1a1a1a !important;
+  margin: 0 !important;
 }
 
 .hero-role {
   font-size: 0.85rem;
-  color: #888;
+  color: #595959;
   margin-top: 0.2rem;
 }
 
 .hero-role a {
-  color: #888 !important;
+  color: #595959 !important;
   font-weight: 500 !important;
   text-decoration: underline !important;
   text-underline-offset: 2px !important;
 }
 
 .hero-role a:hover {
-  color: #555 !important;
+  color: #1a1a1a !important;
 }
 
 /* Social links row */
@@ -290,7 +295,6 @@ a:hover {
 .blog-list__post {
   display: flex;
   align-items: baseline;
-  padding: 0.35rem 0;
 }
 
 .blog-list__link {
@@ -300,6 +304,8 @@ a:hover {
   gap: 1rem !important;
   text-decoration: none !important;
   width: 100% !important;
+  padding: 0.35rem 0 !important;
+  min-height: 24px !important;
 }
 
 .blog-list__title {
@@ -318,7 +324,7 @@ a:hover {
 
 .blog-list__date {
   font-size: 0.85rem;
-  color: #888;
+  color: #595959;
   white-space: nowrap;
   text-align: right;
   min-width: 5.5rem;
@@ -350,13 +356,11 @@ td, th,
 }
 
 td:first-child {
-  white-space: nowrap;
   font-weight: 500;
 }
 
 td:nth-child(3) {
   font-size: 0.75rem;
-  white-space: nowrap;
 }
 
 /* ============================================================
@@ -449,7 +453,7 @@ pre, code {
 }
 
 .page-tab {
-  color: #888 !important;
+  color: #595959 !important;
   text-decoration: none !important;
   font-weight: 400;
   position: relative;
@@ -485,7 +489,7 @@ pre, code {
 }
 
 .page-tab-sep {
-  color: #ccc;
+  color: #595959;
   user-select: none;
 }
 
@@ -523,30 +527,90 @@ pre, code {
   margin-top: 2rem;
   text-align: right;
   font-size: 0.65rem;
-  color: #ccc;
+  color: #595959;
 }
 
 .footer-credit a {
-  color: #ccc !important;
+  color: #595959 !important;
   text-decoration: underline !important;
   text-underline-offset: 2px;
 }
 
 .footer-credit a:hover {
-  color: #999 !important;
+  color: #1a1a1a !important;
 }
 
 /* Inline code */
-code {
+:not(pre) > code {
   background: #f5f5f5 !important;
   padding: 0.15em 0.3em !important;
   border-radius: 3px !important;
   font-size: 0.85em !important;
 }
 
+pre > code {
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+/* Darken low-contrast Shiki light-theme syntax tokens to WCAG AA (>= 4.5:1) */
+pre code span[style*="#6A737D"] {
+  color: #57606a !important;
+}
+
+pre code span[style*="#D73A49"] {
+  color: #b91c1c !important;
+}
+
+pre code span[style*="#E36209"] {
+  color: #a84300 !important;
+}
+
+pre code span[style*="#22863A"] {
+  color: #1a6e2d !important;
+}
+
+[data-v-shell-prompt] {
+  color: #595959 !important;
+  opacity: 1 !important;
+}
+
+/* Darken Vocs info/warning callout text to WCAG AA (>= 4.5:1) */
+[data-v-callout][data-v-context="info"],
+[data-v-callout][data-v-context="info"] p,
+[data-v-callout][data-v-context="info"] strong,
+[data-v-callout][data-v-context="info"] code {
+  color: #005799 !important;
+}
+
+[data-v-callout][data-v-context="warning"],
+[data-v-callout][data-v-context="warning"] p,
+[data-v-callout][data-v-context="warning"] strong,
+[data-v-callout][data-v-context="warning"] code {
+  color: #7a4400 !important;
+}
+
+/* Callout paragraph line height for WCAG 2.2 target size spacing */
+[data-v-callout] p {
+  line-height: 1.85 !important;
+}
+
+/* Screen-reader only utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* Back link (RSC-safe hover via CSS) */
 .back-link {
-  color: #888 !important;
+  color: #595959 !important;
   text-decoration: none !important;
   display: inline-flex;
   align-items: center;
@@ -554,7 +618,7 @@ code {
 }
 
 .back-link:hover {
-  color: #555 !important;
+  color: #1a1a1a !important;
 }
 
 /* Project card (RSC-safe hover via CSS) */

@@ -20,7 +20,7 @@ The [Ethereum Virtual Machine](https://ethereum.org/en/developers/docs/evm/) (EV
 
 The account — often known as the wallet or the private key — must send transactions with sequential nonces in order to have successful execution. However, this is a direct limitation when exploring applications necessary architecture. Knowing that blockchain is a broader piece of the architectural stack for many; it’s no surprise that many developers lean on various types of centralized services operated by their team to “manage” their application. These centralized services are best referred to as **Authoritative Servers.**
 
-### Authoritative Servers
+## Authoritative Servers
 
 Servers that help manage and maintain the state of an application are a necessary evil. There are exceptions to the rule where some applications are able to create a suite of smart contracts that don’t rely on an external manager, however, in most cases the technical overhead is too large or difficult.
 
@@ -31,7 +31,7 @@ Running a server or many servers to manage authority within a game brings its ow
 - **Rate Limits:** When linking to 3rd party services whether a cloud database or a blockchain; rate limits during surges in use of a platform can really cause headaches.
 - **Unscalable Nonces:** The blockchain specific issue occurs on EVM chains that have sequential nonces. During contract execution, the next nonce is usually set by the pending value from the chain itself. However, a single account trying to manage hundreds or thousands of requests at the same time can be overloaded and cause nonces to break.
 
-### Pitfalls of a Single Account
+## Pitfalls of a Single Account
 
 The use of a single account to manage a server is very common, however, not designed for scalability. Imagine the following Node.js + Express controller:
 
@@ -81,7 +81,7 @@ In the above code, a single wallet is being used to execute transactions for eve
 
 One solution that has worked well for many of the projects I’ve worked with is to utilize a queue system. This can certainly work to ensure that nonces stay sequential, however, this does slow down responses back to the client during heavy load.
 
-### Upsides of a Pool
+## Upsides of a Pool
 
 The concept of a **Pool of Signers** came about when I was doing solutions architecture for a Web2 to Web3 game transition. The game itself at the time was fully operational on Android and had a backend already built as part of it’s Web2 v2 build. Moving into the v3 build, the goal was to help bring greater visibility on-chain of the actual game and then utilize this visibility to help manage and validate incentives.
 

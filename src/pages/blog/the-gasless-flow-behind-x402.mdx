@@ -57,7 +57,7 @@ The flow of an x402 payment is as follows:
 2. **Bob** returns a `402 Payment Required` response that includes a list of accepted payment options.  
 3. **Alice** chooses to pay in ERC-3009 compliant AxiosUSD on SKALE Base Chain and signs an authorization using EIP-712 for $0.01. **Bob** requests the resource again, including the `X-Payment` header with his signature base64 encoded.  
 
-:::note
+:::note{aria-label="Wallet signing options note"}
 This can be done through a Web3 library like [Viem](https://viem.sh), an invisible wallet like [Privy](https://privy.io), a Web3 wallet like [MetaMask](https://metamask.io), or a custodial wallet such as [Coinbase Developer Platform Server Wallets](https://www.coinbase.com/developer-platform/products/wallets).
 :::
 
@@ -67,7 +67,7 @@ This can be done through a Web3 library like [Viem](https://viem.sh), an invisib
 7. **Carol** settles the payment on-chain by executing the transfer on behalf of **Bob** and responds with a payment execution response.  
 8. **Bob** receives the response from **Carol** and responds with the `X-Payment-Response`.  
 
-:::note
+:::note{aria-label="Facilitator role note"}
 While this may seem complicated, most of the work is actually done by the facilitator (**Carol**), who handles the majority of on-chain operations.
 :::
 
@@ -90,7 +90,7 @@ For tokens that cannot or prefer not to upgrade, the options are ERC-3009 Forwar
 ERC-3009 Forwarding is a pattern that existed conceptually but had limited implementation until I tested x402 on FAIR Testnet in late September.  
 For an example, see my [EIP-3009 Forwarder](https://github.com/TheGreatAxios/eip3009-forwarder) contract.
 
-:::note
+:::note{aria-label="Forwarding allowance tradeoff note"}
 This enables x402 for any token on any EVM blockchain, but it requires user approval for the forwarding contract (an allowance) so it can spend tokens on the user's behalf. While not ideal, it allows x402 to work with minimal server and facilitator changes. With account abstraction becoming more prevalent, this limitation may lessen over time.
 :::
 
@@ -129,7 +129,7 @@ This allows truly gasless x402 flows on other chains while solving finality/roll
 
 SKALE Chains are self-contained EVM-compatible blockchains with high-performance C++ EVM implementations, scalable node architecture, and instant finality.
 
-:::note
+:::note{aria-label="SKALE Expand note"}
 SKALE Expand brings truly gasless x402 to any blockchain ecosystem. The native IMA bridge is one of the fastest liquidity bridges globally, secured by the SKALE Chain consensus. For example, deploying on Base turns SKALE into an app that accrues TVL and supports new EIP-3009 tokens while remaining gasless. Other ecosystems could request SKALE deployment to achieve the same setup.
 :::
 

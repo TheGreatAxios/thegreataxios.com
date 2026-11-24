@@ -32,7 +32,7 @@ Confidential tokens change this:
 | Contract sees all data | Contract executes on encrypted state |
 | No privacy guarantees | Threshold cryptography secures data |
 
-:::info
+:::info{aria-label="Client-level amount encryption info"}
 **How amounts stay private today:** The transfer amount is encrypted at the client level using `encryptTransaction` — the entire transaction object (including the amount) gets encrypted before hitting the chain. Once onchain, the amount can be re-encrypted to the recipient's viewer key. Encrypted amounts inside contract storage (fully encrypted balances) are being actively explored.
 :::
 
@@ -75,7 +75,7 @@ eUSDC is an encrypted representation of Bridged USDC from Base on SKALE. It's no
 - **Transfers:** Amounts and balances stay encrypted
 - **Withdrawals:** Encrypted eUSDC → Bridged USDC (Base) with amount reveal
 
-:::info
+:::info{aria-label="Native token applicability info"}
 This isn't limited to bridged assets. The same pattern works with a native stablecoin — any onchain token can have encrypted balances and transfers applied to it.
 :::
 
@@ -108,7 +108,7 @@ This matters for:
 - **Agent spending patterns** — exact amounts hidden from competitors
 - **Budget constraints** — total holdings not visible onchain
 
-:::info
+:::info{aria-label="Address visibility info"}
 Confidential tokens encrypt amounts and balances, but the from/to addresses remain public. Transaction counterparts can still be seen onchain.
 :::
 
