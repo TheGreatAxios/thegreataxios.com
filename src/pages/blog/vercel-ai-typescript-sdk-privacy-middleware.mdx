@@ -1,14 +1,13 @@
 ---
 layout: minimal
 authors:
-    - "[thegreataxios](https://linkedin.com/in/sawyercutler)"
+  - "[thegreataxios](https://linkedin.com/in/sawyercutler)"
 date: 2026-04-25
 title: "Vercel AI TypeScript SDK: Privacy Middleware"
 description: "A TypeScript middleware for the Vercel AI SDK that automatically redacts PII from messages using OpenAI's privacy-filter model — running entirely locally via Transformers.js."
 ---
 
-
-import BackLink from '../../snippets/BackLink.tsx'
+import BackLink from "../../snippets/BackLink.tsx";
 
 <BackLink />
 
@@ -23,6 +22,7 @@ Your AI application uses the Vercel AI SDK. It's clean — `generateText`, `stre
 > "I'm Alice Smith from Acme Corp. My email is `alice@example.com` and my phone is `555-0123`."
 
 That string hits your:
+
 - **Logs** — Sentry, Datadog, whatever you're using
 - **Context windows** — passed to the LLM, stored in conversation history
 - **Tool calls** — maybe forwarded to a CRM or booking API
@@ -45,14 +45,14 @@ No API calls. No cloud dependency. The 1.5B parameter model runs in your process
 Wrap your model with the middleware:
 
 ```typescript
-import { wrapLanguageModel } from 'ai';
-import { createOpenRouter } from '@openrouter/ai-sdk-provider';
-import { privacyFilterMiddleware } from 'ai-sdk-privacy-filter-middleware';
+import { wrapLanguageModel } from "ai";
+import { createOpenRouter } from "@openrouter/ai-sdk-provider";
+import { privacyFilterMiddleware } from "ai-sdk-privacy-filter-middleware";
 
 const openrouter = createOpenRouter({ apiKey: process.env.OPENROUTER_API_KEY });
 
 const model = wrapLanguageModel({
-  model: openrouter('openrouter/free'),
+  model: openrouter("openrouter/free"),
   middleware: privacyFilterMiddleware(),
 });
 ```
@@ -76,16 +76,16 @@ The LLM never sees the real PII. Your logs only contain placeholders. Compliance
 
 The model catches 8 categories of PII:
 
-| Type | Placeholder | Example |
-|------|-------------|---------|
-| `private_person` | `[PERSON_N]` | Alice Smith |
-| `private_email` | `[EMAIL_N]` | `` `alice@example.com` `` |
-| `private_phone` | `[PHONE_N]` | `+1-555-0123` |
-| `private_address` | `[ADDRESS_N]` | 123 Main St |
-| `private_date` | `[DATE_N]` | 1990-01-15 |
-| `private_url` | `[URL_N]` | `https://example.com` |
-| `account_number` | `[ACCOUNT_N]` | 1234-5678-9012 |
-| `secret` | `[SECRET_N]` | API keys, passwords |
+| Type              | Placeholder   | Example                   |
+| ----------------- | ------------- | ------------------------- |
+| `private_person`  | `[PERSON_N]`  | Alice Smith               |
+| `private_email`   | `[EMAIL_N]`   | `` `alice@example.com` `` |
+| `private_phone`   | `[PHONE_N]`   | `+1-555-0123`             |
+| `private_address` | `[ADDRESS_N]` | 123 Main St               |
+| `private_date`    | `[DATE_N]`    | 1990-01-15                |
+| `private_url`     | `[URL_N]`     | `https://example.com`     |
+| `account_number`  | `[ACCOUNT_N]` | 1234-5678-9012            |
+| `secret`          | `[SECRET_N]`  | API keys, passwords       |
 
 ## The Middleware Pattern
 
@@ -128,11 +128,11 @@ Running the model locally via Transformers.js eliminates all of this. The model 
 
 ### Runtime Support
 
-| Runtime | Device | Status |
-|---------|--------|--------|
-| Node.js | WASM | Supported |
-| Browser | WebGPU | Supported |
-| Browser | WASM | Supported (fallback) |
+| Runtime | Device | Status               |
+| ------- | ------ | -------------------- |
+| Node.js | WASM   | Supported            |
+| Browser | WebGPU | Supported            |
+| Browser | WASM   | Supported (fallback) |
 
 Auto-detects the best available device. WebGPU when available, WASM fallback otherwise.
 
@@ -141,15 +141,15 @@ Auto-detects the best available device. WebGPU when available, WASM fallback oth
 ## Configuration
 
 ```typescript
-import { createOpenRouter } from '@openrouter/ai-sdk-provider';
+import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 
 const openrouter = createOpenRouter({ apiKey: process.env.OPENROUTER_API_KEY });
 
 const model = wrapLanguageModel({
-  model: openrouter('openrouter/free'),
+  model: openrouter("openrouter/free"),
   middleware: privacyFilterMiddleware({
     // Only redact specific entity types (default: all)
-    entityTypes: ['private_person', 'private_email', 'private_phone'],
+    entityTypes: ["private_person", "private_email", "private_phone"],
 
     // Minimum confidence score (default: 0.8)
     minScore: 0.9,
@@ -161,7 +161,7 @@ const model = wrapLanguageModel({
     placeholderFormat: (type, n) => `<<${type}_${n}>>`,
 
     // Device override ('wasm' | 'webgpu')
-    device: 'webgpu',
+    device: "webgpu",
 
     // Model loading progress callback
     onProgress: ({ status, progress }) => {
@@ -176,14 +176,14 @@ const model = wrapLanguageModel({
 The model loads lazily on first use. First request will be slower (~5-15s depending on hardware) while the model downloads and initializes. To pre-load:
 
 ```typescript
-import { createPrivacyFilter } from 'ai-sdk-privacy-filter-middleware';
-import { createOpenRouter } from '@openrouter/ai-sdk-provider';
+import { createPrivacyFilter } from "ai-sdk-privacy-filter-middleware";
+import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 
 const openrouter = createOpenRouter({ apiKey: process.env.OPENROUTER_API_KEY });
-const middleware = await createPrivacyFilter({ device: 'webgpu' });
+const middleware = await createPrivacyFilter({ device: "webgpu" });
 
 const model = wrapLanguageModel({
-  model: openrouter('openrouter/free'),
+  model: openrouter("openrouter/free"),
   middleware,
 });
 ```
@@ -194,11 +194,11 @@ Works with any AI SDK provider:
 
 ```typescript
 // OpenRouter (default example)
-import { createOpenRouter } from '@openrouter/ai-sdk-provider';
+import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 const openrouter = createOpenRouter({ apiKey: process.env.OPENROUTER_API_KEY });
 
 // OpenAI
-import { openai } from '@ai-sdk/openai';
+import { openai } from "@ai-sdk/openai";
 
 // Anthropic, Gemini, Cohere, etc.
 // Any provider that returns the standard AI SDK interface
@@ -212,16 +212,17 @@ The middleware works in both environments, but the trade-offs differ.
 
 > **Architecture Note:** The privacy-filter model is a sparse Mixture-of-Experts (MoE) with 128 experts. [[2]](#sources) Only ~50M parameters activate per token, making inference lightweight despite the ~1.5GB download size.
 
-| Environment | Device | Model Size | Best For |
-|-------------|--------|------------|----------|
-| **Browser** | WebGPU (or WASM fallback) | Downloaded per user | Client-side apps, data never leaves the device |
-| **Server** | WASM | Loaded once, shared across requests | API routes, guaranteed availability, no per-user download |
+| Environment | Device                    | Model Size                          | Best For                                                  |
+| ----------- | ------------------------- | ----------------------------------- | --------------------------------------------------------- |
+| **Browser** | WebGPU (or WASM fallback) | Downloaded per user                 | Client-side apps, data never leaves the device            |
+| **Server**  | WASM                      | Loaded once, shared across requests | API routes, guaranteed availability, no per-user download |
 
 > **Warning:** WebGPU is not supported in Safari. Use WASM fallback or server-side deployment for Safari users.
 
 ### Browser (WebGPU)
 
 Running in the browser means:
+
 - **Zero server cost** — model inference happens on the user's GPU
 - **Maximum privacy** — PII never leaves the device, not even to your server
 - **Per-user download** — every user downloads ~1.5GB on first use
@@ -232,6 +233,7 @@ Ideal for: Chat UIs, client-only apps, compliance requirements that demand on-de
 ### Server (Node.js + WASM)
 
 Running on the server means:
+
 - **Predictable performance** — consistent hardware, no WebGPU variability
 - **No per-user overhead** — model loads once, serves all requests
 - **Standard deployment** — works on any Node.js host (Vercel, Railway, etc.)
@@ -254,14 +256,14 @@ npm install ai-sdk-privacy-filter-middleware
 **Quick start:**
 
 ```typescript
-import { generateText, wrapLanguageModel } from 'ai';
-import { createOpenRouter } from '@openrouter/ai-sdk-provider';
-import { privacyFilterMiddleware } from 'ai-sdk-privacy-filter-middleware';
+import { generateText, wrapLanguageModel } from "ai";
+import { createOpenRouter } from "@openrouter/ai-sdk-provider";
+import { privacyFilterMiddleware } from "ai-sdk-privacy-filter-middleware";
 
 const openrouter = createOpenRouter({ apiKey: process.env.OPENROUTER_API_KEY });
 
 const model = wrapLanguageModel({
-  model: openrouter('openrouter/free'),
+  model: openrouter("openrouter/free"),
   middleware: privacyFilterMiddleware(),
 });
 
@@ -280,27 +282,27 @@ console.log(result.text);
 To verify the middleware is working correctly, use the debug callbacks to inspect what's happening at each stage:
 
 ```typescript
-import { generateText, wrapLanguageModel } from 'ai';
-import { createOpenRouter } from '@openrouter/ai-sdk-provider';
-import { privacyFilterMiddleware } from 'ai-sdk-privacy-filter-middleware';
+import { generateText, wrapLanguageModel } from "ai";
+import { createOpenRouter } from "@openrouter/ai-sdk-provider";
+import { privacyFilterMiddleware } from "ai-sdk-privacy-filter-middleware";
 
 const openrouter = createOpenRouter({ apiKey: process.env.OPENROUTER_API_KEY });
 
 const model = wrapLanguageModel({
-  model: openrouter('openrouter/free'),
+  model: openrouter("openrouter/free"),
   middleware: privacyFilterMiddleware({
-    entityTypes: ['private_person', 'private_email'],
+    entityTypes: ["private_person", "private_email"],
     minScore: 0.8,
     redactResponses: true,
     placeholderFormat: (type, n) => `<<${type}_${n}>>`,
     onRedact: ({ original, redacted, entities }) => {
-      console.log('[onRedact] original:', original);
-      console.log('[onRedact] redacted:', redacted);
-      console.log('[onRedact] entities:', JSON.stringify(entities, null, 2));
+      console.log("[onRedact] original:", original);
+      console.log("[onRedact] redacted:", redacted);
+      console.log("[onRedact] entities:", JSON.stringify(entities, null, 2));
     },
     onUnredact: ({ raw, unredacted }) => {
-      console.log('[onUnredact] raw:', raw.slice(0, 200));
-      console.log('[onUnredact] unredacted:', unredacted.slice(0, 200));
+      console.log("[onUnredact] raw:", raw.slice(0, 200));
+      console.log("[onUnredact] unredacted:", unredacted.slice(0, 200));
     },
   }),
 });
@@ -310,7 +312,7 @@ const result = await generateText({
   prompt: "My name is Alice Smith and my email is alice@example.com",
 });
 
-console.log('=== FINAL OUTPUT ===');
+console.log("=== FINAL OUTPUT ===");
 console.log(result.text);
 ```
 
@@ -342,18 +344,21 @@ This confirms the LLM only saw placeholders, never the real PII. The `onRedact` 
 ## When to Use This
 
 **Use browser deployment when:**
+
 - You're building a client-side chat interface
 - PII must never reach your server (maximum privacy)
 - Users have modern browsers with WebGPU support
 - You can tolerate the per-user model download
 
 **Use server deployment when:**
+
 - You're building API routes or serverless functions
 - You need predictable, consistent performance
 - You want to avoid pushing 1.5GB to every user
 - You're already running Node.js infrastructure
 
 **Don't use this when:**
+
 - You need centralized redaction across multiple languages — use [privacy-python-server](https://github.com/thegreataxios/privacy-python-server) instead
 - You can't afford 1.5GB memory per instance (browser or server)
 
@@ -366,6 +371,6 @@ This confirms the LLM only saw placeholders, never the real PII. The `onRedact` 
 3. OpenAI, "privacy-filter" model card, HuggingFace. [https://huggingface.co/openai/privacy-filter](https://huggingface.co/openai/privacy-filter)
 4. HuggingFace, "Transformers.js" documentation. [https://huggingface.co/docs/transformers.js](https://huggingface.co/docs/transformers.js)
 
-import Footer from '../../snippets/_footer.mdx'
+import Footer from "../../snippets/_footer.mdx";
 
 <Footer />

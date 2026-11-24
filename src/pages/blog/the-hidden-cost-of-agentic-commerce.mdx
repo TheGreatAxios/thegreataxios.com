@@ -1,14 +1,13 @@
 ---
 layout: minimal
 authors:
-    - "[thegreataxios](https://linkedin.com/in/sawyercutler)"
+  - "[thegreataxios](https://linkedin.com/in/sawyercutler)"
 date: 2026-02-21
 title: "The Hidden Cost of Agentic Commerce"
 description: "The variable cost problem in agentic commerce infrastructure and why the choice of blockchain determines whether machine-to-machine commerce thrives or stalls."
 ---
 
-
-import BackLink from '../../snippets/BackLink.tsx'
+import BackLink from "../../snippets/BackLink.tsx";
 
 <BackLink />
 
@@ -24,13 +23,13 @@ The hidden cost isn't the payment protocol or the integration complexity—it's 
 
 There are always complaints about how traditional PSPs are so expensive i.e. the 2.x% + some amount of cents (e.g $0.3) which can result in many software sellers and physical merchants putting minimums on payments with a credit card, such as $5.
 
-| <span className="sr-only">Feature</span> | Traditional PSP | EVM Chains | Solana | SKALE |
-|---|---|---|---|---|
-| **Base Cost** | 2.x% + $0.30 per tx | Gas token value × gas used | Priority fee × compute units | Pre-paid credits (fixed) |
-| **Predictability** | Fixed per transaction | Variable (token + capacity) | Variable (local fee markets) | Fixed until expansion needed |
-| **Under Load** | Same cost | Global surge pricing | Local surge pricing on hot accounts | Add capacity, no surge |
-| **Finality** | Days (settlement) | Minutes to hours | ~12-15 seconds | ~1 second |
-| **Best For** | Large transactions | Occasional use | High-frequency single-app | Agent-to-agent scale |
+| <span className="sr-only">Feature</span> | Traditional PSP       | EVM Chains                  | Solana                              | SKALE                        |
+| ---------------------------------------- | --------------------- | --------------------------- | ----------------------------------- | ---------------------------- |
+| **Base Cost**                            | 2.x% + $0.30 per tx   | Gas token value × gas used  | Priority fee × compute units        | Pre-paid credits (fixed)     |
+| **Predictability**                       | Fixed per transaction | Variable (token + capacity) | Variable (local fee markets)        | Fixed until expansion needed |
+| **Under Load**                           | Same cost             | Global surge pricing        | Local surge pricing on hot accounts | Add capacity, no surge       |
+| **Finality**                             | Days (settlement)     | Minutes to hours            | ~12-15 seconds                      | ~1 second                    |
+| **Best For**                             | Large transactions    | Occasional use              | High-frequency single-app           | Agent-to-agent scale         |
 
 Blockchains historically have used a valuable gas token that has brought two levels of variability toward the cost of consuming block space:
 
@@ -83,14 +82,14 @@ The store that expands when demand rises captures the growing market. The store 
 The same logic powers AWS, Cloudflare, and other cloud giants. When demand spikes, they don't just raise prices—they provision more servers, build new data centers, and expand capacity. This allows them to:
 
 - Capture growing demand rather than turning customers away
-- Economies of scale that often let them *lower* prices over time
+- Economies of scale that often let them _lower_ prices over time
 - Provide predictable pricing that attracts long-term customers
 
 ### SKALE's Expansion Model
 
 SKALE operates on this same principle. When agentic transaction volume grows, the network can provision additional SKALE Chains to handle the load—without surge pricing that would drive users away.
 
-For merchants and facilitators building on SKALE, this means predictable costs at scale. The infrastructure grows *with* your business, not against it.
+For merchants and facilitators building on SKALE, this means predictable costs at scale. The infrastructure grows _with_ your business, not against it.
 
 ## Conclusion
 

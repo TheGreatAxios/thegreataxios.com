@@ -1,14 +1,13 @@
 ---
 layout: minimal
 authors:
-- "[thegreataxios](https://linkedin.com/in/sawyercutler)"
+  - "[thegreataxios](https://linkedin.com/in/sawyercutler)"
 date: 2026-05-09
 title: "Designing for LLM Failure"
 description: "LLMs fail 10-30% of the time in unpredictable ways. Building an agent that survives means designing for that failure at every layer — here's what I learned."
 ---
 
-
-import BackLink from '../../snippets/BackLink.tsx'
+import BackLink from "../../snippets/BackLink.tsx";
 
 <BackLink />
 
@@ -30,14 +29,14 @@ A chat loop processes one user request at a time. The model receives the convers
 
 An agent loop has no natural boundary. It runs until it is stopped, crashes, or exhausts its resources. It cannot ask a human for help because there is no human in the loop. Every tool call must produce a valid result or the agent needs to handle the failure independently. The state of the environment changes between loop iterations — other actors modify shared state, timing constraints expire, resources become unavailable — so the agent cannot assume the world looks the same as it did during the previous iteration.
 
-| Property | Chat Loop | Agent Loop |
-|----------|-----------|------------|
-| Control flow | Request-response, bounded | Continuous, unbounded |
-| State model | Conversation history only | Persistent across iterations |
-| Human in loop | Yes | No |
-| Failure handling | Can ask for help | Must handle independently |
-| Environment assumptions | Static during request | Changes between iterations |
-| Tool call expectations | Best effort, retriable | Must succeed or have fallback |
+| Property                | Chat Loop                 | Agent Loop                    |
+| ----------------------- | ------------------------- | ----------------------------- |
+| Control flow            | Request-response, bounded | Continuous, unbounded         |
+| State model             | Conversation history only | Persistent across iterations  |
+| Human in loop           | Yes                       | No                            |
+| Failure handling        | Can ask for help          | Must handle independently     |
+| Environment assumptions | Static during request     | Changes between iterations    |
+| Tool call expectations  | Best effort, retriable    | Must succeed or have fallback |
 
 The poker agent maps cleanly onto the agent loop side of this table. It runs as a `while (true)` loop that only exits on fatal errors. It maintains session state across hands and recovers from crashes by verifying its seat onchain. It cannot ask for help when it does not know what to do — it has a deterministic fallback policy for exactly that situation. The environment (other players, the blockchain state, the blind structure) changes every hand and the agent needs to re-read state before every decision.
 
@@ -59,10 +58,10 @@ These failure modes lead to a different design philosophy for tool calling in ag
 
 ```typescript
 function createSubmitActionCaller() {
-  return createModel().bindTools(
-    [submitAction],
-    { tool_choice: "required", strict: true },
-  )
+  return createModel().bindTools([submitAction], {
+    tool_choice: "required",
+    strict: true,
+  });
 }
 ```
 
@@ -80,16 +79,17 @@ Giving the model room to reason before committing improves tool call reliability
 
 ```typescript
 function extractSubmitActionArgs(response, tableAddress) {
-  const toolCall = extractToolCalls(response)
-    .find(call => call.name === "submit_action")
-  if (!toolCall || !toolCall.args) return null
-  const args = toolCall.args
-  if (!isPokerAction(args.action)) return null
+  const toolCall = extractToolCalls(response).find(
+    (call) => call.name === "submit_action",
+  );
+  if (!toolCall || !toolCall.args) return null;
+  const args = toolCall.args;
+  if (!isPokerAction(args.action)) return null;
   return {
     tableAddress,
     action: args.action,
     raiseAmount: args.action === "raise" ? args.raiseAmount : null,
-  }
+  };
 }
 ```
 
@@ -115,14 +115,34 @@ The poker agent uses a three-layer architecture that attempts all three approach
 
 ```typescript
 function preflopDecision(state, holeCards) {
-  const code = handCode(holeCards)
-  const premium = isPair(code) && pairRank(code) >= rankIndex("T")
-    || ["AKs", "AQs", "AJs", "KQs", "AKo"].includes(code)
+  const code = handCode(holeCards);
+  const premium =
+    (isPair(code) && pairRank(code) >= rankIndex("T")) ||
+    ["AKs", "AQs", "AJs", "KQs", "AKo"].includes(code);
 
-  if (premium && !facingRaise) return { action: "raise", raiseAmount: openSize.toString(), reason: `${code} is a value open heads-up with dynamic sizing.` }
-  if (canCheck) return { action: "check", raiseAmount: null, reason: `${code} can realize equity for free.` }
-  if (!facingRaise || playable) return { action: "call", raiseAmount: null, reason: `${code} is playable at current price.` }
-  return { action: "fold", raiseAmount: null, reason: `${code} is too weak against a real raise.` }
+  if (premium && !facingRaise)
+    return {
+      action: "raise",
+      raiseAmount: openSize.toString(),
+      reason: `${code} is a value open heads-up with dynamic sizing.`,
+    };
+  if (canCheck)
+    return {
+      action: "check",
+      raiseAmount: null,
+      reason: `${code} can realize equity for free.`,
+    };
+  if (!facingRaise || playable)
+    return {
+      action: "call",
+      raiseAmount: null,
+      reason: `${code} is playable at current price.`,
+    };
+  return {
+    action: "fold",
+    raiseAmount: null,
+    reason: `${code} is too weak against a real raise.`,
+  };
 }
 ```
 
@@ -130,17 +150,17 @@ function preflopDecision(state, holeCards) {
 
 ```typescript
 function getFallbackAction(state) {
-  const currentBet = BigInt(state.currentBet ?? "0")
-  const myBet = BigInt(state.myBet ?? "0")
-  return currentBet > myBet ? "call" : "check"
+  const currentBet = BigInt(state.currentBet ?? "0");
+  const myBet = BigInt(state.myBet ?? "0");
+  return currentBet > myBet ? "call" : "check";
 }
 ```
 
-| Layer | Source | Speed | Creativity | Reliability |
-|-------|--------|-------|------------|-------------|
-| 1 | LLM | Seconds | High | ~70-90% |
-| 2 | Deterministic policy | Microseconds | Medium | ~99% |
-| 3 | Last resort | Microseconds | None | 100% |
+| Layer | Source               | Speed        | Creativity | Reliability |
+| ----- | -------------------- | ------------ | ---------- | ----------- |
+| 1     | LLM                  | Seconds      | High       | ~70-90%     |
+| 2     | Deterministic policy | Microseconds | Medium     | ~99%        |
+| 3     | Last resort          | Microseconds | None       | 100%        |
 
 The layered approach avoids the downsides of each individual strategy. Auto-retry would burn tokens and time while still needing a fallback when it eventually fails. Human escalation would break autonomy and fail under time pressure. The deterministic policy runs fast enough that it can be invoked after every failed LLM call without meaningful delay, and the last resort ensures the agent always produces a legal action even when the policy encounters an edge case it was not designed for.
 
@@ -154,28 +174,28 @@ I defined six strategy personas — wolf, bull, owl, fox, shark, cat — as a wa
 
 ```typescript
 interface PersonaConfig {
-  name: string
-  philosophy: string
-  aggression: number
-  tightness: number
-  bluffFrequency: number
-  adaptSpeed: number
-  riskTolerance: "low" | "medium" | "high"
-  positionalRules: string
-  handSelection: string
-  bluffConditions: string
-  adaptationRules: string
+  name: string;
+  philosophy: string;
+  aggression: number;
+  tightness: number;
+  bluffFrequency: number;
+  adaptSpeed: number;
+  riskTolerance: "low" | "medium" | "high";
+  positionalRules: string;
+  handSelection: string;
+  bluffConditions: string;
+  adaptationRules: string;
 }
 ```
 
-| Persona | Aggression | Tightness | Bluff Frequency | Playing Style |
-|---------|-----------|-----------|----------------|---------------|
-| Wolf | 0.55 | 0.55 | 0.25 | Balanced game-theory-optimal with adaptive adjustments |
-| Bull | 0.90 | 0.20 | 0.40 | Extreme pressure, raises constantly |
-| Owl | 0.35 | 0.90 | 0.05 | Tight, mathematical, premium hands only |
-| Fox | 0.55 | 0.45 | 0.45 | Tricky, semi-bluffs, exploits weaknesses |
-| Shark | 0.75 | 0.80 | 0.10 | Patient, calculated, strikes selectively |
-| Cat | 0.50 | 0.50 | 0.35 | Unpredictable, mixed strategy |
+| Persona | Aggression | Tightness | Bluff Frequency | Playing Style                                          |
+| ------- | ---------- | --------- | --------------- | ------------------------------------------------------ |
+| Wolf    | 0.55       | 0.55      | 0.25            | Balanced game-theory-optimal with adaptive adjustments |
+| Bull    | 0.90       | 0.20      | 0.40            | Extreme pressure, raises constantly                    |
+| Owl     | 0.35       | 0.90      | 0.05            | Tight, mathematical, premium hands only                |
+| Fox     | 0.55       | 0.45      | 0.45            | Tricky, semi-bluffs, exploits weaknesses               |
+| Shark   | 0.75       | 0.80      | 0.10            | Patient, calculated, strikes selectively               |
+| Cat     | 0.50       | 0.50      | 0.35            | Unpredictable, mixed strategy                          |
 
 The parameters are serialized into the system prompt at startup, giving the model a clear behavioral identity. The same parameters feed the deterministic policy when the model fails, so the fallback action reflects the same strategy the model would have chosen. A bull that cannot decide still acts like a bull — it raises instead of folding — because the policy uses the persona's aggression and tightness values.
 
@@ -275,7 +295,6 @@ Agent loops and agent frameworks are severely under-documented, and the actual d
 
 The full source is at [github.com/thegreataxios/confidential-poker](https://github.com/thegreataxios/confidential-poker), with the agent code under `agents/langchain/`. If you are building agent loops that need to handle real-world failure modes, I am working on this daily and happy to talk through the patterns.
 
-
-import Footer from '../../snippets/_footer.mdx'
+import Footer from "../../snippets/_footer.mdx";
 
 <Footer />

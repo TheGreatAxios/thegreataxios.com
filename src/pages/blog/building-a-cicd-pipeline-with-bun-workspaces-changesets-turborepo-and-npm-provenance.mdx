@@ -1,14 +1,13 @@
 ---
 layout: minimal
 authors:
-    - "[thegreataxios](https://linkedin.com/in/sawyercutler)"
+  - "[thegreataxios](https://linkedin.com/in/sawyercutler)"
 date: 2026-02-16
 title: "Building CI/CD with Bun Workspaces, Changesets, Turborepo, and npm Provenance"
 description: "A practical guide to building a robust CI/CD pipeline for monorepos using Bun workspaces, Changesets, Turborepo, and npm provenance for secure publishing."
 ---
 
-
-import BackLink from '../../snippets/BackLink.tsx'
+import BackLink from "../../snippets/BackLink.tsx";
 
 <BackLink />
 
@@ -47,11 +46,11 @@ The critical part is governance, not tooling.
 
 ## Release Channels
 
-| Branch / Context                               | npm tag  | Meaning |
-|------------------------------------------------|----------|---------|
-| Active development branch (`thegreataxios/<branch-name>`) | `alpha`  | Fast iteration builds |
-| `staging`                                      | `beta`   | Integration and release-candidate testing |
-| `main`                                         | `latest` | Production release |
+| Branch / Context                                          | npm tag  | Meaning                                   |
+| --------------------------------------------------------- | -------- | ----------------------------------------- |
+| Active development branch (`thegreataxios/<branch-name>`) | `alpha`  | Fast iteration builds                     |
+| `staging`                                                 | `beta`   | Integration and release-candidate testing |
+| `main`                                                    | `latest` | Production release                        |
 
 This model keeps iteration fast while preserving a predictable promotion path.
 
@@ -87,38 +86,38 @@ The fix is straightforward: rewrite workspace references to concrete versions be
 
 ```js
 // scripts/resolve-workspaces.mjs
-import fs from "fs"
-import path from "path"
+import fs from "fs";
+import path from "path";
 
-const packagesDir = path.resolve("packages")
-const packageDirs = fs.readdirSync(packagesDir)
+const packagesDir = path.resolve("packages");
+const packageDirs = fs.readdirSync(packagesDir);
 
-const versions = new Map()
+const versions = new Map();
 
 // Collect versions from each workspace package
 for (const dir of packageDirs) {
-  const pkgPath = path.join(packagesDir, dir, "package.json")
-  const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8"))
-  versions.set(pkg.name, pkg.version)
+  const pkgPath = path.join(packagesDir, dir, "package.json");
+  const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8"));
+  versions.set(pkg.name, pkg.version);
 }
 
 // Rewrite workspace:* references
 for (const dir of packageDirs) {
-  const pkgPath = path.join(packagesDir, dir, "package.json")
-  const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8"))
+  const pkgPath = path.join(packagesDir, dir, "package.json");
+  const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8"));
 
   for (const field of ["dependencies", "devDependencies", "peerDependencies"]) {
-    if (!pkg[field]) continue
+    if (!pkg[field]) continue;
 
     for (const [name, version] of Object.entries(pkg[field])) {
       if (typeof version === "string" && version.startsWith("workspace:")) {
-        const resolved = versions.get(name)
-        if (resolved) pkg[field][name] = resolved
+        const resolved = versions.get(name);
+        if (resolved) pkg[field][name] = resolved;
       }
     }
   }
 
-  fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2))
+  fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2));
 }
 ```
 
@@ -235,6 +234,6 @@ Bun provides fast workspace development, Turborepo coordinates builds, Changeset
 
 Once these pieces are wired together, releases become repeatable and uneventful, which is exactly what a CI/CD pipeline should optimize for.
 
-import Footer from '../../snippets/_footer.mdx'
+import Footer from "../../snippets/_footer.mdx";
 
 <Footer />

@@ -1,14 +1,13 @@
 ---
 layout: minimal
 authors:
-    - "[thegreataxios](https://linkedin.com/in/sawyercutler)"
+  - "[thegreataxios](https://linkedin.com/in/sawyercutler)"
 date: 2025-10-27
 title: "The Gasless Design Behind x402"
 description: "Exploring the gasless architecture of x402 protocol for internet-native payments using HTTP 402 and stablecoins for seamless web service transactions."
 ---
 
-
-import BackLink from '../../snippets/BackLink.tsx'
+import BackLink from "../../snippets/BackLink.tsx";
 
 <BackLink />
 
@@ -29,43 +28,43 @@ For those unfamiliar, EIP stands for Ethereum Improvement Proposal. EIPs are a w
 
 This enables a user to:
 
-- Delegate the execution and payment of gas fees to another party  
-- Cover gas fees in the token being authorized for transfer  
-- Perform a series of actions in a single atomic transaction  
-- Enable the receiver of a transfer to execute the transfer  
-- Create simplified batching mechanics  
+- Delegate the execution and payment of gas fees to another party
+- Cover gas fees in the token being authorized for transfer
+- Perform a series of actions in a single atomic transaction
+- Enable the receiver of a transfer to execute the transfer
+- Create simplified batching mechanics
 
 Additionally, one of the key benefits of EIP-3009 is that it **does not** require sequential nonces, making it far simpler to implement and process actions on behalf of a user without worrying about transaction ordering.
 
-| Feature | EIP-3009 | EIP-2612 |
-| ------- | -------- | -------- |
-| Sequential Nonces | No | Yes |
-| Pre-Approval (approve/permit) | No | Yes |
-| Simple Authorization Flow | Yes | No |
+| Feature                       | EIP-3009 | EIP-2612 |
+| ----------------------------- | -------- | -------- |
+| Sequential Nonces             | No       | Yes      |
+| Pre-Approval (approve/permit) | No       | Yes      |
+| Simple Authorization Flow     | Yes      | No       |
 
 ## EIP-3009 and x402
 
-The on-chain transfer portion of x402, in its first version, is built around the use of EIP-3009. While only a few tokens natively support EIP-3009, such as USDC and EURC from Circle and AUSD from Agora, the pattern lends itself well to a "permit-to-use" off-chain approach.  
+The on-chain transfer portion of x402, in its first version, is built around the use of EIP-3009. While only a few tokens natively support EIP-3009, such as USDC and EURC from Circle and AUSD from Agora, the pattern lends itself well to a "permit-to-use" off-chain approach.
 
 The flow of an x402 payment is as follows:
 
 **Alice**: the user or AI agent, the buyer  
 **Bob**: the web service or another agent, the seller  
-**Carol**: the facilitator responsible for verifying and settling the payment  
+**Carol**: the facilitator responsible for verifying and settling the payment
 
-1. **Alice** requests a resource from a web service or another agent.  
-2. **Bob** returns a `402 Payment Required` response that includes a list of accepted payment options.  
-3. **Alice** chooses to pay in ERC-3009 compliant AxiosUSD on SKALE Base Chain and signs an authorization using EIP-712 for $0.01. **Bob** requests the resource again, including the `X-Payment` header with his signature base64 encoded.  
+1. **Alice** requests a resource from a web service or another agent.
+2. **Bob** returns a `402 Payment Required` response that includes a list of accepted payment options.
+3. **Alice** chooses to pay in ERC-3009 compliant AxiosUSD on SKALE Base Chain and signs an authorization using EIP-712 for $0.01. **Bob** requests the resource again, including the `X-Payment` header with his signature base64 encoded.
 
 :::note{aria-label="Wallet signing options note"}
 This can be done through a Web3 library like [Viem](https://viem.sh), an invisible wallet like [Privy](https://privy.io), a Web3 wallet like [MetaMask](https://metamask.io), or a custodial wallet such as [Coinbase Developer Platform Server Wallets](https://www.coinbase.com/developer-platform/products/wallets).
 :::
 
-4. **Bob** checks for the authorization on every request and, when found, contacts **Carol** to `/verify`.  
-5. **Carol** verifies the payment authorization against the payment scheme and network and returns a verification response to **Bob**.  
-6. **Bob** receives the verification response and begins the creation/inference process. If using **Carol** to help settle, **Bob** also tells **Carol** to `/settle`.  
-7. **Carol** settles the payment on-chain by executing the transfer on behalf of **Bob** and responds with a payment execution response.  
-8. **Bob** receives the response from **Carol** and responds with the `X-Payment-Response`.  
+4. **Bob** checks for the authorization on every request and, when found, contacts **Carol** to `/verify`.
+5. **Carol** verifies the payment authorization against the payment scheme and network and returns a verification response to **Bob**.
+6. **Bob** receives the verification response and begins the creation/inference process. If using **Carol** to help settle, **Bob** also tells **Carol** to `/settle`.
+7. **Carol** settles the payment on-chain by executing the transfer on behalf of **Bob** and responds with a payment execution response.
+8. **Bob** receives the response from **Carol** and responds with the `X-Payment-Response`.
 
 :::note{aria-label="Facilitator role note"}
 While this may seem complicated, most of the work is actually done by the facilitator (**Carol**), who handles the majority of on-chain operations.
@@ -74,14 +73,14 @@ While this may seem complicated, most of the work is actually done by the facili
 ## x402 Across Blockchains
 
 The goal of an open protocol like x402 is to foster adoption and interoperability. The Ethereum Virtual Machine (EVM) version uses EIP-3009 and is extendable across today's ecosystem of many EVM blockchains.  
-A Solana implementation also exists and will be explored in a future article.  
+A Solana implementation also exists and will be explored in a future article.
 
 It is important to understand the ability to use x402 across blockchains and the ways it can be enabled:
 
 ### Native ERC-3009 Implementation
 
 This is the default and preferred method to implement x402, identical to the [Bridged ERC-3009 Implementation](#bridged-erc-3009-implementation) discussed below.  
-This is how USDC, EURC, and AUSD are implemented on Base and other EVM chains today. While not all tokens are natively ERC-3009 compatible, existing tokens can upgrade if the pattern is supported and the issuer allows it.  
+This is how USDC, EURC, and AUSD are implemented on Base and other EVM chains today. While not all tokens are natively ERC-3009 compatible, existing tokens can upgrade if the pattern is supported and the issuer allows it.
 
 For tokens that cannot or prefer not to upgrade, the options are ERC-3009 Forwarding or Bridged ERC-3009 Implementation (preferred).
 
@@ -100,15 +99,15 @@ The preferred way to expand x402 support is to create ERC-3009 compatible tokens
 
 **Requirements**:
 
-- A secure, fully programmable bridge  
-- An ERC-3009 compatible token on the new chain that supports the bridge  
+- A secure, fully programmable bridge
+- An ERC-3009 compatible token on the new chain that supports the bridge
 
 **Recommended chain characteristics**:
 
-- A liquidity-based bridge enabling TVL accrual for apps  
-- Programmable bridge functionality for AI agents to interact with the bridge and tokens  
-- ERC-3009 compatible bridge hooks to settle x402 transactions directly from the parent chain  
-- A technical advantage over the parent chain (e.g., zero gas fees, instant finality)  
+- A liquidity-based bridge enabling TVL accrual for apps
+- Programmable bridge functionality for AI agents to interact with the bridge and tokens
+- ERC-3009 compatible bridge hooks to settle x402 transactions directly from the parent chain
+- A technical advantage over the parent chain (e.g., zero gas fees, instant finality)
 
 SKALE Network is ideal for this. See setup and implementations [here](https://github.com/TheGreatAxios/skale-chain-setup) for SKALE Base Sepolia.  
 This setup allows a SKALE chain to natively support x402 for any token bridged from Base.
@@ -125,7 +124,7 @@ As usage grows, this can become a bottleneck unless the facilitator runs their o
 ### The Solution is Truly Gasless
 
 SKALE Network recently announced [SKALE Expand](https://forum.skale.network/t/skale-growth-manifesto/726?u=thegreataxios), a growth initiative enabling SKALE Manager to deploy its app-like design to other blockchains beyond Ethereum.  
-This allows truly gasless x402 flows on other chains while solving finality/rollback problems across L1s/L2s/L3s and appchains.  
+This allows truly gasless x402 flows on other chains while solving finality/rollback problems across L1s/L2s/L3s and appchains.
 
 SKALE Chains are self-contained EVM-compatible blockchains with high-performance C++ EVM implementations, scalable node architecture, and instant finality.
 
@@ -140,6 +139,6 @@ Expanding that further into the broader world of agentic systems and the machine
 
 Reach out if you are building on x402 or ERC-8004 and want to collaborate, share ideas, or just get some feedback on your project.
 
-import Footer from '../../snippets/_footer.mdx'
+import Footer from "../../snippets/_footer.mdx";
 
 <Footer />

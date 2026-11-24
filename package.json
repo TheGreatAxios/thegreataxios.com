@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.2.9",
   "type": "module",
+  "packageManager": "bun@1.4.5",
   "scripts": {
     "predev": "node scripts/generate-blog-list.mjs",
     "dev": "vocs dev",
@@ -10,19 +11,24 @@
     "build": "vocs build",
     "postbuild": "node scripts/postbuild-seo.mjs",
     "prepreview": "node scripts/generate-blog-list.mjs",
-    "preview": "vocs preview"
+    "preview": "vocs preview",
+    "fmt": "bun fmt",
+    "fmt:check": "bun fmt --check",
+    "check": "bun check",
+    "lint": "oxlint"
   },
   "dependencies": {
     "@vercel/og": "^1.0.3",
     "lucide-react": "^1.59.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
-    "vocs": "^2.10.3",
+    "vocs": "^2.14.1",
     "waku": "1.0.0-rc.2"
   },
   "devDependencies": {
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "oxlint": "^1.95.0",
     "typescript": "^7.0.2"
   }
 }

@@ -1,14 +1,13 @@
 ---
 layout: minimal
 authors:
-    - "[thegreataxios](https://linkedin.com/in/sawyercutler)"
+  - "[thegreataxios](https://linkedin.com/in/sawyercutler)"
 date: 2026-04-24
 title: "PII Redaction at the Edge: An Open-Source Server for AI Agents"
 description: "A standalone PII redaction API for multi-agent AI systems, wrapping OpenAI's privacy-filter model to strip personal information before it spreads through logs, context windows, and agent handoffs."
 ---
 
-
-import BackLink from '../../snippets/BackLink.tsx'
+import BackLink from "../../snippets/BackLink.tsx";
 
 <BackLink />
 
@@ -23,6 +22,7 @@ Your AI agent just received a user message:
 > "My name is Alice Smith, email alice@smith.com, phone 555-0123. Please book me a flight to NYC."
 
 It needs to:
+
 1. Extract the intent (book a flight)
 2. Call an airline API
 3. Log the interaction for debugging
@@ -82,8 +82,9 @@ Response:
 ```
 
 Notice what happened:
+
 - **"Alice Smith"** becomes **`<PRIVATE_PERSON_1><PRIVATE_PERSON_2>`**
-- You get back the redacted text *and* metadata about what was detected
+- You get back the redacted text _and_ metadata about what was detected
 - Each span has position, confidence score, and type label
 - The placeholders are typed and numbered, so you can track entities across documents
 
@@ -91,16 +92,16 @@ Notice what happened:
 
 The model catches 8 categories of PII:
 
-| Type | Example |
-|------|---------|
-| `private_person` | Names |
-| `private_email` | Email addresses |
-| `private_phone` | Phone numbers |
-| `private_address` | Street addresses |
-| `private_url` | URLs with PII |
-| `private_date` | Birth dates, sensitive dates |
-| `account_number` | SSN, account numbers |
-| `secret` | Passwords, API keys |
+| Type              | Example                      |
+| ----------------- | ---------------------------- |
+| `private_person`  | Names                        |
+| `private_email`   | Email addresses              |
+| `private_phone`   | Phone numbers                |
+| `private_address` | Street addresses             |
+| `private_url`     | URLs with PII                |
+| `private_date`    | Birth dates, sensitive dates |
+| `account_number`  | SSN, account numbers         |
+| `secret`          | Passwords, API keys          |
 
 ## Why This Matters for Multi-Agent Systems
 
@@ -114,7 +115,7 @@ Redaction adds a layer that works regardless of where the data flows next. It's 
 
 GDPR, CCPA, HIPAA -- they all say the same thing: **don't store PII unless you need to.**
 
-Most agent systems store *everything* by default. Conversation history, tool call logs, error traces -- it's all there, unredacted, waiting for an audit.
+Most agent systems store _everything_ by default. Conversation history, tool call logs, error traces -- it's all there, unredacted, waiting for an audit.
 
 With `privacy-python-server`, you redact before you log. Before you cache. Before you pass to the next agent. Compliance becomes architectural, not procedural.
 
@@ -261,6 +262,7 @@ def store_conversation(conversation_history: list):
 ## When to Use This (And When Not To)
 
 **Use `privacy-python-server` when:**
+
 - You have multiple services that need PII redaction
 - Some of your services run in constrained environments (serverless, edge, small containers)
 - You want centralized control over redaction behavior
@@ -268,6 +270,7 @@ def store_conversation(conversation_history: list):
 - You need operational features like auth, rate limiting, health checks
 
 **Just import the model directly when:**
+
 - You have a single monolithic service
 - Resources aren't a concern
 - You don't need cross-service consistency
@@ -305,6 +308,6 @@ MIT licensed.
 
 1. OpenAI, "privacy-filter" model, HuggingFace. [https://huggingface.co/openai/privacy-filter](https://huggingface.co/openai/privacy-filter)
 
-import Footer from '../../snippets/_footer.mdx'
+import Footer from "../../snippets/_footer.mdx";
 
 <Footer />

@@ -1,14 +1,13 @@
 ---
 layout: minimal
 authors:
-    - "[thegreataxios](https://linkedin.com/in/sawyercutler)"
+  - "[thegreataxios](https://linkedin.com/in/sawyercutler)"
 date: 2025-07-31
 title: "Proof-of-Encryption in the Cloud"
 description: "Exploring the BITE Protocol for Proof of Encryption using threshold cryptography — enabling MEV-resistant encrypted blockchain transactions via cloud API."
 ---
 
-
-import BackLink from '../../snippets/BackLink.tsx'
+import BackLink from "../../snippets/BackLink.tsx";
 
 <BackLink />
 
@@ -25,21 +24,25 @@ The following post explores the key benefits of BITE, FAIR, and the upcoming SKA
 While some of these benefits can arrive sooner depending on SDK implementation and adoption, I’ve organized them into **short**, **mid**, and **long-term** buckets.
 
 ### 🟢 Short Term
+
 - Fully encrypted transactions with 100% protection against MEV, including back-running
 - Onchain traditional finance tools: private and FAIR TWAPs, DCA, and market orders
 - Censorship resistance
 - Simple integration with **zero changes to Solidity**
 
 ### 🟡 Mid Term
+
 - AI-powered onchain trading via enhanced encrypted financial tools
 - End-to-end encryption with re-encryption inside a TEE (Trusted Execution Environment), enabling data forwarding to specific parties for private decryption
 
 ### 🔵 Long Term
+
 - Fully encrypted private state
 - Onchain healthcare and banking use cases
 - Fully encrypted **parallel execution** within the EVM
 
-----
+---
+
 ## How Proof of Encryption Works
 
 **Proof of Encryption (PoE)** embeds encryption into the consensus layer of a blockchain. Unlike Layer 2 solutions (e.g. Unichain) that use TEEs in isolation, PoE **does not depend on decentralization alone**—it relies on **provable mathematics**.
@@ -47,7 +50,9 @@ While some of these benefits can arrive sooner depending on SDK implementation a
 > The SKALE Network core team has over seven years of experience building the world’s fastest leaderless BFT consensus. They’ve combined real-world application with rigorous mathematical proofs to pioneer PoE.
 
 ### 🧠 How It Works
+
 PoE uses:
+
 - **Threshold schemes** +
 - **BLS threshold encryption** +
 - **Multi-party threshold signatures** +
@@ -58,7 +63,9 @@ This combo allows encrypted transaction propagation, leaderless/asynchronous con
 The result? **Private, MEV-resistant, decentralized consensus**—unlocking trillions in new financial use cases.
 
 ---
+
 ## How to use BITE
+
 **BITE Protocol** is the implementation of PoE when used with a compatible blockchain like FAIR or (soon) SKALE Chains.
 
 The best part? **Zero changes to your Solidity contracts**.
@@ -74,21 +81,25 @@ npm add @skalenetwork/bite
 The library makes it easy to encrypt both transaction data and the `to` address in just a few lines of code.
 
 ---
+
 ### What's with the Cloud?
+
 Over the last several years of working in blockchain, I’ve realized one thing: **an innovative product is only useful if it’s easy to implement**. That’s why I collaborated with [@0xRetroDev](https://x.com/0xRetroDev) to build a simpler, cloud-based design for broader adoption.
 
 ### Background
+
 If you’ve heard of **Flashbots**, **CoW Swap**, or **Jito**, you know they’re tied to **MEV** (Maximal Extractable Value). If not, here’s a simplified breakdown:
 
 - **MEV** is profit gained by reordering or inserting transactions.
 - **Bad MEV** = front-running, sandwich attacks, back-running.
 - **Good MEV** = arbitrage, liquidations that help price stability or protocol solvency.
 - **Some firms (e.g. Jito)** make validators more profitable via MEV.
-- **Others (e.g. CoW Swap)** attempt to *protect users* from MEV.
+- **Others (e.g. CoW Swap)** attempt to _protect users_ from MEV.
 
 > **Bottom line:** MEV is mostly harmful and extracts value away from users.
 
 ### Simplifying Adoption
+
 Widespread usage builds a **network effect**. Just as Jito dominates Solana validators and MEV-blocker RPCs like CoW Swap are spreading, we aim for BITE to be universally accessible—across stacks, devices, and languages.
 
 ### Phase I: BITE API
@@ -97,6 +108,7 @@ A PoC implementation is already live thanks to [@0xRetroDev](https://github.com/
 🔗 [BITE API GitHub Repo](https://github.com/0xRetroDev/bite-api)
 
 This API allows any transaction to be encrypted by calling the endpoint. It’s ideal for:
+
 - Environments without native BITE SDKs
 - Languages outside JavaScript/TypeScript
 - Setting up early MPC experiments or agentic flows
@@ -112,11 +124,13 @@ A production-ready version will soon be hosted via [Eidolon.gg](https://eidolon.
 To fully solve the **privacy problem**, we propose a unique infrastructure setup modeled on how FAIR and SKALE operate.
 
 #### Infrastructure
+
 1. Run a TEE (Trusted Execution Environment)
-2. Generate a private key *inside* the TEE
+2. Generate a private key _inside_ the TEE
 3. Expose the **public** key via API
 
 #### SDK Flow
+
 4. Client requests public key
 5. Client encrypts transaction payload using public key
 6. TEE decrypts using internal private key
@@ -134,6 +148,6 @@ Yes, there are risks and trade-offs here. But I believe this is a great **early-
 
 Hi, I’m **Sawyer**, a software engineer, developer relations lead, and operational consultant with a background in healthcare and blockchain.
 
-import Footer from '../../snippets/_footer.mdx'
+import Footer from "../../snippets/_footer.mdx";
 
 <Footer />

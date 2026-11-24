@@ -143,23 +143,39 @@ body {
 .vocs_Content td,
 .vocs_Content th,
 .vocs_Content blockquote {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
 }
 
 /* Monospace on code blocks too */
-pre, code, kbd, samp, tt {
+pre,
+code,
+kbd,
+samp,
+tt {
   font-family: "JetBrains Mono", monospace !important;
 }
 
 /* Headings */
-h1, h2, h3, h4, h5, h6,
-.vocs_H1, .vocs_H2, .vocs_H3, .vocs_H4, .vocs_H5, .vocs_H6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.vocs_H1,
+.vocs_H2,
+.vocs_H3,
+.vocs_H4,
+.vocs_H5,
+.vocs_H6 {
   font-family: "JetBrains Mono", monospace !important;
   font-weight: 500 !important;
   letter-spacing: -0.02em !important;
 }
 
-h1, .vocs_H1 {
+h1,
+.vocs_H1 {
   font-size: 1.5rem !important;
   font-weight: 500 !important;
   border: none !important;
@@ -167,7 +183,8 @@ h1, .vocs_H1 {
   margin-bottom: 1rem !important;
 }
 
-h2, .vocs_H2 {
+h2,
+.vocs_H2 {
   font-size: 1.2rem !important;
   font-weight: 500 !important;
   border: none !important;
@@ -179,7 +196,8 @@ h2, .vocs_H2 {
   border: none !important;
 }
 
-h3, .vocs_H3 {
+h3,
+.vocs_H3 {
   font-size: 1rem !important;
   font-weight: 500 !important;
 }
@@ -348,8 +366,10 @@ h1.hero-name {
   margin-bottom: 1.5rem !important;
 }
 
-td, th,
-.vocs_TableCell, .vocs_TableHeader {
+td,
+th,
+.vocs_TableCell,
+.vocs_TableHeader {
   padding: 0.35rem 0.5rem !important;
   vertical-align: top !important;
   font-size: 0.78rem !important;
@@ -419,7 +439,8 @@ td:nth-child(3) {
    CODE BLOCKS
    ============================================================ */
 
-pre, code {
+pre,
+code {
   font-family: "JetBrains Mono", monospace !important;
   font-size: 0.85rem !important;
 }
@@ -626,7 +647,10 @@ pre code span[style*="#22863A"] {
   transform: translateY(0);
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
   border-color: #dbe7ff;
-  transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease,
+    border-color 120ms ease;
 }
 
 .project-card:hover {

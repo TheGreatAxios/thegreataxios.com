@@ -1,19 +1,19 @@
 ---
 layout: minimal
 authors:
-    - "[Sawyer Cutler](https://linkedin.com/in/sawyercutler)"
-    - "[Anthony Holley](https://www.linkedin.com/in/anthony-holley/)"
+  - "[Sawyer Cutler](https://linkedin.com/in/sawyercutler)"
+  - "[Anthony Holley](https://www.linkedin.com/in/anthony-holley/)"
 date: 2026-05-04
 title: "A Compact Flat Format for LLM Tool Calling"
 description: "ai-sdk-wire-middleware replaces JSON tool-call blocks with a &lt;call&gt;name k=v&lt;/call&gt; format — dropping tool-call tokens 37.8% and improving multi-step agent accuracy 5× on open-weight models."
 ---
 
-import BackLink from '../../snippets/BackLink.tsx'
+import BackLink from "../../snippets/BackLink.tsx";
 
 <BackLink />
 
 **Co-authored by [Sawyer Cutler](https://linkedin.com/in/sawyercutler) and [Anthony Holley](https://www.linkedin.com/in/anthony-holley/)** <br />
-*May 4, 2026*
+_May 4, 2026_
 
 # A Compact Flat Format for LLM Tool Calling
 
@@ -81,13 +81,13 @@ npm install ai-sdk-wire-middleware
 Use it:
 
 ```typescript
-import { wrapLanguageModel, generateText, tool } from 'ai';
-import { anthropic } from '@ai-sdk/anthropic';
-import { compactTools } from 'ai-sdk-wire-middleware';
-import { z } from 'zod';
+import { wrapLanguageModel, generateText, tool } from "ai";
+import { anthropic } from "@ai-sdk/anthropic";
+import { compactTools } from "ai-sdk-wire-middleware";
+import { z } from "zod";
 
 const model = wrapLanguageModel({
-  model: anthropic('claude-sonnet-4-5'),
+  model: anthropic("claude-sonnet-4-5"),
   middleware: compactTools(),
 });
 
@@ -95,16 +95,16 @@ const result = await generateText({
   model,
   tools: {
     getWeather: tool({
-      description: 'Get the weather for a city',
+      description: "Get the weather for a city",
       inputSchema: z.object({
         location: z.string(),
-        units: z.enum(['metric', 'imperial']).optional(),
+        units: z.enum(["metric", "imperial"]).optional(),
       }),
       execute: async ({ location, units }) =>
-        `72°${units === 'metric' ? 'C' : 'F'} in ${location}`,
+        `72°${units === "metric" ? "C" : "F"} in ${location}`,
     }),
   },
-  prompt: 'What is the weather in Austin in metric units?',
+  prompt: "What is the weather in Austin in metric units?",
 });
 ```
 
@@ -121,20 +121,20 @@ We built a multi-step agent benchmark — 6 tasks requiring 3–12+ chained tool
 - Get the time in 4 timezones in parallel
 - Query active users from a database, then email a report
 
-| Mode | Passes | Pass Rate | vs JSON |
-|------|--------|-----------|---------|
-| Native JSON | **1/18** | **5.6 %** | — |
-| Compact | **5/18** | **27.8 %** | **5× better** |
+| Mode        | Passes   | Pass Rate  | vs JSON       |
+| ----------- | -------- | ---------- | ------------- |
+| Native JSON | **1/18** | **5.6 %**  | —             |
+| Compact     | **5/18** | **27.8 %** | **5× better** |
 
 Compact completed the task **5× more often** than native JSON.
 
 ### Per-Model Breakdown
 
-| Model | JSON Passes | Compact Passes | Delta |
-|-------|-------------|----------------|-------|
-| GLM-5-Turbo | 1/6 | 1/6 | Tie |
-| GLM-5.1 | 0/6 | **2/6** | +2 |
-| GLM-5 | 0/6 | **2/6** | +2 |
+| Model       | JSON Passes | Compact Passes | Delta |
+| ----------- | ----------- | -------------- | ----- |
+| GLM-5-Turbo | 1/6         | 1/6            | Tie   |
+| GLM-5.1     | 0/6         | **2/6**        | +2    |
+| GLM-5       | 0/6         | **2/6**        | +2    |
 
 The advantage is concentrated on the two GLM-5 models — the ones where JSON tool-calling most frequently breaks down. These are 744B-754B MoE models that rival GPT-5 and Claude Opus on coding benchmarks. The problem isn't their reasoning, it's the protocol.
 
@@ -158,16 +158,16 @@ We ran two sets of benchmarks. One offline (deterministic, pure format cost) and
 
 Pricing varies wildly by provider and model tier. At the high end (GPT-5, Claude Opus) output runs ~$10–$25/1M. But there are far cheaper options:
 
-| Model | Input (per 1M) | Output (per 1M) |
-|---|---|---|
-| DeepSeek V4-Flash | $0.14 | $0.28 |
-| DeepSeek V4-Pro [[7]](#sources) | $1.74 | $3.48 |
-| Llama 3.1 8B (DeepInfra) [[8]](#sources) | $0.02 | $0.05 |
-| Claude Haiku 4.5 [[9]](#sources) | $1.00 | $5.00 |
-| GLM-5 [[5]](#sources) | $1.00 | $3.20 |
-| GLM-5.1 [[6]](#sources) | $1.05 | $3.50 |
-| GPT-5.5 [[10]](#sources) | $5.00 | $30.00 |
-| Claude Opus 4.7 [[9]](#sources) | $5.00 | $25.00 |
+| Model                                    | Input (per 1M) | Output (per 1M) |
+| ---------------------------------------- | -------------- | --------------- |
+| DeepSeek V4-Flash                        | $0.14          | $0.28           |
+| DeepSeek V4-Pro [[7]](#sources)          | $1.74          | $3.48           |
+| Llama 3.1 8B (DeepInfra) [[8]](#sources) | $0.02          | $0.05           |
+| Claude Haiku 4.5 [[9]](#sources)         | $1.00          | $5.00           |
+| GLM-5 [[5]](#sources)                    | $1.00          | $3.20           |
+| GLM-5.1 [[6]](#sources)                  | $1.05          | $3.50           |
+| GPT-5.5 [[10]](#sources)                 | $5.00          | $30.00          |
+| Claude Opus 4.7 [[9]](#sources)          | $5.00          | $25.00          |
 
 Output isn't always 5× more expensive — DeepSeek V4-Flash is only 2× (and costs pennies). On the high end, the ratio can be 4–6×. The takeaway isn't the ratio; it's that **every token you generate has real operational cost**: latency, throughput, and per-call spend compound across thousands of agent steps.
 
@@ -175,24 +175,24 @@ Output isn't always 5× more expensive — DeepSeek V4-Flash is only 2× (and co
 
 We measured a catalog of **13 tools** and **19 representative invocations** using a real BPE tokenizer (`o200k_base` via `js-tiktoken` — the same tokenizer GPT-4o uses).
 
-| Case | Native JSON | Compact | Reduction |
-|---|---|---|---|
-| `getWeather(location)` | 25 t | 11 t | **56.0%** |
-| `getTime(timezone)` | 28 t | 14 t | **50.0%** |
-| `sendEmail(to, subject, body, priority)` | 46 t | 30 t | **34.8%** |
-| `searchProducts(query, max, inStock)` | 37 t | 21 t | **43.2%** |
-| `bookMeeting(6 args, array)` | 63 t | 44 t | **30.2%** |
-| `updateUserProfile(nested)` | 67 t | 50 t | **25.4%** |
-| 19-case cumulative total | 762 t | **474 t** | **37.8%** |
+| Case                                     | Native JSON | Compact   | Reduction |
+| ---------------------------------------- | ----------- | --------- | --------- |
+| `getWeather(location)`                   | 25 t        | 11 t      | **56.0%** |
+| `getTime(timezone)`                      | 28 t        | 14 t      | **50.0%** |
+| `sendEmail(to, subject, body, priority)` | 46 t        | 30 t      | **34.8%** |
+| `searchProducts(query, max, inStock)`    | 37 t        | 21 t      | **43.2%** |
+| `bookMeeting(6 args, array)`             | 63 t        | 44 t      | **30.2%** |
+| `updateUserProfile(nested)`              | 67 t        | 50 t      | **25.4%** |
+| 19-case cumulative total                 | 762 t       | **474 t** | **37.8%** |
 
 Simple tools (1-2 parameters) save roughly **half** the tokens. More complex tools save 25-35%. The pattern is consistent: the more parameters a tool has, the less proportional savings — but you always save.
 
 Across the full run:
 
-| Metric | Native JSON | Compact | Reduction |
-|---|---|---|---|
-| Output tokens (total) | 762 | 474 | **37.8%** |
-| Round-trip correctness | — | **19/19** | — |
+| Metric                 | Native JSON | Compact   | Reduction |
+| ---------------------- | ----------- | --------- | --------- |
+| Output tokens (total)  | 762         | 474       | **37.8%** |
+| Round-trip correctness | —           | **19/19** | —         |
 
 Every single tool call parsed correctly back into the exact same structured arguments the native protocol would have produced.
 
@@ -206,13 +206,13 @@ Offline numbers are one thing. Real inference with real models tells a different
 
 Configuration: temperature 0 (deterministic), one shot per case, no retries.
 
-| Metric | Native JSON | Compact | Delta |
-|---|---|---|---|
-| Total output tokens | ~803 avg | ~654 avg | **−18.6%** |
-| Total input tokens | ~10,898 avg | ~4,308 avg | **−60.5%** |
-| Strict match rate | 8/10 | 9/10 | +1 |
-| Soft match rate | 10/10 | 10/10 | — |
-| Mean latency | ~34.2 s | ~31.4 s | — |
+| Metric              | Native JSON | Compact    | Delta      |
+| ------------------- | ----------- | ---------- | ---------- |
+| Total output tokens | ~803 avg    | ~654 avg   | **−18.6%** |
+| Total input tokens  | ~10,898 avg | ~4,308 avg | **−60.5%** |
+| Strict match rate   | 8/10        | 9/10       | +1         |
+| Soft match rate     | 10/10       | 10/10      | —          |
+| Mean latency        | ~34.2 s     | ~31.4 s    | —          |
 
 The big number here is **input tokens dropping 60%**. JSON schema for 13 tools clocks in at ~861 tokens. The compact manual is ~490 tokens. The model also has less structural noise in its own conversation history.
 
@@ -224,12 +224,12 @@ Still, 18.6% fewer output tokens and 60% fewer input tokens is meaningful. In a 
 
 We ran ablations to isolate the effect of each middleware component — removing the protocol manual, moving its position, or switching to JSON inside `<call>`. Each ablation ran 6 representative cases with 3 reps each on glm-5-turbo and glm-5.1.
 
-| Ablation | Total Tokens | Equivalent | Delta vs Canonical | Effect |
-|----------|------------:|:----------:|:------------------:|--------|
-| Canonical compact | 1083 | 16/19 | baseline | — |
-| no-manual | 1231 | 18/18 | **+148 tokens** | Manual helps — instructs model to be concise |
-| placement=first | 1184 | 18/18 | **+101 tokens** | End placement is better; core instructions first, formatting secondary |
-| syntax=json | 1239 | 18/18 | **+156 tokens** | Wire format is more efficient than JSON even inside `<call>` |
+| Ablation          | Total Tokens | Equivalent | Delta vs Canonical | Effect                                                                 |
+| ----------------- | -----------: | :--------: | :----------------: | ---------------------------------------------------------------------- |
+| Canonical compact |         1083 |   16/19    |      baseline      | —                                                                      |
+| no-manual         |         1231 |   18/18    |  **+148 tokens**   | Manual helps — instructs model to be concise                           |
+| placement=first   |         1184 |   18/18    |  **+101 tokens**   | End placement is better; core instructions first, formatting secondary |
+| syntax=json       |         1239 |   18/18    |  **+156 tokens**   | Wire format is more efficient than JSON even inside `<call>`           |
 
 Key finding: **the `<call>` wrapper alone saves some tokens, but the key-value wire syntax accounts for the majority of savings.** The protocol manual is a net positive — it tells models to be concise, which they otherwise aren't.
 
@@ -266,6 +266,7 @@ The Vercel AI SDK v6 has a feature called `LanguageModelV3Middleware` that lets 
 ```
 
 Features:
+
 - **Key-value syntax**: `key=value` for flat records of primitives
 - **Arrays**: `attendees=["a","b"]` inline for list fields
 - **Nested flattening**: `profile.displayName=Alice` for one-level-deep objects
@@ -276,12 +277,12 @@ Features:
 
 ```typescript
 compactTools({
-  syntax: 'wire',            // 'wire' | 'json'   (default 'wire')
-  fallbackToJson: 'complex', // 'complex' | 'error' | 'force'
-  placement: 'last',         // 'first' | 'last'
-  manualHeader: undefined,   // override the manual injected into system prompt
+  syntax: "wire", // 'wire' | 'json'   (default 'wire')
+  fallbackToJson: "complex", // 'complex' | 'error' | 'force'
+  placement: "last", // 'first' | 'last'
+  manualHeader: undefined, // override the manual injected into system prompt
   debug: false,
-})
+});
 ```
 
 - `syntax: 'json'` uses `{"key":"val"}` inside `<call>` for tools that can't use wire format — saves some tokens vs native protocol but less than wire format
@@ -298,9 +299,9 @@ Making protocols more efficient is a well-established pattern:
 
 - **Prompt caching** (offered by [Anthropic](https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching) [[11]](#sources) and [OpenAI](https://platform.openai.com/docs/guides/prompt-caching) [[12]](#sources)) reuses processed input tokens across requests. The compact format's smaller footprint compounds here — smaller cache entries, cheaper cache misses.
 
-- **Speculative decoding** generates multiple candidate tokens in parallel and keeps the first valid one. It reduces *latency* but doesn't reduce the number of tokens generated. The compact format reduces both.
+- **Speculative decoding** generates multiple candidate tokens in parallel and keeps the first valid one. It reduces _latency_ but doesn't reduce the number of tokens generated. The compact format reduces both.
 
-The difference: all of the above optimize the *transport* — how data moves between systems. This middleware optimizes the *generation* — the model itself produces fewer tokens from the start.
+The difference: all of the above optimize the _transport_ — how data moves between systems. This middleware optimizes the _generation_ — the model itself produces fewer tokens from the start.
 
 ## Caveats
 
@@ -351,11 +352,11 @@ The benchmark code is your starting point. Fork it, swap in your own tools and m
 But you don't need to run benchmarks to benefit. Using the middleware is one line:
 
 ```typescript
-import { wrapLanguageModel } from 'ai';
-import { compactTools } from 'ai-sdk-wire-middleware';
+import { wrapLanguageModel } from "ai";
+import { compactTools } from "ai-sdk-wire-middleware";
 
 const model = wrapLanguageModel({
-  model: anthropic('claude-sonnet-4-5'),
+  model: anthropic("claude-sonnet-4-5"),
   middleware: compactTools(),
 });
 ```
@@ -371,7 +372,7 @@ If you run benchmarks against your own toolset, I'd love to hear your numbers. D
 1. ai-sdk-wire-middleware repository (benchmark code, ablation scripts). [https://github.com/thegreataxios/ai-sdk-wire-middleware](https://github.com/thegreataxios/ai-sdk-wire-middleware)
 2. Vercel, "AI SDK" documentation. [https://sdk.vercel.ai](https://sdk.vercel.ai)
 3. Vercel, "LanguageModelV3Middleware" reference. [https://sdk.vercel.ai/providers/community/custom-providers/middleware](https://sdk.vercel.ai/providers/community/custom-providers/middleware)
-4. OpenAI, "tiktoken" tokenizer library (o200k\_base). [https://github.com/openai/tiktoken](https://github.com/openai/tiktoken)
+4. OpenAI, "tiktoken" tokenizer library (o200k_base). [https://github.com/openai/tiktoken](https://github.com/openai/tiktoken)
 5. Zhipu AI, "GLM-5" series model documentation. [https://zhipu.ai](https://zhipu.ai)
 6. Zhipu AI, "GLM-5.1" model card (754B MoE, 203K context, SWE-bench scores). [https://openrouter.ai/z-ai/glm-5.1](https://openrouter.ai/z-ai/glm-5.1)
 7. DeepSeek API pricing. [https://api-docs.deepseek.com/quick_start/pricing](https://api-docs.deepseek.com/quick_start/pricing)
@@ -385,6 +386,6 @@ If you run benchmarks against your own toolset, I'd love to hear your numbers. D
 15. IBM, "Granite 4.1: 3b model card" (model specs, benchmark scores). [https://huggingface.co/ibm-granite/granite-4.1-3b](https://huggingface.co/ibm-granite/granite-4.1-3b)
 16. Meta, "Llama 3.1: 8B model card". [https://huggingface.co/meta-llama/Llama-3.1-8B](https://huggingface.co/meta-llama/Llama-3.1-8B)
 
-import Footer from '../../snippets/_footer.mdx'
+import Footer from "../../snippets/_footer.mdx";
 
 <Footer />

@@ -7,7 +7,7 @@ title: "Using AI to Improve Key Website Metrics"
 description: "Core Web Vitals are what matter for users and Google Search. I used an AI coding agent against Lighthouse lab data to fix a real site — LCP from ~30s to 2.3s — and kept the work grounded in CWV, not vanity scores."
 ---
 
-import BackLink from '../../snippets/BackLink.tsx'
+import BackLink from "../../snippets/BackLink.tsx";
 
 <BackLink />
 
@@ -27,9 +27,9 @@ Before getting into the work, it helps to translate the language used by perform
 
 The [Core Web Vitals](https://developers.google.com/search/docs/appearance/core-web-vitals) are three measurements for the parts of that experience people notice most:
 
-- **Largest Contentful Paint (LCP)** measures how long it takes for the largest important piece of content, usually a hero image, headline, or product image, to appear. In plain English: *when can I see the thing I came here for?*
-- **Interaction to Next Paint (INP)** measures how long the page takes to visibly respond after someone clicks, taps, or types. In plain English: *when I do something, does the page respond quickly?*
-- **Cumulative Layout Shift (CLS)** measures whether things unexpectedly move while the page loads. In plain English: *will the button move away from my finger because an image or advertisement appeared?*
+- **Largest Contentful Paint (LCP)** measures how long it takes for the largest important piece of content, usually a hero image, headline, or product image, to appear. In plain English: _when can I see the thing I came here for?_
+- **Interaction to Next Paint (INP)** measures how long the page takes to visibly respond after someone clicks, taps, or types. In plain English: _when I do something, does the page respond quickly?_
+- **Cumulative Layout Shift (CLS)** measures whether things unexpectedly move while the page loads. In plain English: _will the button move away from my finger because an image or advertisement appeared?_
 
 Google uses these metrics as part of its page experience signals, but they are also useful without thinking about search rankings. They describe whether a page shows its important content, responds to its visitor, and stays in place, which is really what most people mean when they say that a website feels fast.
 
@@ -37,11 +37,11 @@ Google uses these metrics as part of its page experience signals, but they are a
 
 The metrics I cared about were the Core Web Vitals, often shortened to **CWV**, not the Lighthouse score by itself. The three current vitals cover loading, interaction, and visual stability:
 
-| Vital | Question it answers | "Good" threshold at p75 |
-|-------|---------------------|--------------------------|
-| **LCP** (Largest Contentful Paint) | When does the main content appear? | **≤ 2.5s** |
-| **INP** (Interaction to Next Paint) | How quickly does the page respond to input? | **≤ 200ms** |
-| **CLS** (Cumulative Layout Shift) | Does the layout move while the page loads? | **≤ 0.1** |
+| Vital                               | Question it answers                         | "Good" threshold at p75 |
+| ----------------------------------- | ------------------------------------------- | ----------------------- |
+| **LCP** (Largest Contentful Paint)  | When does the main content appear?          | **≤ 2.5s**              |
+| **INP** (Interaction to Next Paint) | How quickly does the page respond to input? | **≤ 200ms**             |
+| **CLS** (Cumulative Layout Shift)   | Does the layout move while the page loads?  | **≤ 0.1**               |
 
 These thresholds are measured at the 75th percentile, usually written as **p75**, and separated between mobile and desktop. The 75th percentile means that at least three out of every four page loads should be at or better than the threshold. It is a way to avoid declaring a site healthy because one developer happened to test it on a fast laptop; a page that feels fast to me is not necessarily fast for the users who find it on a phone over a weak connection.
 
@@ -53,15 +53,15 @@ There are two kinds of data involved here. **Field data** from real users, inclu
 
 The first mobile report gave us a straightforward list of work. A few of the labels below are other Lighthouse measurements, so here is the short version: FCP is when the first visible pixel appears, TBT adds up time when the browser was too busy to respond during the test, and transfer size is how much data the browser had to download. The Lighthouse Performance number is a score from 0 to 1, or 0 to 100 when displayed as a percentage.
 
-| Signal | Before | After (mobile lab) |
-|--------|--------|--------------------|
-| LCP | ~30s, with a 4.3MB hero JPEG | **2.3s** |
-| CLS | Risk from unsized media | **0** |
-| TBT / long tasks | Elevated by third-party work | **0ms TBT** |
-| FCP | Slowed by bytes, CSS, and fonts | **2.2s** |
-| Transfer size | Multi-megabyte first load | **~355 KiB** |
-| Lighthouse Performance | Broken | **0.96** |
-| Accessibility / Best Practices / SEO | Partial failures | **1.0 / 1.0 / 1.0** |
+| Signal                               | Before                          | After (mobile lab)  |
+| ------------------------------------ | ------------------------------- | ------------------- |
+| LCP                                  | ~30s, with a 4.3MB hero JPEG    | **2.3s**            |
+| CLS                                  | Risk from unsized media         | **0**               |
+| TBT / long tasks                     | Elevated by third-party work    | **0ms TBT**         |
+| FCP                                  | Slowed by bytes, CSS, and fonts | **2.2s**            |
+| Transfer size                        | Multi-megabyte first load       | **~355 KiB**        |
+| Lighthouse Performance               | Broken                          | **0.96**            |
+| Accessibility / Best Practices / SEO | Partial failures                | **1.0 / 1.0 / 1.0** |
 
 The LCP candidate was a large building photo served as a JPEG. The Matterport embed was pulling around 2MB into the initial page load even though most visitors were not going to start a virtual tour immediately. There were also generic links such as "Learn More," missing security headers on the responses from the Worker, and media without enough information for the browser to reserve its space.
 
@@ -171,6 +171,6 @@ Live site for the run above: [vhnursing.com](https://vhnursing.com).
 1. Google Search Central, "Understanding Core Web Vitals and Google search results." [https://developers.google.com/search/docs/appearance/core-web-vitals](https://developers.google.com/search/docs/appearance/core-web-vitals)
 2. web.dev, "Web Vitals." [https://web.dev/articles/vitals](https://web.dev/articles/vitals)
 
-import Footer from '../../snippets/_footer.mdx'
+import Footer from "../../snippets/_footer.mdx";
 
 <Footer />

@@ -7,7 +7,7 @@ title: "WebMCP: The Web's Missing Agent Interface"
 description: "WebMCP turns web pages into agent-native applications. I shipped it as three NPM packages and built Faraday — a 3D medical scan viewer that won the OpenAI WebMCP Challenge — to prove the model."
 ---
 
-import BackLink from '../../snippets/BackLink.tsx'
+import BackLink from "../../snippets/BackLink.tsx";
 
 <BackLink />
 
@@ -23,30 +23,30 @@ WebMCP adds a model context at the document level. The application registers too
 
 ```ts
 document.modelContext.registerTool({
-  name: 'find_regions',
-  description: 'Find connected 3D regions by intensity window',
+  name: "find_regions",
+  description: "Find connected 3D regions by intensity window",
   inputSchema: {
-    type: 'object',
+    type: "object",
     properties: {
-      min_intensity: { type: 'number' },
-      max_intensity: { type: 'number' },
+      min_intensity: { type: "number" },
+      max_intensity: { type: "number" },
     },
-    required: ['min_intensity', 'max_intensity'],
+    required: ["min_intensity", "max_intensity"],
   },
   execute: async ({ min_intensity, max_intensity }) => {
     // Compute in the browser. Return measurements, never raw scan data.
   },
-})
+});
 ```
 
 The difference from browser automation is architectural, not cosmetic:
 
-| <span className="sr-only">Feature</span> | Browser automation | WebMCP tools |
-| --- | --- | --- |
-| Interface | Human UI, interpreted visually | Application-defined operations |
-| Access | Pixels and DOM text | Structured, schema-validated calls |
-| State | Whatever is on screen | Application state, exposed on purpose |
-| Boundaries | Prompt instructions, mostly | Data flow and output schemas, in code |
+| <span className="sr-only">Feature</span> | Browser automation             | WebMCP tools                          |
+| ---------------------------------------- | ------------------------------ | ------------------------------------- |
+| Interface                                | Human UI, interpreted visually | Application-defined operations        |
+| Access                                   | Pixels and DOM text            | Structured, schema-validated calls    |
+| State                                    | Whatever is on screen          | Application state, exposed on purpose |
+| Boundaries                               | Prompt instructions, mostly    | Data flow and output schemas, in code |
 
 That last row is the one I care about most. With automation, the boundary between "agent reads the page" and "agent does something consequential" lives inside a prompt. With WebMCP, the boundary is the tool surface itself, and the output schema defines exactly what crosses it. That makes agent behavior testable in the application instead of hoped-for in the model.
 
@@ -86,6 +86,6 @@ npm install @thegreataxios/webmcp
 
 Faraday is live at [thegreataxios.github.io/faraday](https://thegreataxios.github.io/faraday/), and the full source is at [github.com/TheGreatAxios/faraday](https://github.com/TheGreatAxios/faraday). If you're building agent-facing web applications, reach out — happy to talk through the patterns.
 
-import Footer from '../../snippets/_footer.mdx'
+import Footer from "../../snippets/_footer.mdx";
 
 <Footer />

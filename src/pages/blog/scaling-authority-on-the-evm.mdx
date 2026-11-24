@@ -1,14 +1,13 @@
 ---
 layout: minimal
 authors:
-    - "[thegreataxios](https://linkedin.com/in/sawyercutler)"
+  - "[thegreataxios](https://linkedin.com/in/sawyercutler)"
 date: 2024-09-08
 title: "Scaling Authority on the EVM"
 description: "Solving EVM nonce collision issues with a Signing Pool architecture using HD wallet-derived child signers for high-throughput authoritative servers."
 ---
 
-
-import BackLink from '../../snippets/BackLink.tsx'
+import BackLink from "../../snippets/BackLink.tsx";
 
 <BackLink />
 
@@ -36,44 +35,45 @@ Running a server or many servers to manage authority within a game brings its ow
 The use of a single account to manage a server is very common, however, not designed for scalability. Imagine the following Node.js + Express controller:
 
 ```ts
-// controller.ts  
-import { Request, Response } from "express";  
-import { Contract, JsonRpcProvider, Wallet } from "ethers";  
-  
-type RequestBody = {  
-  gameId: string;  
-  userWalletAddress: `0x${string}`;  
-}  
-  
-export default async function(req: Request, res: Response) {  
-  // Access to gameId str and userWalletAddress ethereum address  
-  const { gameId, userWalletAddress } : RequestBody = req.body;  
-    
-  try {  
-    // Provider connects to SKALE Calypso Mainnet  
-    const provider = new JsonRpcProvider("https://mainnet.skalenodes.com/v1/honorable-steel-rasalhague");  
-    // Wallet is for the server (one key) and uses the Calypso provider  
-    const wallet = new Wallet("...privateKey", provider);  
-    // Contract connects to a contract on-chain that stores on-chain game analytics  
-    // This contract uses the wallet and provider above  
-    const contract = new Contract("0x...", [...abi], wallet);  
-  
-    await contract.logPlay(gameId, userWalletAddress);  
-  
-    return res.send(200).status("Event Logged");  
-    
-  } catch (err) {  
-    // Avoid sending private information to the client  
-    return res.status(500).send("Internal Server Error");  
-  }  
-}  
-  
-// router.ts  
-import controller from "./controller";  
-import { Router } from "express";  
-  
-const router = Router();  
-router.post("/games/play", controller);  
+// controller.ts
+import { Request, Response } from "express";
+import { Contract, JsonRpcProvider, Wallet } from "ethers";
+
+type RequestBody = {
+  gameId: string;
+  userWalletAddress: `0x${string}`;
+};
+
+export default async function (req: Request, res: Response) {
+  // Access to gameId str and userWalletAddress ethereum address
+  const { gameId, userWalletAddress }: RequestBody = req.body;
+
+  try {
+    // Provider connects to SKALE Calypso Mainnet
+    const provider = new JsonRpcProvider(
+      "https://mainnet.skalenodes.com/v1/honorable-steel-rasalhague",
+    );
+    // Wallet is for the server (one key) and uses the Calypso provider
+    const wallet = new Wallet("...privateKey", provider);
+    // Contract connects to a contract on-chain that stores on-chain game analytics
+    // This contract uses the wallet and provider above
+    const contract = new Contract("0x...", [...abi], wallet);
+
+    await contract.logPlay(gameId, userWalletAddress);
+
+    return res.send(200).status("Event Logged");
+  } catch (err) {
+    // Avoid sending private information to the client
+    return res.status(500).send("Internal Server Error");
+  }
+}
+
+// router.ts
+import controller from "./controller";
+import { Router } from "express";
+
+const router = Router();
+router.post("/games/play", controller);
 export default router;
 ```
 
@@ -90,101 +90,109 @@ During the initial design of the v3, it became clear that one of the biggest lim
 It became clear that a single signer on a single server just would not be efficient. From there, two different designs came about. The first was to utilize a pool of multiple signers to handle higher load. This allowed each account in the pool to send one transaction at a time before the next signer was selected. With some strategic decisions made to abstract the Signing Pool over to a separate resource that all the controllers (or underlying services) could call into; it allowed scalability to go from a few requests per second with no issue to hundreds of requests per second with no issue.
 
 ```ts
-// engineManager.ts  
-import { HDNodeWallet, JsonRpcProvider, TransactionReceipt, TransactionRequest, Wallet } from "ethers";  
-  
-type InternalSigner = {  
-    wallet: Wallet;  
-    nonce: number;  
-    active: boolean;  
-    checks: {  
-        gas: boolean;  
-    }  
-}  
-  
-class SigningManager {  
-      
-    #currentSignerIndex = 0;  
-    #baseWallet: HDNodeWallet;  
-    #rpcUrl: string;  
-    #signers: {[key: number]: InternalSigner} = {};  
-  
-    protected baseProvider: JsonRpcProvider;  
-  
-    constructor(        seed: string,  
-        signerCount: number = 1,  
-        rpcUrl: string    ) {  
-        this.signerCount = signerCount;  
-        this.#rpcUrl = rpcUrl;  
-        this.baseProvider = new JsonRpcProvider(rpcUrl);  
-        this.#baseWallet = Wallet.fromPhrase(seed, this.baseProvider);  
-        this._initializeWallets(signerCount);  
-    }  
-  
-    private async _initializeWallets(signerCount: number) {  
-        let addresses = [];  
-        for (let i = 0; i < signerCount; i++) {  
-              
-            const _wallet = new Wallet(this.#baseWallet.deriveChild(i).privateKey, new JsonRpcProvider(this.#rpcUrl));  
-          
-            this.#signers[i] = {  
-                wallet: _wallet,  
-                nonce: await _wallet.getNonce(),  
-                active: true  
-            };  
-  
-            addresses.push(_wallet.address);  
-        };  
-  
-        if (process.env.NODE_ENV === "development") console.log(`Wallets for ${this.use}`, addresses.join(",\n"));  
-    }  
-  
-    public async sendTransaction(request: TransactionRequest) : Promise<TransactionReceipt> {  
-        const signerIndex = this.selectSignerIndex();  
-        const signer = this.#signers[signerIndex];  
-        const balance = await this.baseProvider.getBalance(signer.wallet.address);  
-          
-        if (balance === BigInt(0) && balance > BigInt(request.value ?? 0)) {  
-            this.#signers[signerIndex - 1] = {  
-                ...signer,  
-                active: false,  
-                checks: {  
-                    gas: true,  
-                }  
-            };  
-  
-            return await this.sendTransaction(request);  
-        }  
-  
-        const tx = await signer.wallet.sendTransaction({  
-            gasPrice: 100_000, // set for SKALE to maintain lowest gas consumption  
-            ...request  
-        });  
-  
-        return await tx.wait();  
-    }  
-  
-    private get signerCount() {  
-      return Object.keys(this.#signers).length;  
-    }  
-  
-    private selectSignerIndex() {  
-        const signerIndex = this.#currentSignerIndex;  
-  
-        if (signerIndex + 1 === this.signerCount) {  
-            this.#currentSignerIndex = 0;  
-        } else {  
-            this.#currentSignerIndex++;  
-        }  
-  
-        return signerIndex;  
-    }  
-}  
-  
+// engineManager.ts
+import {
+  HDNodeWallet,
+  JsonRpcProvider,
+  TransactionReceipt,
+  TransactionRequest,
+  Wallet,
+} from "ethers";
+
+type InternalSigner = {
+  wallet: Wallet;
+  nonce: number;
+  active: boolean;
+  checks: {
+    gas: boolean;
+  };
+};
+
+class SigningManager {
+  #currentSignerIndex = 0;
+  #baseWallet: HDNodeWallet;
+  #rpcUrl: string;
+  #signers: { [key: number]: InternalSigner } = {};
+
+  protected baseProvider: JsonRpcProvider;
+
+  constructor(seed: string, signerCount: number = 1, rpcUrl: string) {
+    this.signerCount = signerCount;
+    this.#rpcUrl = rpcUrl;
+    this.baseProvider = new JsonRpcProvider(rpcUrl);
+    this.#baseWallet = Wallet.fromPhrase(seed, this.baseProvider);
+    this._initializeWallets(signerCount);
+  }
+
+  private async _initializeWallets(signerCount: number) {
+    let addresses = [];
+    for (let i = 0; i < signerCount; i++) {
+      const _wallet = new Wallet(
+        this.#baseWallet.deriveChild(i).privateKey,
+        new JsonRpcProvider(this.#rpcUrl),
+      );
+
+      this.#signers[i] = {
+        wallet: _wallet,
+        nonce: await _wallet.getNonce(),
+        active: true,
+      };
+
+      addresses.push(_wallet.address);
+    }
+
+    if (process.env.NODE_ENV === "development")
+      console.log(`Wallets for ${this.use}`, addresses.join(",\n"));
+  }
+
+  public async sendTransaction(
+    request: TransactionRequest,
+  ): Promise<TransactionReceipt> {
+    const signerIndex = this.selectSignerIndex();
+    const signer = this.#signers[signerIndex];
+    const balance = await this.baseProvider.getBalance(signer.wallet.address);
+
+    if (balance === BigInt(0) && balance > BigInt(request.value ?? 0)) {
+      this.#signers[signerIndex - 1] = {
+        ...signer,
+        active: false,
+        checks: {
+          gas: true,
+        },
+      };
+
+      return await this.sendTransaction(request);
+    }
+
+    const tx = await signer.wallet.sendTransaction({
+      gasPrice: 100_000, // set for SKALE to maintain lowest gas consumption
+      ...request,
+    });
+
+    return await tx.wait();
+  }
+
+  private get signerCount() {
+    return Object.keys(this.#signers).length;
+  }
+
+  private selectSignerIndex() {
+    const signerIndex = this.#currentSignerIndex;
+
+    if (signerIndex + 1 === this.signerCount) {
+      this.#currentSignerIndex = 0;
+    } else {
+      this.#currentSignerIndex++;
+    }
+
+    return signerIndex;
+  }
+}
+
 export default new SigningManager();
 ```
 
-```ts
+````ts
 // controller.ts  
 import { Request, Response } from "express";  
 import { Contract, JsonRpcProvider, Wallet } from "ethers";  
@@ -224,7 +232,7 @@ import { Router } from "express";
 const router = Router();  
 router.post("/games/play", controller);  
 export default router;
-```
+````
 
 The addition of the signing manager not only makes the controls cleaner, but it allows for a range of 1 to 2²⁵⁶-1 signers in the single engine manager. Of course subject to local resources on the machine. Every signer in the batch manager must have the necessary amount of gas, but especially when designing solutions like this on SKALE; you have the ability to have contract calls top up the signers every time so they never running out.
 
@@ -236,6 +244,6 @@ Additionally, it is important to note that this solution does **NOT** utilize 
 
 For builders interested in taking advantage of this, make sure to head over to [https://docs.skale.space](https://docs.skale.space) and start building now.
 
-import Footer from '../../snippets/_footer.mdx'
+import Footer from "../../snippets/_footer.mdx";
 
 <Footer />

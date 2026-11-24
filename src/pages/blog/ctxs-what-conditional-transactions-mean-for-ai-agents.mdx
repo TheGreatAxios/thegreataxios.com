@@ -1,18 +1,17 @@
 ---
 layout: minimal
 authors:
-    - "[thegreataxios](https://linkedin.com/in/sawyercutler)"
+  - "[thegreataxios](https://linkedin.com/in/sawyercutler)"
 date: 2026-03-04
 title: "CTXs: What Conditional Transactions Mean for AI Agents"
 description: "Exploring SKALE's Conditional Transactions (CTXs) — encrypted onchain data that decrypts only when smart contract conditions are met, enabling private agent execution."
 ---
 
-
-import BackLink from '../../snippets/BackLink.tsx'
+import BackLink from "../../snippets/BackLink.tsx";
 
 <BackLink />
 
-#  What Conditional Transactions (CTXs) Mean for AI Agents
+# What Conditional Transactions (CTXs) Mean for AI Agents
 
 SKALE Network's Blockchain Integrated Threshold Encryption (BITE) Protocol introduced **Encrypted Transactions** which introduced 100% private data in transit for blockchain transactions from wallet to execution.
 
@@ -32,7 +31,7 @@ CTXs introduce a new EVM primitive, **conditional execution**. This allows encry
 3. The transaction queues and in the next block, the validator committee performs threshold decryption in a batch.
 4. The decrypted data passes to the developer's `onDecrypt()` callback, which executes the business logic with the sender being an ephemeral wallet.
 
-This is a two-block operation. Block *i* queues the decryption request. Block *i+1* decrypts and executes. This breaks the standard EVM assumption that contract execution is atomic within a single block — more on that below.
+This is a two-block operation. Block _i_ queues the decryption request. Block _i+1_ decrypts and executes. This breaks the standard EVM assumption that contract execution is atomic within a single block — more on that below.
 
 ## Why This Matters for AI Agents
 
@@ -42,13 +41,13 @@ An AI agent's value is in what it knows and how it decides. Strategy parameters,
 
 CTXs create a new category of onchain data: encrypted state that is only readable when the contract decides it should be.
 
-| <span className="sr-only">Feature</span> | Encrypted Transactions | CTXs |
-| --- | --- | --- |
-| What's encrypted | Transaction data (calldata, destination) | Smart contract storage (state, parameters, inputs) |
-| When it's decrypted | After block finalization | When contract triggers `BITE.submitCTX()` |
-| Protection model | Transit encryption | At-rest encryption with conditional reveal |
-| Developer interface | Transparent (automatic) | Callback pattern (`onDecrypt()`) |
-| Execution model | Same-block | Two-block (request in *i*, execute in *i+1*) |
+| <span className="sr-only">Feature</span> | Encrypted Transactions                   | CTXs                                               |
+| ---------------------------------------- | ---------------------------------------- | -------------------------------------------------- |
+| What's encrypted                         | Transaction data (calldata, destination) | Smart contract storage (state, parameters, inputs) |
+| When it's decrypted                      | After block finalization                 | When contract triggers `BITE.submitCTX()`          |
+| Protection model                         | Transit encryption                       | At-rest encryption with conditional reveal         |
+| Developer interface                      | Transparent (automatic)                  | Callback pattern (`onDecrypt()`)                   |
+| Execution model                          | Same-block                               | Two-block (request in _i_, execute in _i+1_)       |
 
 For agents, this enables workflows that were previously not possible on any public chain:
 
@@ -64,7 +63,7 @@ This is the part that requires a shift in thinking for EVM developers.
 
 EVM developers are trained on atomicity. You call a function, the state changes, the transaction either succeeds or reverts — all in one block. CTXs break that assumption.
 
-When a contract calls `BITE.submitCTX()`, the decryption does not happen in the current block. It is batched with all other decryption requests from block *i* and executed at the start of block *i+1*.
+When a contract calls `BITE.submitCTX()`, the decryption does not happen in the current block. It is batched with all other decryption requests from block _i_ and executed at the start of block _i+1_.
 
 This means:
 
@@ -100,7 +99,7 @@ Encrypted data that automatically decrypts at a specific block timestamp. A rese
 
 Two agents submit encrypted negotiation terms. The contract only decrypts when both sides have submitted, and both are revealed simultaneously. Execution happens on the overlap of terms.
 
-This is the foundation of private agent-to-agent commerce where neither party has an information advantage. As I explored in [Memory for the Agentic Economy](/blog/memory-for-the-agentic-economy.mdx), agent marketplace transactions need transparent execution and settlement records — but the *terms* can remain private until reveal.
+This is the foundation of private agent-to-agent commerce where neither party has an information advantage. As I explored in [Memory for the Agentic Economy](/blog/memory-for-the-agentic-economy.mdx), agent marketplace transactions need transparent execution and settlement records — but the _terms_ can remain private until reveal.
 
 ### Encrypted Multisig Updates
 
@@ -116,6 +115,6 @@ Combined with SKALE's credit system and sub-second finality, CTXs make SKALE on 
 
 If you are building agents that need private onchain state, reach out. I'm working on this daily and happy to walk through integration patterns.
 
-import Footer from '../../snippets/_footer.mdx'
+import Footer from "../../snippets/_footer.mdx";
 
 <Footer />

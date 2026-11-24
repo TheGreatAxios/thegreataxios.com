@@ -1,14 +1,13 @@
 ---
 layout: minimal
 authors:
-    - "[thegreataxios](https://linkedin.com/in/sawyercutler)"
+  - "[thegreataxios](https://linkedin.com/in/sawyercutler)"
 date: 2026-04-18
 title: "Solving the Barista Test: A Private Money Solution"
 description: "When you buy coffee, the barista doesn't see your bank balance. Confidential tokens bring this privacy to blockchain — hidden balances, encrypted amounts, real transfers."
 ---
 
-
-import BackLink from '../../snippets/BackLink.tsx'
+import BackLink from "../../snippets/BackLink.tsx";
 
 <BackLink />
 
@@ -16,7 +15,7 @@ import BackLink from '../../snippets/BackLink.tsx'
 
 The barista test: when you buy coffee, the barista doesn't see your bank balance. Confidential tokens bring this privacy to blockchain — private balances, encrypted amounts, and transfers that reveal nothing to observers.
 
-This is not a new primitive. Confidential tokens are an *application* — a pattern that combines encrypted transactions, conditional transactions, and re-encryption into a single use case. eUSDC is one implementation. The pattern works for any token.
+This is not a new primitive. Confidential tokens are an _application_ — a pattern that combines encrypted transactions, conditional transactions, and re-encryption into a single use case. eUSDC is one implementation. The pattern works for any token.
 
 ## What Confidential Tokens Demonstrate
 
@@ -24,13 +23,13 @@ Standard ERC-20 tokens expose everything. Balances. Transfer amounts. Transactio
 
 Confidential tokens change this:
 
-| Standard Token | Confidential Token |
-|----------------|-------------------|
-| Balances public | Balances encrypted |
-| Transfer amounts visible | Amounts encrypted |
-| History traceable | Only sender/recipient see their flows |
-| Contract sees all data | Contract executes on encrypted state |
-| No privacy guarantees | Threshold cryptography secures data |
+| Standard Token           | Confidential Token                    |
+| ------------------------ | ------------------------------------- |
+| Balances public          | Balances encrypted                    |
+| Transfer amounts visible | Amounts encrypted                     |
+| History traceable        | Only sender/recipient see their flows |
+| Contract sees all data   | Contract executes on encrypted state  |
+| No privacy guarantees    | Threshold cryptography secures data   |
 
 :::info{aria-label="Client-level amount encryption info"}
 **How amounts stay private today:** The transfer amount is encrypted at the client level using `encryptTransaction` — the entire transaction object (including the amount) gets encrypted before hitting the chain. Once onchain, the amount can be re-encrypted to the recipient's viewer key. Encrypted amounts inside contract storage (fully encrypted balances) are being actively explored.
@@ -82,16 +81,16 @@ This isn't limited to bridged assets. The same pattern works with a native stabl
 The SDK usage is straightforward:
 
 ```typescript
-import { mpp } from '@skalenetwork/mpp/client'
+import { mpp } from "@skalenetwork/mpp/client";
 
 const method = mpp.charge({
-  chain: 'bite-sandbox',
-  currency: 'eUSDC',
+  chain: "bite-sandbox",
+  currency: "eUSDC",
   extensions: {
     skale: { encrypted: true, confidentialToken: true },
-    gasless: 'eip3009'
-  }
-})
+    gasless: "eip3009",
+  },
+});
 ```
 
 `encrypted: true` — Transaction amount encrypts onchain.
@@ -105,6 +104,7 @@ Confidential tokens combine naturally with MPP (Machine Payments Protocol). I co
 AI agents paying for services via MPP can use confidential tokens to hide both the payment amount and their remaining balance. Only the agent and the service provider see transaction details.
 
 This matters for:
+
 - **Agent spending patterns** — exact amounts hidden from competitors
 - **Budget constraints** — total holdings not visible onchain
 
@@ -142,6 +142,6 @@ The result is a token with the same functionality as ERC-20 but privacy properti
 
 If you're issuing a token and want to add privacy to it, reach out.
 
-import Footer from '../../snippets/_footer.mdx'
+import Footer from "../../snippets/_footer.mdx";
 
 <Footer />

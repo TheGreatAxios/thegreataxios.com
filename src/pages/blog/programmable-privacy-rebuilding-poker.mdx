@@ -1,14 +1,13 @@
 ---
 layout: minimal
 authors:
-    - "[thegreataxios](https://linkedin.com/in/sawyercutler)"
+  - "[thegreataxios](https://linkedin.com/in/sawyercutler)"
 date: 2026-04-18
 title: "I Built Poker That Actually Works Onchain"
 description: "Poker failed onchain because cards were visible. I rebuilt it with dual encryption, CTX callbacks, and autonomous agents — live demo at confidential-poker.vercel.app."
 ---
 
-
-import BackLink from '../../snippets/BackLink.tsx'
+import BackLink from "../../snippets/BackLink.tsx";
 
 <BackLink />
 
@@ -90,13 +89,11 @@ function onDecrypt(bytes[] calldata decryptedArguments, bytes[] calldata plainte
 
 Same pattern for turn (1 card) and river (1 card). Each phase queues in one block, decrypts and executes in the next.
 
-*[source](https://github.com/TheGreatAxios/confidential-poker/blob/main/packages/contracts/src/PokerGame.sol)*
+_[source](https://github.com/TheGreatAxios/confidential-poker/blob/main/packages/contracts/src/PokerGame.sol)_
 
 ## Architecture Overview
 
-<div align="center">
-  ![Poker Architecture](/poker-architecture.svg)
-</div>
+<div align="center">![Poker Architecture](/poker-architecture.svg)</div>
 
 The server handles game orchestration because card dealing requires sequential operations that don't fit single transactions. The contracts hold truth — game state, encrypted cards, betting balances. The server translates between player actions and onchain state.
 
@@ -153,7 +150,6 @@ I'm actively building on SKALE daily. DM me if you want to walk through the impl
 
 ---
 
-
-import Footer from '../../snippets/_footer.mdx'
+import Footer from "../../snippets/_footer.mdx";
 
 <Footer />

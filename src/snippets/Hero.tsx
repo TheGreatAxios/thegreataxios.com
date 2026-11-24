@@ -2,23 +2,31 @@ import { GithubIcon, LinkedinIcon } from "./BrandIcons.tsx";
 import PageTabs from "./PageTabs.tsx";
 
 interface HeroProps {
-  name?: string
-  github?: string
-  x?: string
-  linkedin?: string
-  tabsActive?: 'writing' | 'projects'
+  name?: string;
+  github?: string;
+  x?: string;
+  linkedin?: string;
+  tabsActive?: "writing" | "projects";
 }
 
-export function HeroHeader({ name = "Sawyer Cutler", tabsActive }: Pick<HeroProps, 'name' | 'tabsActive'>) {
+export function HeroHeader({
+  name = "Sawyer Cutler",
+  tabsActive,
+}: Pick<HeroProps, "name" | "tabsActive">) {
   return (
     <div className="hero-name-block">
       <div className="hero-name-row">
         <h1 className="hero-name">{name}</h1>
         {tabsActive && <PageTabs active={tabsActive} />}
       </div>
-      <div className="hero-role">Lead Product Engineer @ <a href="https://corbits.dev" target="_blank" rel="noopener noreferrer">Corbits</a></div>
+      <div className="hero-role">
+        Lead Product Engineer @{" "}
+        <a href="https://corbits.dev" target="_blank" rel="noopener noreferrer">
+          Corbits
+        </a>
+      </div>
     </div>
-  )
+  );
 }
 
 export default function Hero({
@@ -26,7 +34,7 @@ export default function Hero({
   github = "https://github.com/thegreataxios",
   x = "https://x.com/thegreataxios",
   linkedin = "https://linkedin.com/in/sawyercutler",
-  tabsActive
+  tabsActive,
 }: HeroProps) {
   return (
     <div className="about-section">
@@ -37,18 +45,52 @@ export default function Hero({
       </p>
       <p>
         Recent work includes{" "}
-        <a href="https://github.com/corbitsdev/corbits-triage" target="_blank" rel="noopener noreferrer"><b>Corbits Triage</b></a>,{" "}
-        <a href="https://github.com/TheGreatAxios/webmcp" target="_blank" rel="noopener noreferrer"><b>WebMCP</b></a>,{" "}
-        <a href="https://github.com/corbitsdev/workbench" target="_blank" rel="noopener noreferrer"><b>Workbench</b></a>,{" "}
-        <a href="https://github.com/corbitsdev/corbits-solution-builder" target="_blank" rel="noopener noreferrer"><b>Solution Builder</b></a>, and{" "}
-        <a href="https://github.com/faremeter/interchange" target="_blank" rel="noopener noreferrer"><b>Interchange</b></a>.
+        <a
+          href="https://github.com/corbitsdev/corbits-triage"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <b>Corbits Triage</b>
+        </a>
+        ,{" "}
+        <a
+          href="https://github.com/TheGreatAxios/webmcp"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <b>WebMCP</b>
+        </a>
+        ,{" "}
+        <a
+          href="https://github.com/corbitsdev/workbench"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <b>Workbench</b>
+        </a>
+        ,{" "}
+        <a
+          href="https://github.com/corbitsdev/corbits-solution-builder"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <b>Solution Builder</b>
+        </a>
+        , and{" "}
+        <a
+          href="https://github.com/faremeter/interchange"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <b>Interchange</b>
+        </a>
+        .
       </p>
       <p>
-        I'm researching applied AI in the tools teams already use — and getting more out of smaller models along the way.
+        I'm researching applied AI in the tools teams already use — and getting
+        more out of smaller models along the way.
       </p>
-      <p>
-        I write about applied AI and agent infrastructure.
-      </p>
+      <p>I write about applied AI and agent infrastructure.</p>
 
       <div className="hero-socials">
         {github && (
@@ -63,12 +105,10 @@ export default function Hero({
           </a>
         )}
         {x && (
-          <a
-            href={x}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <span className="hero-x-icon" aria-hidden="true">𝕏</span>
+          <a href={x} target="_blank" rel="noopener noreferrer">
+            <span className="hero-x-icon" aria-hidden="true">
+              𝕏
+            </span>
             <span>thegreataxios</span>
             <span className="sr-only"> on X</span>
           </a>

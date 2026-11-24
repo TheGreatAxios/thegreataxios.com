@@ -1,14 +1,13 @@
 ---
 layout: minimal
 authors:
-    - "[thegreataxios](https://linkedin.com/in/sawyercutler)"
+  - "[thegreataxios](https://linkedin.com/in/sawyercutler)"
 date: 2026-03-26
 title: "Confidential MPP on SKALE: Private Payments for AI Agents"
 description: "How Confidential MPP enables AI agents to pay and get paid without exposing amounts or balances — private machine-to-machine payments on SKALE."
 ---
 
-
-import BackLink from '../../snippets/BackLink.tsx'
+import BackLink from "../../snippets/BackLink.tsx";
 
 <BackLink />
 
@@ -117,16 +116,16 @@ npm install @skalenetwork/mpp
 Make a confidential payment:
 
 ```typescript
-import { mpp } from '@skalenetwork/mpp/client'
+import { mpp } from "@skalenetwork/mpp/client";
 
 const method = mpp.charge({
-  chain: 'bite-sandbox',
-  currency: 'eUSDC',
+  chain: "bite-sandbox",
+  currency: "eUSDC",
   extensions: {
     skale: { encrypted: true, confidentialToken: true },
-    gasless: 'eip3009'
-  }
-})
+    gasless: "eip3009",
+  },
+});
 ```
 
 **What this does:**

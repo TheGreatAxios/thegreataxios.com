@@ -1,14 +1,13 @@
 ---
 layout: minimal
 authors:
-    - "[thegreataxios](https://linkedin.com/in/sawyercutler)"
+  - "[thegreataxios](https://linkedin.com/in/sawyercutler)"
 date: 2025-10-05
 title: "x402 via EIP-3009 Forwarding"
 description: "Extending x402 payments to any blockchain through EIP-3009 forwarding contracts, with focus on SKALE's zero-gas infrastructure for instant transactions."
 ---
 
-
-import BackLink from '../../snippets/BackLink.tsx'
+import BackLink from "../../snippets/BackLink.tsx";
 
 <BackLink />
 
@@ -36,11 +35,12 @@ Additionally, it was built with a number of key use cases in mind such as agenti
 
 ### SKALE
 
-[SKALE](https://skale.space) is a network of blockchains capable of bringing an infinite amount of block space to the world in the form of SKALE Chains. SKALE Chains are EVM compatible blockchains that are run by the pool of SKALE validator nodes. With a unique economic model that allows communities, developers, businesses, enterprises, and governments to purchase their own blockchains for  a flat fee, the underlying SKALE Chain can be configured and utilized in whatever way they see fit, including zero gas fee transactions.
+[SKALE](https://skale.space) is a network of blockchains capable of bringing an infinite amount of block space to the world in the form of SKALE Chains. SKALE Chains are EVM compatible blockchains that are run by the pool of SKALE validator nodes. With a unique economic model that allows communities, developers, businesses, enterprises, and governments to purchase their own blockchains for a flat fee, the underlying SKALE Chain can be configured and utilized in whatever way they see fit, including zero gas fee transactions.
 
 With the instant finality, large block size, and zero gas fee nature of a SKALE Chain; it's an ideal fit to bring zero cost operations to x402 for every token; a far greater opportunity for developers and stablecoin issuers compared to using subsidized USDC on certain chains.
 
 ### Stablecoins
+
 If you are unfamiliar with stablecoins, they are a cryptocurrency designed to remain at a stable value in relation to some other asset. The largest stablecoins today are Tether USD (USDT) and Circle USD (USDC) which are tokens issued by their respective companies intended to stay pegged at the value of $1 USD per token.
 
 The usage of stablecoins within x402 makes a lot of sense for many of the core use cases called out such as for cloud compute and storage providers. Stablecoins with zero gas fees is an even stronger pull to providers who don't have to weigh the cost of gas into their services.
@@ -53,9 +53,7 @@ The unique part about 3009, is that it's actually implemented within a few stabl
 
 While there are a number of ways to implement the meta-transactions, for to start I chose to go with a **Forwarding** contract for ERC-3009 since that is what the majority of facilitators are currently offering. My belief is that when a technology is new we can always explore more complex and fine-tuned designs, however, the easier it is to integrate into existing tooling the faster we can bring the usage over to SKALE and everyone can benefit from the zero gas fees.
 
-
 > The current forwarding contract is not audited. This contract is offered without any guarantees or warranties under the MIT License. See the full license [here](https://github.com/TheGreatAxios/eip3009-wrapper/blob/main/LICENSE).
-
 
 ## Implementation
 
@@ -66,7 +64,7 @@ The following section explores all the code written and steps taken to achieve a
 The entire setup of facilitators currently relies on ERC-3009 compatible tokens, i.e USDC.
 Therefore, to ensure that we could utilize as much of the existing facilitator as possible we needed to implement a `Forwarding` contract. While slightly more inefficient, the gas costs are irrelevant on a chain like SKALE and the extra approval is a price worth paying to achieve my goal (I can iron it out later).
 
-I created the [EIP-3009 Forwarder](https://github.com/TheGreatAxios/eip3009-forwarder) which uses the core structure of the core proposal, but through a forwarding contract. *The difference?* The sender who is signing the authorization must first approve the token being spent via authorization.
+I created the [EIP-3009 Forwarder](https://github.com/TheGreatAxios/eip3009-forwarder) which uses the core structure of the core proposal, but through a forwarding contract. _The difference?_ The sender who is signing the authorization must first approve the token being spent via authorization.
 
 As mentioned above, I think this is an acceptable tradeoff. This specific forwarding contract is designed to support a single token only. This was again done to mimic the setup and flows of a traditional facilitator.
 
@@ -83,19 +81,29 @@ Make note of the first key step within the script below, which is the approval c
 console.log("Step A: Checking and setting allowance");
 
 const approveAmount = ethers.parseUnits("1", token.decimals); // 1 token
-const currentAllowance = await erc20Contract.allowance(userAddress, FORWARDER_ADDRESS);
+const currentAllowance = await erc20Contract.allowance(
+  userAddress,
+  FORWARDER_ADDRESS,
+);
 const minimumRequired = (approveAmount * 20n) / 100n; // 20% of approve amount
 
-console.log(`Current allowance: ${ethers.formatUnits(currentAllowance, token.decimals)}`);
-console.log(`Minimum required (20%): ${ethers.formatUnits(minimumRequired, token.decimals)}`);
+console.log(
+  `Current allowance: ${ethers.formatUnits(currentAllowance, token.decimals)}`,
+);
+console.log(
+  `Minimum required (20%): ${ethers.formatUnits(minimumRequired, token.decimals)}`,
+);
 
 if (currentAllowance < minimumRequired) {
-	console.log("Insufficient allowance, approving...");
-	const approveTx = await erc20Contract.approve(FORWARDER_ADDRESS, approveAmount);
-	await approveTx.wait();
-	console.log(`✓ Approved! Tx: ${approveTx.hash}`);
+  console.log("Insufficient allowance, approving...");
+  const approveTx = await erc20Contract.approve(
+    FORWARDER_ADDRESS,
+    approveAmount,
+  );
+  await approveTx.wait();
+  console.log(`✓ Approved! Tx: ${approveTx.hash}`);
 } else {
-	console.log("✓ Sufficient allowance exists, skipping approval");
+  console.log("✓ Sufficient allowance exists, skipping approval");
 }
 ```
 
@@ -170,12 +178,12 @@ To prove this, I made a [pull request](https://github.com/faremeter/faremeter/pu
 
 ```typescript
 type NetworkInfo = {
-	address: Address;
-	contractName: string;
-	/* Added Below */
-	forwarder?: Address;
-	forwarderName?: string;
-	forwarderVersion?: string;
+  address: Address;
+  contractName: string;
+  /* Added Below */
+  forwarder?: Address;
+  forwarderName?: string;
+  forwarderVersion?: string;
 };
 ```
 
@@ -217,6 +225,7 @@ async function createContractConfig(
   return { address, domain };
 }
 ```
+
 from [here](https://github.com/faremeter/faremeter/blob/76f2e79ee2906ae4e60330186c350bfd31e520a1/packages/payment-evm/src/exact/facilitator.ts#L81) showcases the dynamic use of `useForwarder`.
 
 When the facilitator is called, it uses the incoming configuration of token and chain to validate if the forwarder is needed. After which the core facilitation stays 1:1 as the actual EIP-712 signature validation and then meta-transaction execution remains identical.
@@ -256,6 +265,6 @@ With this potential growth, the only network that is capable of scaling to handl
 
 ---
 
-import Footer from '../../snippets/_footer.mdx'
+import Footer from "../../snippets/_footer.mdx";
 
 <Footer />

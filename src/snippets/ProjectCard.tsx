@@ -2,14 +2,20 @@ import { Globe } from "lucide-react";
 import { GithubIcon } from "./BrandIcons.tsx";
 
 interface ProjectCardProps {
-  title: string
-  description: string
-  tags?: string[]
-  github?: string
-  website?: string
+  title: string;
+  description: string;
+  tags?: string[];
+  github?: string;
+  website?: string;
 }
 
-export default function ProjectCard({ title, description, tags, github, website }: ProjectCardProps) {
+export default function ProjectCard({
+  title,
+  description,
+  tags,
+  github,
+  website,
+}: ProjectCardProps) {
   return (
     <div
       className="project-card"
@@ -23,14 +29,48 @@ export default function ProjectCard({ title, description, tags, github, website 
         gap: "0.35rem",
         minWidth: 0,
         height: "118px",
-        overflow: "hidden"
+        overflow: "hidden",
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.5rem" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", minWidth: 0 }}>
-          <h3 style={{ fontSize: "0.92rem", fontWeight: "700", margin: 0, lineHeight: "1.2", color: "#0f172a", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{title}</h3>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "0.5rem",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "0.4rem",
+            minWidth: 0,
+          }}
+        >
+          <h3
+            style={{
+              fontSize: "0.92rem",
+              fontWeight: "700",
+              margin: 0,
+              lineHeight: "1.2",
+              color: "#0f172a",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {title}
+          </h3>
           {tags && tags.length > 0 && (
-            <div style={{ display: "flex", alignItems: "center", gap: "0.25rem", flexShrink: 0 }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.25rem",
+                flexShrink: 0,
+              }}
+            >
               {tags.map((tag) => (
                 <span
                   key={tag}
@@ -43,7 +83,7 @@ export default function ProjectCard({ title, description, tags, github, website 
                     borderRadius: "999px",
                     padding: "0.03rem 0.36rem",
                     lineHeight: "1.1",
-                    whiteSpace: "nowrap"
+                    whiteSpace: "nowrap",
                   }}
                 >
                   {tag}
@@ -52,13 +92,24 @@ export default function ProjectCard({ title, description, tags, github, website 
             </div>
           )}
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexShrink: 0 }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
+            flexShrink: 0,
+          }}
+        >
           {github && (
             <a
               href={github}
               target="_blank"
               rel="noopener noreferrer"
-              style={{ color: "#1d4ed8", display: "inline-flex", alignItems: "center" }}
+              style={{
+                color: "#1d4ed8",
+                display: "inline-flex",
+                alignItems: "center",
+              }}
               aria-label={`${title} GitHub`}
             >
               <GithubIcon size={14} />
@@ -69,7 +120,11 @@ export default function ProjectCard({ title, description, tags, github, website 
               href={website}
               target="_blank"
               rel="noopener noreferrer"
-              style={{ color: "#1d4ed8", display: "inline-flex", alignItems: "center" }}
+              style={{
+                color: "#1d4ed8",
+                display: "inline-flex",
+                alignItems: "center",
+              }}
               aria-label={`${title} Website`}
             >
               <Globe style={{ width: "14px", height: "14px" }} />
@@ -85,12 +140,11 @@ export default function ProjectCard({ title, description, tags, github, website 
           color: "#64748b",
           lineHeight: "1.32",
           maxHeight: "3.96em",
-          overflow: "hidden"
+          overflow: "hidden",
         }}
       >
         {description}
       </p>
-
     </div>
   );
 }
