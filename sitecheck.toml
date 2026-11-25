@@ -1,0 +1,25 @@
+url = "https://sawyercutler.com/"
+
+[http]
+check_www_redirect = true
+check_trailing_slash = true
+check_canonical = true
+check_sitemap = true
+check_robots = true
+check_llms_txt = true
+
+[security_headers]
+
+[structured_data]
+required_types = ["WebSite", "Person"]
+check_open_graph = true
+check_twitter = true
+
+[seo]
+
+[ai]
+
+[a11y]
+
+[indexnow]
+key = "eb756387fccff1baef28ffcf3ad10316"
