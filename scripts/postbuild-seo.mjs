@@ -250,6 +250,11 @@ async function run() {
     );
     html = upsertHeadTag(
       html,
+      /<meta\s+name="robots"\s+content="[^"]*"\s*\/?>/i,
+      '<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large"/>',
+    );
+    html = upsertHeadTag(
+      html,
       /<meta\s+property="og:url"\s+content="[^"]*"\s*\/?>/i,
       `<meta property="og:url" content="${canonicalUrl}"/>`,
     );
